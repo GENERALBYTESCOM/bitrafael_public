@@ -29,8 +29,8 @@ Example use of <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob
 Android
 =======
 If you want to use this project on Android OS mare sure you:
-1. Use in your Android project <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/tree/master/client/libs_android">different</a> bitcoinj libraries.
-2. Add <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/tree/master/common/src_android">following</a> sources to your Android project.
+* 1. Use in your Android project <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/tree/master/client/libs_android">different</a> bitcoinj libraries.
+* 2. Add <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/tree/master/common/src_android">following</a> sources to your Android project.
 
 Build information
 =================
