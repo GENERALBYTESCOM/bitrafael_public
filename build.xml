@@ -1,0 +1,69 @@
+<project name="bitrafael" default="dist" basedir=".">
+    <description>
+        BitRafael Public Interface
+    </description>
+    <!-- set global properties for this build -->
+    <property name="src_common" location="common/src"/>
+    <property name="src_client" location="client/src"/>
+    <property name="build_common" location="common/build"/>
+    <property name="build_client" location="client/build"/>
+    <property name="dist"  location="dist"/>
+    <property name="lib"  location="client/lib"/>
+
+    <path id="classpath">
+        <fileset dir="${lib}" includes="**/*.jar"/>
+    </path>
+
+    <target name="init">
+        <tstamp/>
+        <delete dir="${build_common}" />
+        <mkdir dir="${build_common}"/>
+        <delete dir="${build_client}" />
+        <mkdir dir="${build_client}"/>
+        <delete dir="${dist}" />
+        <mkdir dir="${dist}"/>
+    </target>
+
+    <target name="compile" depends="init" description="compile the source " >
+        <javac srcdir="${src_common}" destdir="${build_common}" debug="true">
+            <classpath>
+                <path refid="classpath" />
+            </classpath>
+        </javac>
+        <delete includeemptydirs="true">
+            <fileset dir="${build_common}" includes="**/test/**"/>
+        </delete>
+
+        <javac srcdir="${src_client}" destdir="${build_client}" debug="true">
+            <classpath>
+                <path refid="classpath" />
+                <dirset dir="${build_common}" />
+            </classpath>
+        </javac>
+        <delete includeemptydirs="true">
+            <fileset dir="${build_client}" includes="**/test/**"/>
+        </delete>
+
+    </target>
+
+    <target name="dist" depends="compile" description="generate the distribution" >
+        <jar jarfile="${dist}/lib/${ant.project.name}_common.jar" basedir="${build_common}">
+        </jar>
+
+        <jar jarfile="${dist}/lib/${ant.project.name}_client.jar" >
+            <fileset dir="${build_client}"/>
+            <fileset dir="${build_common}"/>
+        </jar>
+
+        <tstamp>
+            <format property="BUILD_NUMBER" pattern="yyyyMMdd" locale="en,US"/>
+        </tstamp>
+
+        <copy todir="${dist}/lib" flatten="true">
+            <fileset dir="${lib}" >
+                <include name="**/*.jar"/>
+            </fileset>
+        </copy>
+
+    </target>
+</project>
