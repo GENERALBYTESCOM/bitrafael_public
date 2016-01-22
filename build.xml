@@ -1,14 +1,14 @@
 <project name="bitrafael" default="dist" basedir=".">
     <description>
-        BitRafael Public Interface
+        BitRafael Public Repository
     </description>
     <!-- set global properties for this build -->
-    <property name="src_common" location="common/src"/>
-    <property name="src_client" location="client/src"/>
-    <property name="build_common" location="common/build"/>
-    <property name="build_client" location="client/build"/>
+    <property name="src_common" location="bitrafael_common/src"/>
+    <property name="src_client" location="bitrafael_client/src"/>
+    <property name="build_common" location="bitrafael_common/build"/>
+    <property name="build_client" location="bitrafael_client/build"/>
     <property name="dist"  location="dist"/>
-    <property name="lib"  location="client/lib"/>
+    <property name="lib"  location="bitrafael_client/lib"/>
 
     <path id="classpath">
         <fileset dir="${lib}" includes="**/*.jar"/>
