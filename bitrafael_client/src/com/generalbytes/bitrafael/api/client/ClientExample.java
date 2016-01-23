@@ -18,10 +18,23 @@
 
 package com.generalbytes.bitrafael.api.client;
 
+import com.generalbytes.bitrafael.api.wallet.MasterPrivateKey;
+import com.generalbytes.bitrafael.api.wallet.WalletTools;
+
 import java.math.BigDecimal;
 
 public class ClientExample {
     public static void main(String[] args) {
+          WalletTools wt = new WalletTools();
+        final MasterPrivateKey mKey = wt.getMasterPrivateKey("letter advice cage absurd amount doctor acoustic avoid letter advice cage above", "TREZOR");
+        System.out.println("mKey = " + mKey);
+        final String walletAddress = wt.getWalletAddress(mKey,0, 0, 0, 0);
+        System.out.println("walletAddress = " + walletAddress);
+        final String walletPrivateKey = wt.getWalletPrivateKey(mKey,0, 0, 0, 0);
+        System.out.println("walletPrivateKey = " + walletPrivateKey);
+        final String addressFromPrivateKey = wt.getAddressFromPrivateKey(walletPrivateKey);
+        System.out.println("addressFromPrivateKey = " + addressFromPrivateKey);
+
         BitRafaelBTCClient c = new BitRafaelBTCClient("https://coin.cz");
         BigDecimal b1 = c.getBalance("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         BigDecimal b2 = c.getBalanceConfirmed("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
