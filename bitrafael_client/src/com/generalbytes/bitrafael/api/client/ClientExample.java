@@ -19,13 +19,13 @@
 package com.generalbytes.bitrafael.api.client;
 
 import com.generalbytes.bitrafael.api.wallet.MasterPrivateKey;
-import com.generalbytes.bitrafael.api.wallet.WalletTools;
+import com.generalbytes.bitrafael.api.wallet.BitRafaelWalletTools;
 
 import java.math.BigDecimal;
 
 public class ClientExample {
     public static void main(String[] args) {
-          WalletTools wt = new WalletTools();
+          BitRafaelWalletTools wt = new BitRafaelWalletTools();
         final MasterPrivateKey mKey = wt.getMasterPrivateKey("letter advice cage absurd amount doctor acoustic avoid letter advice cage above", "TREZOR");
         System.out.println("mKey = " + mKey);
         final String walletAddress = wt.getWalletAddress(mKey,0, 0, 0, 0);

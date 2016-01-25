@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by b00lean on 23.1.16.
  */
-public class WalletTools implements IWalletTools{
+public class BitRafaelWalletTools implements IWalletTools{
 
     public MasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password){
         List<String> split = ImmutableList.copyOf(Splitter.on(" ").omitEmptyStrings().split(seedMnemonicSeparatedBySpaces));
