@@ -23,10 +23,7 @@ import com.generalbytes.bitrafael.api.IBitRafaelBitcoinAPI;
 import com.generalbytes.bitrafael.api.dto.TxSignature;
 import com.generalbytes.bitrafael.api.dto.TxTemplateInput;
 import com.generalbytes.bitrafael.api.dto.TxTemplateOutput;
-import com.generalbytes.bitrafael.api.dto.rest.AddressBalanceResponse;
-import com.generalbytes.bitrafael.api.dto.rest.TxReceiptResponse;
-import com.generalbytes.bitrafael.api.dto.rest.TxTemplateRequest;
-import com.generalbytes.bitrafael.api.dto.rest.TxTemplateResponse;
+import com.generalbytes.bitrafael.api.dto.rest.*;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.DumpedPrivateKey;
 import org.bitcoinj.core.Sha256Hash;
@@ -62,7 +59,7 @@ public class BitRafaelBTCClient {
             if (addressBalance != null && addressBalance.isSuccess() && addressBalance.getData() != null) {
                 return satoshisToBigDecimal(addressBalance.getData().getTotal());
             }
-        }catch (Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace();
         }
         return null;
@@ -74,12 +71,47 @@ public class BitRafaelBTCClient {
             if (addressBalance != null && addressBalance.isSuccess() && addressBalance.getData() != null) {
                 return satoshisToBigDecimal(addressBalance.getData().getTotal());
             }
-        }catch (Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace();
         }
         return null;
     }
 
+    public long getTransactionHeight(String txHash){
+        try {
+            final TxInfoResponse response = api.getTransactionInfo(txHash);
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData().getBlockHeight();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return -1;
+    }
+
+    public long getTransactionConfirmations(String txHash){
+        try {
+            final TxInfoResponse response = api.getTransactionInfo(txHash);
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData().getConfirmations();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return -1;
+    }
+
+    public long getCurrentBlockchainHeight() {
+        try {
+            final BlockchainHeightResponse response = api.getCurrentBlockchainHeight();
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return -1;
+    }
 
 
     public String send(String fromPrivateKey, BigDecimal amount, String toAddress) {

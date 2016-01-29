@@ -19,10 +19,7 @@
 package com.generalbytes.bitrafael.api;
 
 import com.generalbytes.bitrafael.api.dto.TxTemplate;
-import com.generalbytes.bitrafael.api.dto.rest.AddressBalanceResponse;
-import com.generalbytes.bitrafael.api.dto.rest.TxReceiptResponse;
-import com.generalbytes.bitrafael.api.dto.rest.TxTemplateRequest;
-import com.generalbytes.bitrafael.api.dto.rest.TxTemplateResponse;
+import com.generalbytes.bitrafael.api.dto.rest.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -44,5 +41,14 @@ public interface IBitRafaelBitcoinAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/transactions/send")
     public TxReceiptResponse sendTransaction(TxTemplate template, @HeaderParam("broadcast") boolean broadcast);
+
+    @GET
+    @Path("/transactions/{txhash}/info")
+    public TxInfoResponse getTransactionInfo(@PathParam("txhash") String txHash);
+
+    @GET
+    @Path("/blockchain/height")
+    public BlockchainHeightResponse getCurrentBlockchainHeight();
+
 
 }

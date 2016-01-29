@@ -31,6 +31,11 @@ public class TxInfo {
 
     private List<InputInfo> inputInfos;
     private List<OutputInfo> outputInfos;
+    private long blockHeight;
+    private long confirmations;
+
+    public TxInfo() {
+    }
 
     public TxInfo(String txHash, String blockHash, long timestamp, long receivedTimestamp, long size) {
         this.txHash = txHash;
@@ -92,5 +97,49 @@ public class TxInfo {
                 ", receivedTimestamp=" + receivedTimestamp +
                 ", size=" + size +
                 '}';
+    }
+
+    public long getBlockHeight() {
+        return blockHeight;
+    }
+
+    public void setBlockHeight(long blockHeight) {
+        this.blockHeight = blockHeight;
+    }
+
+    public long getConfirmations() {
+        return confirmations;
+    }
+
+    public void setConfirmations(long confirmations) {
+        this.confirmations = confirmations;
+    }
+
+    public void setTxHash(String txHash) {
+        this.txHash = txHash;
+    }
+
+    public void setBlockHash(String blockHash) {
+        this.blockHash = blockHash;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setReceivedTimestamp(long receivedTimestamp) {
+        this.receivedTimestamp = receivedTimestamp;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public void setInputInfos(List<InputInfo> inputInfos) {
+        this.inputInfos = inputInfos;
+    }
+
+    public void setOutputInfos(List<OutputInfo> outputInfos) {
+        this.outputInfos = outputInfos;
     }
 }

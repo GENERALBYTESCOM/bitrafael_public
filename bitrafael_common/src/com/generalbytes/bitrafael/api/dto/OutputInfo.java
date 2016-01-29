@@ -24,6 +24,9 @@ public class OutputInfo {
     private String address;
     private long value;
 
+    public OutputInfo() {
+    }
+
     public OutputInfo(String txHash, int index, String address, long value) {
         this.txHash = txHash;
         this.index = index;
@@ -47,4 +50,19 @@ public class OutputInfo {
         return value;
     }
 
+    public void setTxHash(String txHash) {
+        this.txHash = txHash;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setValue(long value) {
+        this.value = value;
+    }
 }

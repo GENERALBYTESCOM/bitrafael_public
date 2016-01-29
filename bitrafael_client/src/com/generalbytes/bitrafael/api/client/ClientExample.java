@@ -35,12 +35,27 @@ public class ClientExample {
         final String addressFromPrivateKey = wt.getAddressFromPrivateKey(walletPrivateKey);
         System.out.println("addressFromPrivateKey = " + addressFromPrivateKey);
 
-        BitRafaelBTCClient c = new BitRafaelBTCClient("https://coin.cz");
+        BitRafaelBTCClient c = new BitRafaelBTCClient("http://localhost:5556");
         BigDecimal b1 = c.getBalance("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         BigDecimal b2 = c.getBalanceConfirmed("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         System.out.println("balances = " + b1 + " " + b2);
-        final String txHash = c.send("5JFL....private_key_for_1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN", new BigDecimal("0.0002"), "34ZzYw5xB8JTFcECJrFo12sCEGK9St11bU");
+        String txHash = c.send("5JFL....private_key_for_1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN", new BigDecimal("0.0002"), "34ZzYw5xB8JTFcECJrFo12sCEGK9St11bU");
         System.out.println("txHash = " + txHash);
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (txHash== null) {
+            txHash = "edcfc87234dd501f244791e1b112210914a36d6f3d820e7d122e5db1903001c0";
+        }
+        final long transactionConfirmations = c.getTransactionConfirmations(txHash);
+        System.out.println("transactionConfirmations = " + transactionConfirmations);
+        final long transactionHeight = c.getTransactionHeight(txHash);
+        System.out.println("transactionHeight = " + transactionHeight);
+        final long currentBlockchainHeight = c.getCurrentBlockchainHeight();
+        System.out.println("currentBlockchainHeight = " + currentBlockchainHeight);
 
 
     }
