@@ -20,9 +20,9 @@ Content
 
 Notes
 ==========
-* Example use of <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/client/src/com/generalbytes/bitrafael/api/client/BitRafaelBTCClient.java">BitRafaelBTCClient</a> is in <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/client/src/com/generalbytes/bitrafael/api/client/ClientExample.java">ClientExample.java</a>.
-* The easiest way how to interface with API is to use <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/client/src/com/generalbytes/bitrafael/api/client/BitRafaelBTCClient.java">BitRafaelBTCClient</a>.
-* Which API functions Bitrafael Server exposes can be read in <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/common/src/com/generalbytes/bitrafael/api/IBitRafaelBitcoinAPI.java">IBitRafaelBitcoinAPI</a> interface.
+* Example use of <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_client/src/com/generalbytes/bitrafael/api/client/BitRafaelBTCClient.java">BitRafaelBTCClient</a> is in <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_client/src/com/generalbytes/bitrafael/api/client/ClientExample.java">ClientExample.java</a>.
+* The easiest way how to interface with API is to use <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_client/src/com/generalbytes/bitrafael/api/client/BitRafaelBTCClient.java">BitRafaelBTCClient</a>.
+* Which API functions Bitrafael Server exposes can be read in <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_common/src/com/generalbytes/bitrafael/api/IBitRafaelBitcoinAPI.java">IBitRafaelBitcoinAPI</a> interface.
 
 
 
@@ -31,8 +31,8 @@ Notes
 Android
 =======
 If you want to use this project on Android OS mare sure you:
-* 1. Use in your Android project <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/tree/master/client/libs_android">different</a> bitcoinj libraries.
-* 2. Add <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/tree/master/common/src_android">following</a> sources to your Android project.
+* 1. Use in your Android project <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/tree/master/bitrafael_client/libs_android">different</a> bitcoinj libraries.
+* 2. Add <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/tree/master/bitrafael_common/src_android">following</a> sources to your Android project.
 
 Build information
 =================
