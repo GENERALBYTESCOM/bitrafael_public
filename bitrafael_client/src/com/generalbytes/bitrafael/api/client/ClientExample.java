@@ -18,6 +18,7 @@
 
 package com.generalbytes.bitrafael.api.client;
 
+import com.generalbytes.bitrafael.api.dto.TxInfo;
 import com.generalbytes.bitrafael.api.wallet.MasterPrivateKey;
 import com.generalbytes.bitrafael.api.wallet.BitRafaelWalletTools;
 
@@ -35,7 +36,8 @@ public class ClientExample {
         final String addressFromPrivateKey = wt.getAddressFromPrivateKey(walletPrivateKey);
         System.out.println("addressFromPrivateKey = " + addressFromPrivateKey);
 
-        BitRafaelBTCClient c = new BitRafaelBTCClient("http://localhost:5556");
+//        BitRafaelBTCClient c = new BitRafaelBTCClient("http://localhost:5556");
+        BitRafaelBTCClient c = new BitRafaelBTCClient("https://coin.cz");
         BigDecimal b1 = c.getBalance("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         BigDecimal b2 = c.getBalanceConfirmed("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         System.out.println("balances = " + b1 + " " + b2);
@@ -56,7 +58,7 @@ public class ClientExample {
         System.out.println("transactionHeight = " + transactionHeight);
         final long currentBlockchainHeight = c.getCurrentBlockchainHeight();
         System.out.println("currentBlockchainHeight = " + currentBlockchainHeight);
-
-
+        final TxInfo txinfo = c.getAddressLastTransactionInfo("17oM8y8YEARHHpi6TmoXjLEcF5VMmdGqrR");
+        System.out.println("txinfo = " + txinfo);
     }
 }

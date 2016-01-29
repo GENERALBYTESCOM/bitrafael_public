@@ -32,6 +32,10 @@ public interface IBitRafaelBitcoinAPI {
     @Path("/addresses/{address}")
     public AddressBalanceResponse getAddressBalance(@PathParam("address") String address);
 
+    @GET
+    @Path("/addresses/{address}/last")
+    public TxInfoResponse getAddressLastTransactionInfo(@PathParam("address") String address);
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/transactions/build")

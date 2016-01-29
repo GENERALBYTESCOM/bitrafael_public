@@ -20,6 +20,7 @@
 package com.generalbytes.bitrafael.api.client;
 
 import com.generalbytes.bitrafael.api.IBitRafaelBitcoinAPI;
+import com.generalbytes.bitrafael.api.dto.TxInfo;
 import com.generalbytes.bitrafael.api.dto.TxSignature;
 import com.generalbytes.bitrafael.api.dto.TxTemplateInput;
 import com.generalbytes.bitrafael.api.dto.TxTemplateOutput;
@@ -99,6 +100,18 @@ public class BitRafaelBTCClient {
             t.printStackTrace();
         }
         return -1;
+    }
+
+    public TxInfo getAddressLastTransactionInfo(String address){
+        try {
+            final TxInfoResponse response = api.getAddressLastTransactionInfo(address);
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
     }
 
     public long getCurrentBlockchainHeight() {
