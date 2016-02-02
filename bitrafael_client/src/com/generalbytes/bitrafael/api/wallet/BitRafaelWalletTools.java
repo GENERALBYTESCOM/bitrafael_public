@@ -64,7 +64,7 @@ public class BitRafaelWalletTools implements IWalletTools{
     @Override
     public String getAddressFromPrivateKey(String privateKey) {
         DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
-        return (new Address(MainNetParams.get(),dp.getKey().getPubKeyHash())).toBase58();
+        return (new Address(MainNetParams.get(),dp.getKey().getPubKeyHash())) +"";
     }
 
     public static DeterministicKey createMasterPubKeyFromPubB58(String xpubstr) throws AddressFormatException
