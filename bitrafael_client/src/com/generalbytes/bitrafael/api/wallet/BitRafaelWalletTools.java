@@ -63,7 +63,7 @@ public class BitRafaelWalletTools implements IWalletTools{
 
     @Override
     public String getAddressFromPrivateKey(String privateKey) {
-        DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(),privateKey);
+        DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
         return (new Address(MainNetParams.get(),dp.getKey().getPubKeyHash())).toBase58();
     }
 
