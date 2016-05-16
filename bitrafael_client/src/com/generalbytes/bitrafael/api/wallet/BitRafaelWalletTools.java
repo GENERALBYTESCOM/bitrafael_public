@@ -1,3 +1,21 @@
+/*************************************************************************************
+ * Copyright (C) 2016 GENERAL BYTES s.r.o. All rights reserved.
+ *
+ * This software may be distributed and modified under the terms of the GNU
+ * General Public License version 2 (GPL2) as published by the Free Software
+ * Foundation and appearing in the file GPL2.TXT included in the packaging of
+ * this file. Please note that GPL2 Section 2[b] requires that all works based
+ * on this software must also be made publicly available under the terms of
+ * the GPL2 ("Copyleft").
+ *
+ * Contact information
+ * -------------------
+ *
+ * GENERAL BYTES s.r.o.
+ * Web      :  http://www.generalbytes.com
+ *
+ ************************************************************************************/
+
 package com.generalbytes.bitrafael.api.wallet;
 
 import com.google.common.base.Splitter;
@@ -13,56 +31,72 @@ import org.bitcoinj.wallet.DeterministicSeed;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-/**
- * Created by b00lean on 23.1.16.
- */
 public class BitRafaelWalletTools implements IWalletTools{
 
+
     public MasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password){
+        if (password == null) {
+            password = "";
+        }
         List<String> split = ImmutableList.copyOf(Splitter.on(" ").omitEmptyStrings().split(seedMnemonicSeparatedBySpaces));
         DeterministicSeed seed = new DeterministicSeed(split,null,password, MnemonicCode.BIP39_STANDARDISATION_TIME_SECS);
         DeterministicKey masterKey = HDKeyDerivation.createMasterPrivateKey(seed.getSeedBytes());
         final String xprv = masterKey.serializePrivB58(MainNetParams.get());
+        return getMasterPrivateKey(xprv);
+    }
+
+    @Override
+    public MasterPrivateKey getMasterPrivateKey(String xprv) {
         return new MasterPrivateKey(xprv);
     }
 
     @Override
-    public String getWalletAddress(MasterPrivateKey master, int subsystemId, int accountId, int purposeId, int childId) {
-        DeterministicKey masterKey = HDKeyDerivation.createMasterPrivateKey(master.getSeedBytes());
+    public String getWalletAddress(MasterPrivateKey master, int accountIndex, int chainIndex, int index) {
+        DeterministicKey masterKey = DeterministicKey.deserializeB58(master.getXPRV(), MainNetParams.get());
         masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
-        DeterministicHierarchy hierarchy = new DeterministicHierarchy(masterKey);
-        DeterministicKey subsystemKey = hierarchy.get(ImmutableList.of(new ChildNumber(subsystemId)), false, true);
-        DeterministicKey accountKey = hierarchy.get(HDUtils.append(subsystemKey.getPath(), new ChildNumber(accountId, false)), false, true);
-        DeterministicKey purposeKey = hierarchy.get(HDUtils.append(accountKey.getPath(), new ChildNumber(purposeId, false)), false, true);
-        DeterministicKey walletKey = hierarchy.get(HDUtils.append(purposeKey.getPath(), new ChildNumber(childId, false)), false, true);
+
+        final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(PURPOSE_BIP44, true));
+        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(COIN_TYPE_BITCOIN, true));
+        final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
+        final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
+        final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
+
         return new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
     }
 
     @Override
-    public String getAccountXPUB(MasterPrivateKey master, int subsystemId, int accountId) {
-        DeterministicKey masterKey = HDKeyDerivation.createMasterPrivateKey(master.getSeedBytes());
-        masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
-        DeterministicHierarchy hierarchy = new DeterministicHierarchy(masterKey);
-        DeterministicKey subsystemKey = hierarchy.get(ImmutableList.of(new ChildNumber(subsystemId)), false, true);
-        DeterministicKey accountKey = hierarchy.get(HDUtils.append(subsystemKey.getPath(), new ChildNumber(accountId, false)), false, true);
-        return accountKey.serializePubB58(MainNetParams.get());
+    public String getWalletAddressFromAccountXPUB(String accountXPUB, int chainIndex, int index) {
+        DeterministicKey accountKey = DeterministicKey.deserializeB58(accountXPUB, MainNetParams.get());
+        final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
+        final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
+        return new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
     }
 
-
-    @Override
-    public String getWalletPrivateKey(MasterPrivateKey master, int subsystemId, int accountId, int purposeId, int childId) {
-        DeterministicKey masterKey = HDKeyDerivation.createMasterPrivateKey(master.getSeedBytes());
+    public String getWalletPrivateKey(MasterPrivateKey master, int accountIndex, int chainIndex, int index) {
+        DeterministicKey masterKey = DeterministicKey.deserializeB58(master.getXPRV(), MainNetParams.get());
         masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
-        DeterministicHierarchy hierarchy = new DeterministicHierarchy(masterKey);
-        DeterministicKey subsystemKey = hierarchy.get(ImmutableList.of(new ChildNumber(subsystemId)), false, true);
-        DeterministicKey accountKey = hierarchy.get(HDUtils.append(subsystemKey.getPath(), new ChildNumber(accountId, false)), false, true);
-        DeterministicKey purposeKey = hierarchy.get(HDUtils.append(accountKey.getPath(), new ChildNumber(purposeId, false)), false, true);
-        DeterministicKey walletKey = hierarchy.get(HDUtils.append(purposeKey.getPath(), new ChildNumber(childId, false)), false, true);
+
+        final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(PURPOSE_BIP44, true));
+        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(COIN_TYPE_BITCOIN, true));
+        final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
+        final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
+        final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
+
         return walletKey.getPrivateKeyAsWiF(MainNetParams.get());
     }
 
     @Override
-    public String getAddressFromPrivateKey(String privateKey) {
+    public String getAccountXPUB(MasterPrivateKey master, int accountIndex) {
+        DeterministicKey masterKey = DeterministicKey.deserializeB58(master.getXPRV(), MainNetParams.get());
+        masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
+        final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(PURPOSE_BIP44, true));
+        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(COIN_TYPE_BITCOIN, true));
+        final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
+        return accountKey.serializePubB58(MainNetParams.get());
+    }
+
+    @Override
+    public String getWalletAddressFromPrivateKey(String privateKey) {
         DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
         return (new Address(MainNetParams.get(),dp.getKey().getPubKeyHash())) +"";
     }
@@ -85,4 +119,7 @@ public class BitRafaelWalletTools implements IWalletTools{
         final DeterministicKey masterPubKeyFromBytes = HDKeyDerivation.createMasterPubKeyFromBytes(pubBytes, chainCode);
         return masterPubKeyFromBytes;
     }
+
+
+
 }

@@ -19,6 +19,7 @@
 package com.generalbytes.bitrafael.api.client;
 
 import com.generalbytes.bitrafael.api.dto.TxInfo;
+import com.generalbytes.bitrafael.api.wallet.IWalletTools;
 import com.generalbytes.bitrafael.api.wallet.MasterPrivateKey;
 import com.generalbytes.bitrafael.api.wallet.BitRafaelWalletTools;
 
@@ -26,14 +27,14 @@ import java.math.BigDecimal;
 
 public class ClientExample {
     public static void main(String[] args) {
-          BitRafaelWalletTools wt = new BitRafaelWalletTools();
+        IWalletTools wt = new BitRafaelWalletTools();
         final MasterPrivateKey mKey = wt.getMasterPrivateKey("letter advice cage absurd amount doctor acoustic avoid letter advice cage above", "TREZOR");
         System.out.println("mKey = " + mKey);
-        final String walletAddress = wt.getWalletAddress(mKey,0, 0, 0, 0);
+        final String walletAddress = wt.getWalletAddress(mKey, 0, 0, 0);
         System.out.println("walletAddress = " + walletAddress);
-        final String walletPrivateKey = wt.getWalletPrivateKey(mKey,0, 0, 0, 0);
+        final String walletPrivateKey = wt.getWalletPrivateKey(mKey,0, 0, 0);
         System.out.println("walletPrivateKey = " + walletPrivateKey);
-        final String addressFromPrivateKey = wt.getAddressFromPrivateKey(walletPrivateKey);
+        final String addressFromPrivateKey = wt.getWalletAddressFromPrivateKey(walletPrivateKey);
         System.out.println("addressFromPrivateKey = " + addressFromPrivateKey);
 
 //        BitRafaelBTCClient c = new BitRafaelBTCClient("http://localhost:5556");
@@ -41,6 +42,7 @@ public class ClientExample {
         BigDecimal b1 = c.getBalance("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         BigDecimal b2 = c.getBalanceConfirmed("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         System.out.println("balances = " + b1 + " " + b2);
+        //following line will always cause error as the private key is not set
         String txHash = c.send("5JFL....private_key_for_1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN", new BigDecimal("0.0002"), "34ZzYw5xB8JTFcECJrFo12sCEGK9St11bU");
         System.out.println("txHash = " + txHash);
 
