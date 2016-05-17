@@ -20,10 +20,7 @@
 package com.generalbytes.bitrafael.api.client;
 
 import com.generalbytes.bitrafael.api.IBitRafaelBitcoinAPI;
-import com.generalbytes.bitrafael.api.dto.TxInfo;
-import com.generalbytes.bitrafael.api.dto.TxSignature;
-import com.generalbytes.bitrafael.api.dto.TxTemplateInput;
-import com.generalbytes.bitrafael.api.dto.TxTemplateOutput;
+import com.generalbytes.bitrafael.api.dto.*;
 import com.generalbytes.bitrafael.api.dto.rest.*;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.DumpedPrivateKey;
@@ -33,6 +30,8 @@ import org.bitcoinj.params.MainNetParams;
 import si.mazi.rescu.RestProxyFactory;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BitRafaelBTCClient {
     private String server;
@@ -191,4 +190,29 @@ public class BitRafaelBTCClient {
         }
         return null;
     }
+
+
+    public BigDecimal convertAmount(BigDecimal fromAmount, String fromCurrency, String toCurrency) {
+        final ArrayList<AmountsPair> amountsPairs = new ArrayList<AmountsPair>();
+        amountsPairs.add(new AmountsPair(fromAmount,fromCurrency,null,toCurrency));
+        final List<AmountsPair> result = convertAmounts(amountsPairs);
+        if (result != null) {
+            return result.get(0).getToAmount();
+        }
+        return null;
+    }
+
+    private List<AmountsPair> convertAmounts(ArrayList<AmountsPair> amountsPairs) {
+        try {
+            final ConvertAmountsResponse res = api.convertAmounts(amountsPairs);
+            if (res.isSuccess()) {
+                return res.getData();
+            }
+        }catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

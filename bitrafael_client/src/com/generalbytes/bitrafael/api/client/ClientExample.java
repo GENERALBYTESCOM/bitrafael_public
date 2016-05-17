@@ -37,8 +37,17 @@ public class ClientExample {
         final String addressFromPrivateKey = wt.getWalletAddressFromPrivateKey(walletPrivateKey);
         System.out.println("addressFromPrivateKey = " + addressFromPrivateKey);
 
-//        BitRafaelBTCClient c = new BitRafaelBTCClient("http://localhost:5556");
         BitRafaelBTCClient c = new BitRafaelBTCClient("https://coin.cz");
+        BigDecimal amount = c.convertAmount(BigDecimal.ONE, "CZK", "BTC");
+        System.out.println("1 CZK = " + amount + " BTC");
+        amount = c.convertAmount(BigDecimal.ONE, "BTC", "CZK");
+        System.out.println("1 BTC = " + amount + " CZK");
+
+        amount = c.convertAmount(BigDecimal.ONE, "mBTC", "BTC");
+        System.out.println("1 mBTC = " + amount + " BTC");
+        amount = c.convertAmount(BigDecimal.ONE, "BTC", "mBTC");
+        System.out.println("1 BTC = " + amount + " mBTC");
+
         BigDecimal b1 = c.getBalance("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         BigDecimal b2 = c.getBalanceConfirmed("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         System.out.println("balances = " + b1 + " " + b2);

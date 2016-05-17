@@ -18,11 +18,13 @@
 
 package com.generalbytes.bitrafael.api;
 
+import com.generalbytes.bitrafael.api.dto.AmountsPair;
 import com.generalbytes.bitrafael.api.dto.TxTemplate;
 import com.generalbytes.bitrafael.api.dto.rest.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 @Path("/bitcoin/v1")
 @Produces(MediaType.APPLICATION_JSON)
@@ -54,5 +56,10 @@ public interface IBitRafaelBitcoinAPI {
     @Path("/blockchain/height")
     public BlockchainHeightResponse getCurrentBlockchainHeight();
 
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/currencies/convert")
+    public ConvertAmountsResponse convertAmounts(List<AmountsPair> amountsPairs);
 
 }
