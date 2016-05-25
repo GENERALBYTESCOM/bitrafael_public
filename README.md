@@ -20,10 +20,9 @@ Content
 
 Notes
 ==========
-* Example use of <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_client/src/com/generalbytes/bitrafael/api/client/BitRafaelBTCClient.java">BitRafaelBTCClient</a> is in <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_client/src/com/generalbytes/bitrafael/api/client/ClientExample.java">ClientExample.java</a>.
-* The easiest way how to interface with API is to use <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_client/src/com/generalbytes/bitrafael/api/client/BitRafaelBTCClient.java">BitRafaelBTCClient</a>.
-* Which API functions Bitrafael Server exposes can be read in <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_common/src/com/generalbytes/bitrafael/api/IBitRafaelBitcoinAPI.java">IBitRafaelBitcoinAPI</a> interface.
-* There is also BIP32,29,44 compatible WalletTools utility class that simplifies work with deterministic wallets <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_client/src/com/generalbytes/bitrafael/api/wallet/BitRafaelWalletTools.java">BitRafaelWalletTools</a>.
+* Best is to read examples of use of this API. List of examples use can be found <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/tree/master/bitrafael_client/src/com/generalbytes/bitrafael/api/examples">here</a>.
+* Which API functions Bitrafael Server exposes can be read in <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_common/src/com/generalbytes/bitrafael/api/IBitrafaelBitcoinAPI.java">IBitrafaelBitcoinAPI</a> interface.
+* There is also BIP32,29,44 compatible WalletTools utility class that simplifies work with deterministic wallets <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_client/src/com/generalbytes/bitrafael/api/wallet/WalletTools.java">WalletTools</a>.
 
 
 
