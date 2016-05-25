@@ -31,7 +31,7 @@ import org.bitcoinj.wallet.DeterministicSeed;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-public class BitRafaelWalletTools implements IWalletTools{
+public class WalletTools implements IWalletTools{
 
 
     public MasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password){

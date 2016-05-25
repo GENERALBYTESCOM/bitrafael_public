@@ -33,27 +33,51 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BitRafaelBTCClient {
+public class Client implements IClient {
     private String server;
     private IBitRafaelBitcoinAPI api;
     private static final BigDecimal ONE_BTC_IN_SATOSHIS = new BigDecimal("100000000");
-    private static final BigDecimal MINIMUM_FEE = new BigDecimal("0.0001");
+    public static final BigDecimal MINIMUM_FEE = new BigDecimal("0.0001");
 
 
-    public BitRafaelBTCClient(String server) {
+    public Client() {
+        this("https://coin.cz");
+    }
+
+    public Client(String server) {
         this.server = server;
         api = RestProxyFactory.createProxy(IBitRafaelBitcoinAPI.class, server + "/api");
     }
 
-    private static BigDecimal satoshisToBigDecimal(long satoshis) {
+    public static BigDecimal satoshisToBigDecimal(long satoshis) {
         return new BigDecimal(satoshis).divide(ONE_BTC_IN_SATOSHIS);
     }
 
-    private static long bigDecimalToSatoshis(BigDecimal amount) {
+    public static long bigDecimalToSatoshis(BigDecimal amount) {
         return amount.multiply(ONE_BTC_IN_SATOSHIS).longValueExact();
     }
 
-    public BigDecimal getBalance(String address) {
+    public static BigDecimal calculateMiningFee(TxInfo txInfo) {
+        final List<InputInfo> inputInfos = txInfo.getInputInfos();
+        final List<OutputInfo> outputInfos = txInfo.getOutputInfos();
+        long input  = 0;
+        long output = 0;
+        for (int i = 0; i < inputInfos.size(); i++) {
+            InputInfo inputInfo = inputInfos.get(i);
+            input += inputInfo.getValue();
+        }
+
+        for (int i = 0; i < outputInfos.size(); i++) {
+            OutputInfo outputInfo = outputInfos.get(i);
+            output+=outputInfo.getValue();
+        }
+        return satoshisToBigDecimal(input - output);
+    }
+
+
+
+    @Override
+    public BigDecimal getAddressBalance(String address) {
         try {
             final AddressBalanceResponse addressBalance = api.getAddressBalance(address);
             if (addressBalance != null && addressBalance.isSuccess() && addressBalance.getData() != null) {
@@ -65,7 +89,8 @@ public class BitRafaelBTCClient {
         return null;
     }
 
-    public BigDecimal getBalanceConfirmed(String address) {
+    @Override
+    public BigDecimal getAddressBalanceConfirmed(String address) {
         try {
             final AddressBalanceResponse addressBalance = api.getAddressBalance(address);
             if (addressBalance != null && addressBalance.isSuccess() && addressBalance.getData() != null) {
@@ -77,6 +102,7 @@ public class BitRafaelBTCClient {
         return null;
     }
 
+    @Override
     public long getTransactionHeight(String txHash){
         try {
             final TxInfoResponse response = api.getTransactionInfo(txHash);
@@ -89,6 +115,7 @@ public class BitRafaelBTCClient {
         return -1;
     }
 
+    @Override
     public long getTransactionConfirmations(String txHash){
         try {
             final TxInfoResponse response = api.getTransactionInfo(txHash);
@@ -101,6 +128,7 @@ public class BitRafaelBTCClient {
         return -1;
     }
 
+    @Override
     public TxInfo getAddressLastTransactionInfo(String address){
         try {
             final TxInfoResponse response = api.getAddressLastTransactionInfo(address);
@@ -113,6 +141,7 @@ public class BitRafaelBTCClient {
         return null;
     }
 
+    @Override
     public long getCurrentBlockchainHeight() {
         try {
             final BlockchainHeightResponse response = api.getCurrentBlockchainHeight();
@@ -126,14 +155,17 @@ public class BitRafaelBTCClient {
     }
 
 
+    @Override
     public String send(String fromPrivateKey, BigDecimal amount, String toAddress) {
         return send(fromPrivateKey, amount, toAddress, null);
     }
 
+    @Override
     public String send(String fromPrivateKey, BigDecimal amount, String toAddress, BigDecimal fee) {
         return send(new String[]{fromPrivateKey}, new BigDecimal[] {amount}, new String[]{toAddress}, new BigDecimal[] {amount}, fee);
     }
 
+    @Override
     public String send(String[] fromPrivateKeys, BigDecimal[] fromAmounts, String[] toAddresses, BigDecimal[] toAmounts, BigDecimal fee) {
         try {
             //build input data for template
@@ -192,6 +224,7 @@ public class BitRafaelBTCClient {
     }
 
 
+    @Override
     public BigDecimal convertAmount(BigDecimal fromAmount, String fromCurrency, String toCurrency) {
         final ArrayList<AmountsPair> amountsPairs = new ArrayList<AmountsPair>();
         amountsPairs.add(new AmountsPair(fromAmount,fromCurrency,null,toCurrency));
@@ -202,7 +235,8 @@ public class BitRafaelBTCClient {
         return null;
     }
 
-    private List<AmountsPair> convertAmounts(ArrayList<AmountsPair> amountsPairs) {
+    @Override
+    public List<AmountsPair> convertAmounts(ArrayList<AmountsPair> amountsPairs) {
         try {
             final ConvertAmountsResponse res = api.convertAmounts(amountsPairs);
             if (res.isSuccess()) {

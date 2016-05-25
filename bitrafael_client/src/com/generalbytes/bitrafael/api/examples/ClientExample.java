@@ -16,40 +16,31 @@
  *
  ************************************************************************************/
 
-package com.generalbytes.bitrafael.api.client;
+package com.generalbytes.bitrafael.api.examples;
 
+import com.generalbytes.bitrafael.api.client.Client;
+import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.dto.TxInfo;
-import com.generalbytes.bitrafael.api.wallet.IWalletTools;
-import com.generalbytes.bitrafael.api.wallet.MasterPrivateKey;
-import com.generalbytes.bitrafael.api.wallet.BitRafaelWalletTools;
 
 import java.math.BigDecimal;
 
 public class ClientExample {
     public static void main(String[] args) {
-        IWalletTools wt = new BitRafaelWalletTools();
-        final MasterPrivateKey mKey = wt.getMasterPrivateKey("letter advice cage absurd amount doctor acoustic avoid letter advice cage above", "TREZOR");
-        System.out.println("mKey = " + mKey);
-        final String walletAddress = wt.getWalletAddress(mKey, 0, 0, 0);
-        System.out.println("walletAddress = " + walletAddress);
-        final String walletPrivateKey = wt.getWalletPrivateKey(mKey,0, 0, 0);
-        System.out.println("walletPrivateKey = " + walletPrivateKey);
-        final String addressFromPrivateKey = wt.getWalletAddressFromPrivateKey(walletPrivateKey);
-        System.out.println("addressFromPrivateKey = " + addressFromPrivateKey);
+        IClient c = new Client("https://coin.cz");
 
-        BitRafaelBTCClient c = new BitRafaelBTCClient("https://coin.cz");
-        BigDecimal amount = c.convertAmount(BigDecimal.ONE, "CZK", "BTC");
-        System.out.println("1 CZK = " + amount + " BTC");
-        amount = c.convertAmount(BigDecimal.ONE, "BTC", "CZK");
-        System.out.println("1 BTC = " + amount + " CZK");
+        //test currency conversion related functions
+        BigDecimal amount = c.convertAmount(BigDecimal.ONE, "USD", "BTC");
+        System.out.println("1 USD = " + amount + " BTC");
+        amount = c.convertAmount(BigDecimal.ONE, "BTC", "USD");
+        System.out.println("1 BTC = " + amount + " USD");
 
         amount = c.convertAmount(BigDecimal.ONE, "mBTC", "BTC");
         System.out.println("1 mBTC = " + amount + " BTC");
         amount = c.convertAmount(BigDecimal.ONE, "BTC", "mBTC");
         System.out.println("1 BTC = " + amount + " mBTC");
 
-        BigDecimal b1 = c.getBalance("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
-        BigDecimal b2 = c.getBalanceConfirmed("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
+        BigDecimal b1 = c.getAddressBalance("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
+        BigDecimal b2 = c.getAddressBalanceConfirmed("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         System.out.println("balances = " + b1 + " " + b2);
         //following line will always cause error as the private key is not set
         String txHash = c.send("5JFL....private_key_for_1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN", new BigDecimal("0.0002"), "34ZzYw5xB8JTFcECJrFo12sCEGK9St11bU");
