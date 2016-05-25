@@ -19,7 +19,7 @@
 
 package com.generalbytes.bitrafael.api.client;
 
-import com.generalbytes.bitrafael.api.IBitRafaelBitcoinAPI;
+import com.generalbytes.bitrafael.api.IBitrafaelBitcoinAPI;
 import com.generalbytes.bitrafael.api.dto.*;
 import com.generalbytes.bitrafael.api.dto.rest.*;
 import org.bitcoinj.core.Address;
@@ -35,7 +35,7 @@ import java.util.List;
 
 public class Client implements IClient {
     private String server;
-    private IBitRafaelBitcoinAPI api;
+    private IBitrafaelBitcoinAPI api;
     private static final BigDecimal ONE_BTC_IN_SATOSHIS = new BigDecimal("100000000");
     public static final BigDecimal MINIMUM_FEE = new BigDecimal("0.0001");
 
@@ -46,7 +46,7 @@ public class Client implements IClient {
 
     public Client(String server) {
         this.server = server;
-        api = RestProxyFactory.createProxy(IBitRafaelBitcoinAPI.class, server + "/api");
+        api = RestProxyFactory.createProxy(IBitrafaelBitcoinAPI.class, server + "/api");
     }
 
     public static BigDecimal satoshisToBigDecimal(long satoshis) {

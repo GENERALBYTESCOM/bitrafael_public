@@ -28,7 +28,7 @@ import java.util.List;
 
 @Path("/bitcoin/v1")
 @Produces(MediaType.APPLICATION_JSON)
-public interface IBitRafaelBitcoinAPI {
+public interface IBitrafaelBitcoinAPI {
 
     @GET
     @Path("/addresses/{address}")
