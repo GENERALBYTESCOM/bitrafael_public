@@ -29,7 +29,7 @@ public class PaymentRequestSpec {
     private long validityDurationInSeconds;
 
     public PaymentRequestSpec(BigDecimal fiatAmount, BigDecimal fiatToleranceAmount, String fiatCurrency, String accountXPUBForReceivingPayment) {
-        this(fiatAmount,fiatToleranceAmount, fiatCurrency,accountXPUBForReceivingPayment,null,3,15 * 60 * 1000); //15 minutes
+        this(fiatAmount,fiatToleranceAmount, fiatCurrency,accountXPUBForReceivingPayment,null,3,15 * 60); //15 minutes
     }
 
     public PaymentRequestSpec(BigDecimal fiatAmount, BigDecimal fiatToleranceAmount, String fiatCurrency, String accountXPUBForReceivingPayment, Object tag, int safeNumberOfBlockConfirmations, long validityDurationInSeconds) {
