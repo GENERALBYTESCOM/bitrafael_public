@@ -73,7 +73,7 @@ public class PaymentMgr implements IPaymentMgr{
             @Override
             public Thread newThread(Runnable runnable) {
                 Thread thread = new Thread(runnable);
-                thread.setName("BlockchainWatcher");
+                thread.setName("PaymentMgr");
                 thread.setDaemon(true);
                 return thread;
             }
