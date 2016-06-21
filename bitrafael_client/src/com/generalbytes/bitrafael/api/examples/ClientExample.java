@@ -20,6 +20,7 @@ package com.generalbytes.bitrafael.api.examples;
 
 import com.generalbytes.bitrafael.api.client.Client;
 import com.generalbytes.bitrafael.api.client.IClient;
+import com.generalbytes.bitrafael.api.dto.TxFeesInfo;
 import com.generalbytes.bitrafael.api.dto.TxInfo;
 
 import java.math.BigDecimal;
@@ -27,6 +28,9 @@ import java.math.BigDecimal;
 public class ClientExample {
     public static void main(String[] args) {
         IClient c = new Client("https://coin.cz");
+
+        final TxFeesInfo fees = c.getRecommendedTransactionFeesPerByte();
+        System.out.println("Recommended transaction fees per byte: " + c.getRecommendedTransactionFeesPerByte());
 
         //test currency conversion related functions
         BigDecimal amount = c.convertAmount(BigDecimal.ONE, "USD", "BTC");

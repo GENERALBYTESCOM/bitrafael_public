@@ -129,6 +129,19 @@ public class Client implements IClient {
     }
 
     @Override
+    public TxFeesInfo getRecommendedTransactionFeesPerByte() {
+        try {
+            final TxFeesInfoResponse response = api.getTransactionFeesInfo();
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public TxInfo getAddressLastTransactionInfo(String address){
         try {
             final TxInfoResponse response = api.getAddressLastTransactionInfo(address);

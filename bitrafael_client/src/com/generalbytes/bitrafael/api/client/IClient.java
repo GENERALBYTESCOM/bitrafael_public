@@ -18,6 +18,7 @@
 package com.generalbytes.bitrafael.api.client;
 
 import com.generalbytes.bitrafael.api.dto.AmountsPair;
+import com.generalbytes.bitrafael.api.dto.TxFeesInfo;
 import com.generalbytes.bitrafael.api.dto.TxInfo;
 
 import java.math.BigDecimal;
@@ -40,5 +41,6 @@ public interface IClient {
 
     BigDecimal convertAmount(BigDecimal fromAmount, String fromCurrency, String toCurrency);
     List<AmountsPair> convertAmounts(ArrayList<AmountsPair> amountsPairs);
+    TxFeesInfo getRecommendedTransactionFeesPerByte();
 
 }

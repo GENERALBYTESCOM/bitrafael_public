@@ -91,7 +91,7 @@ public class PaymentMgr implements IPaymentMgr{
     public PaymentRequest createPaymentRequest(PaymentRequestSpec spec, IPaymentListener listener) {
         String receivingAddress = getReceivingAddress(spec.getAccountXPUBForReceivingPayment(), IWalletTools.CHAIN_EXTERNAL);
 
-        final ArrayList<AmountsPair> amountsPairs = new ArrayList<>();
+        final ArrayList<AmountsPair> amountsPairs = new ArrayList<AmountsPair>();
         final String cryptoCurrency = BTC;
         amountsPairs.add(new AmountsPair(spec.getFiatAmount(),spec.getFiatCurrency(),null, cryptoCurrency));
         amountsPairs.add(new AmountsPair(spec.getFiatToleranceAmount(),spec.getFiatCurrency(),null, cryptoCurrency));

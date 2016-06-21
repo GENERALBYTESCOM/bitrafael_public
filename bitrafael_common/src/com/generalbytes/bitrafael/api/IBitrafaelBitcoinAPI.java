@@ -53,6 +53,10 @@ public interface IBitrafaelBitcoinAPI {
     public TxInfoResponse getTransactionInfo(@PathParam("txhash") String txHash);
 
     @GET
+    @Path("/transactions/fees")
+    public TxFeesInfoResponse getTransactionFeesInfo();
+
+    @GET
     @Path("/blockchain/height")
     public BlockchainHeightResponse getCurrentBlockchainHeight();
 
