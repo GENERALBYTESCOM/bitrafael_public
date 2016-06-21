@@ -84,7 +84,9 @@ public class BlockchainWatcher implements IBlockchainWatcher{
             this.listener = listener;
             this.tag = tag;
             this.lastTxInfo = lastTxInfo;
-            this.oldTxInfos.add(lastTxInfo);
+            if (lastTxInfo != null) {
+                this.oldTxInfos.add(lastTxInfo);
+            }
         }
 
 
