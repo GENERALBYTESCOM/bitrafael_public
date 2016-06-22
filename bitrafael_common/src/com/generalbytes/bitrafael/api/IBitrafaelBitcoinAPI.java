@@ -34,9 +34,30 @@ public interface IBitrafaelBitcoinAPI {
     @Path("/addresses/{address}")
     public AddressBalanceResponse getAddressBalance(@PathParam("address") String address);
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/addresses/balances")
+    public AddressesBalancesResponse getAddressesBalances(List<String> addresses);
+
+    @GET
+    @Path("/account/{xpub}")
+    public AccountBalanceResponse getAccountBalance(@PathParam("xpub") String xpub);
+
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/account/balances")
+    public AccountsBalancesResponse getAccountsBalances(List<String> xpubs);
+
+
     @GET
     @Path("/addresses/{address}/last")
     public TxInfoResponse getAddressLastTransactionInfo(@PathParam("address") String address);
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/addresses/last")
+    public TxInfosResponse getAddressesLastTransactionInfos(List<String> addresses);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
