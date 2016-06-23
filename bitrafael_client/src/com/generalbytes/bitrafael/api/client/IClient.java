@@ -24,6 +24,7 @@ import com.generalbytes.bitrafael.api.dto.TxInfo;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface IClient {
     long getCurrentBlockchainHeight();
@@ -31,6 +32,7 @@ public interface IClient {
     BigDecimal getAddressBalance(String address);
     BigDecimal getAddressBalanceConfirmed(String address);
     TxInfo getAddressLastTransactionInfo(String address);
+    Map<String,TxInfo> getAddressesLastTransactionInfos(List<String> addresses);
 
     long getTransactionHeight(String txHash);
     long getTransactionConfirmations(String txHash);

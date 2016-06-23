@@ -26,6 +26,7 @@ import com.generalbytes.bitrafael.api.dto.TxInfo;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -271,13 +272,26 @@ public class BlockchainWatcher implements IBlockchainWatcher{
 
     private void checkForWalletChanges() {
         List<WalletRecord> rec = null;
+        List<String> addresses = null;
         synchronized (walletRecords) {
             rec = new ArrayList<WalletRecord>(walletRecords);
+            if (rec.isEmpty()) {
+                return;
+            }
         }
-
+        addresses = new ArrayList<>();
+        for (int i = 0; i < walletRecords.size(); i++) {
+            WalletRecord record = walletRecords.get(i);
+            addresses.add(record.getWalletAddress());
+        }
+        final Map<String, TxInfo> results = client.getAddressesLastTransactionInfos(addresses);
+        if (results == null || results.isEmpty()) {
+            return;
+        }
         for (int i = 0; i < rec.size(); i++) {
             WalletRecord record = rec.get(i);
-            final TxInfo linfo = client.getAddressLastTransactionInfo(record.getWalletAddress());
+            final TxInfo linfo = results.get(record.getWalletAddress());
+
             if (linfo != null) {
                 if (record.getLastTxInfo() == null || !linfo.getTxHash().equals(record.getLastTxInfo().getTxHash())) {
                     boolean isNewTx = true;

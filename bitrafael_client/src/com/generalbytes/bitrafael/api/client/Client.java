@@ -32,6 +32,7 @@ import si.mazi.rescu.RestProxyFactory;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Client implements IClient {
     private String server;
@@ -145,6 +146,19 @@ public class Client implements IClient {
     public TxInfo getAddressLastTransactionInfo(String address){
         try {
             final TxInfoResponse response = api.getAddressLastTransactionInfo(address);
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Map<String, TxInfo> getAddressesLastTransactionInfos(List<String> addresses) {
+        try {
+            final TxInfosResponse response = api.getAddressesLastTransactionInfos(addresses);
             if (response != null && response.isSuccess() && response.getData() != null) {
                 return response.getData();
             }
