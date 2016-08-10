@@ -66,10 +66,30 @@ public class WalletTools implements IWalletTools{
 
     @Override
     public String getWalletAddressFromAccountXPUB(String accountXPUB, int chainIndex, int index) {
-        DeterministicKey accountKey = DeterministicKey.deserializeB58(accountXPUB, MainNetParams.get());
-        final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
-        final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
-        return new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
+        if (!accountXPUB.startsWith("xpub")) {
+            return null;
+        }
+        byte[] serializedKey = org.bitcoinj.core.Base58.decodeChecked(accountXPUB);
+        ByteBuffer buffer = ByteBuffer.wrap(serializedKey);
+        int header = buffer.getInt();
+        if(header != MainNetParams.get().getBip32HeaderPriv() && header != MainNetParams.get().getBip32HeaderPub()) {
+            throw new IllegalArgumentException("Unknown header bytes in xpub: " + accountXPUB);
+        } else {
+            boolean pub = header == MainNetParams.get().getBip32HeaderPub();
+            if (pub) {
+                int depth = buffer.get() & 255;
+                DeterministicKey accountKey = DeterministicKey.deserializeB58(accountXPUB, MainNetParams.get());
+                DeterministicKey walletKey = accountKey;
+                if (depth != 2) {
+                    //bip44
+                    final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
+                    walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
+                }
+                return new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
+            }else {
+                return null;
+            }
+        }
     }
 
     public String getWalletPrivateKey(MasterPrivateKey master, int accountIndex, int chainIndex, int index) {
