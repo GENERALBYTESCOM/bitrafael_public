@@ -18,21 +18,35 @@
 
 package com.generalbytes.bitrafael.api.wallet;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.AddressFormatException;
-import org.bitcoinj.core.Base58;
-import org.bitcoinj.core.DumpedPrivateKey;
+import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.*;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.wallet.DeterministicSeed;
 
 import java.nio.ByteBuffer;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
 
 public class WalletTools implements IWalletTools{
 
+
+    @Override
+    public String generateSeedMnemonicSeparatedBySpaces() {
+        try {
+            SecureRandom prng = SecureRandom.getInstance("SHA1PRNG");
+            List<String> words = MnemonicCode.INSTANCE.toMnemonic(Sha256Hash.create(prng.generateSeed(32)).getBytes());
+            return Joiner.on(" ").join(words);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (MnemonicException.MnemonicLengthException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public MasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password){
         if (password == null) {

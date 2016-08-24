@@ -25,6 +25,10 @@ public class WalletToolsExample {
         final String walletAddressFromXPUB = wt.getWalletAddressFromAccountXPUB(accountXPUB, IWalletTools.CHAIN_EXTERNAL, 0);
         System.out.println("walletAddressFromXPUB = " + walletAddressFromXPUB);
 
+        //generate new master key
+        final String menmonic = wt.generateSeedMnemonicSeparatedBySpaces();
+        System.out.println("menmonic = " + menmonic);
+
 
     }
 }

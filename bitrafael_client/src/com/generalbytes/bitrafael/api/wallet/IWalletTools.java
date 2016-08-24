@@ -25,6 +25,7 @@ public interface IWalletTools {
     public static final int CHAIN_EXTERNAL = 0;
     public static final int CHAIN_CHANGE = 1;
 
+    public String generateSeedMnemonicSeparatedBySpaces();
     public MasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password);
     public MasterPrivateKey getMasterPrivateKey(String xprv);
     public String getAccountXPUB(MasterPrivateKey master, int accountIndex);
