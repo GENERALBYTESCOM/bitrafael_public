@@ -17,6 +17,7 @@
  ************************************************************************************/
 package com.generalbytes.bitrafael.api.client;
 
+import com.generalbytes.bitrafael.api.dto.AddressInfo;
 import com.generalbytes.bitrafael.api.dto.AmountsPair;
 import com.generalbytes.bitrafael.api.dto.TxFeesInfo;
 import com.generalbytes.bitrafael.api.dto.TxInfo;
@@ -32,7 +33,9 @@ public interface IClient {
     BigDecimal getAddressBalance(String address);
     BigDecimal getAddressBalanceConfirmed(String address);
     TxInfo getAddressLastTransactionInfo(String address);
+    AddressInfo getAddressInfo(String address, int limit);
     Map<String,TxInfo> getAddressesLastTransactionInfos(List<String> addresses);
+    Map<String,AddressInfo> getAddressesInfo(List<String> addresses, int limit);
 
     long getTransactionHeight(String txHash);
     long getTransactionConfirmations(String txHash);
@@ -42,7 +45,7 @@ public interface IClient {
     String send(String[] fromPrivateKeys, BigDecimal[] fromAmounts, String[] toAddresses, BigDecimal[] toAmounts, BigDecimal fee);
 
     BigDecimal convertAmount(BigDecimal fromAmount, String fromCurrency, String toCurrency);
-    List<AmountsPair> convertAmounts(ArrayList<AmountsPair> amountsPairs);
+    List<AmountsPair> convertAmounts(List<AmountsPair> amountsPairs);
     TxFeesInfo getRecommendedTransactionFeesPerByte();
 
 }

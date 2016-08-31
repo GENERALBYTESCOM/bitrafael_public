@@ -59,6 +59,18 @@ public interface IBitrafaelBitcoinAPI {
     @Path("/addresses/last")
     public TxInfosResponse getAddressesLastTransactionInfos(List<String> addresses);
 
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/addresses/{address}/info")
+    AddressInfoResponse getAddressInfo(@PathParam("address") String address, @QueryParam("limit") int limit);
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/addresses/info")
+    AddressesInfoResponse getAddressesInfos(List<String> addresses, @QueryParam("limit") int limit);
+
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/transactions/build")

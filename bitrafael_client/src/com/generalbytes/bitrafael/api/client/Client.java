@@ -169,6 +169,32 @@ public class Client implements IClient {
     }
 
     @Override
+    public AddressInfo getAddressInfo(String address, int limit) {
+        try {
+            final AddressInfoResponse response = api.getAddressInfo(address, limit);
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Map<String, AddressInfo> getAddressesInfo(List<String> addresses, int limit) {
+        try {
+            final AddressesInfoResponse response = api.getAddressesInfos(addresses, limit);
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public long getCurrentBlockchainHeight() {
         try {
             final BlockchainHeightResponse response = api.getCurrentBlockchainHeight();
@@ -263,7 +289,7 @@ public class Client implements IClient {
     }
 
     @Override
-    public List<AmountsPair> convertAmounts(ArrayList<AmountsPair> amountsPairs) {
+    public List<AmountsPair> convertAmounts(List<AmountsPair> amountsPairs) {
         try {
             final ConvertAmountsResponse res = api.convertAmounts(amountsPairs);
             if (res.isSuccess()) {
