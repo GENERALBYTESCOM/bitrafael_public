@@ -22,10 +22,7 @@ package com.generalbytes.bitrafael.api.client;
 import com.generalbytes.bitrafael.api.IBitrafaelBitcoinAPI;
 import com.generalbytes.bitrafael.api.dto.*;
 import com.generalbytes.bitrafael.api.dto.rest.*;
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.DumpedPrivateKey;
-import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.*;
 import org.bitcoinj.params.MainNetParams;
 import si.mazi.rescu.RestProxyFactory;
 
@@ -301,5 +298,20 @@ public class Client implements IClient {
         return null;
     }
 
+
+    public static final String formatAmount(long amountInSatoshis, String currency, long time) {
+        if ( currency == null || "BTC".equalsIgnoreCase(currency)) {
+            if (amountInSatoshis == 0) {
+                return "0 " + currency;
+            }
+            return new BigDecimal(Coin.valueOf(amountInSatoshis).toPlainString()).stripTrailingZeros().toPlainString() + " " + currency;
+        } else if ( "mBTC".equalsIgnoreCase(currency)) {
+            if (amountInSatoshis == 0) {
+                return "0 " + currency;
+            }
+            return new BigDecimal(Coin.valueOf(amountInSatoshis).toPlainString()).multiply(new BigDecimal("1000")).stripTrailingZeros().toPlainString() + " " + currency;
+        }
+        return null;
+    }
 
 }
