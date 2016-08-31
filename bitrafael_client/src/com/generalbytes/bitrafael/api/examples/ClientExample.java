@@ -23,8 +23,10 @@ import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.dto.AddressInfo;
 import com.generalbytes.bitrafael.api.dto.TxFeesInfo;
 import com.generalbytes.bitrafael.api.dto.TxInfo;
+import com.generalbytes.bitrafael.api.transaction.Transaction;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class ClientExample {
     public static void main(String[] args) {
@@ -50,6 +52,14 @@ public class ClientExample {
 
         final AddressInfo addressInfo = c.getAddressInfo("1rAfaELDCv1fKghK6vSsJXf8Q5GvU2Eqn", Integer.MAX_VALUE);
         System.out.println("addressInfo = " + addressInfo);
+
+        final List<Transaction> transactions = Transaction.buildTransactions(addressInfo.getTxInfos(), "1rAfaELDCv1fKghK6vSsJXf8Q5GvU2Eqn");
+        System.out.println("Transactions of 1rAfaELDCv1fKghK6vSsJXf8Q5GvU2Eqn");
+        for (int i = 0; i < transactions.size(); i++) {
+            Transaction transaction = transactions.get(i);
+            System.out.println(" " + i +". " + transaction);
+        }
+
 
 
         //following line will always cause error as the private key is not set

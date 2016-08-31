@@ -23,6 +23,9 @@ public class TxFeesInfo {
     private long halfHourFee; //halfHourFee: The lowest fee (in satoshis per byte) that will confirm transactions within half an hour (with 90% probability).
     private long hourFee; //hourFee: The lowest fee (in satoshis per byte) that will confirm transactions within an hour (with 90% probability).
 
+    public TxFeesInfo() {
+    }
+
     public TxFeesInfo(long fastestFee, long halfHourFee, long hourFee) {
         this.fastestFee = fastestFee;
         this.halfHourFee = halfHourFee;
@@ -39,6 +42,18 @@ public class TxFeesInfo {
 
     public long getHourFee() {
         return hourFee;
+    }
+
+    public void setFastestFee(long fastestFee) {
+        this.fastestFee = fastestFee;
+    }
+
+    public void setHalfHourFee(long halfHourFee) {
+        this.halfHourFee = halfHourFee;
+    }
+
+    public void setHourFee(long hourFee) {
+        this.hourFee = hourFee;
     }
 
     @Override
