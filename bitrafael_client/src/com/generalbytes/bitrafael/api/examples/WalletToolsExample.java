@@ -27,7 +27,7 @@ public class WalletToolsExample {
 
         //generate new master key
         final String menmonic = wt.generateSeedMnemonicSeparatedBySpaces();
-        System.out.println("menmonic = " + menmonic);
+        System.out.println("New generated menmonic = " + menmonic);
 
 
     }

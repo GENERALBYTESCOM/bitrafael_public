@@ -20,6 +20,7 @@ package com.generalbytes.bitrafael.api.examples;
 
 import com.generalbytes.bitrafael.api.client.Client;
 import com.generalbytes.bitrafael.api.client.IClient;
+import com.generalbytes.bitrafael.api.dto.AddressInfo;
 import com.generalbytes.bitrafael.api.dto.TxFeesInfo;
 import com.generalbytes.bitrafael.api.dto.TxInfo;
 
@@ -46,6 +47,11 @@ public class ClientExample {
         BigDecimal b1 = c.getAddressBalance("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         BigDecimal b2 = c.getAddressBalanceConfirmed("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         System.out.println("balances = " + b1 + " " + b2);
+
+        final AddressInfo addressInfo = c.getAddressInfo("1rAfaELDCv1fKghK6vSsJXf8Q5GvU2Eqn", Integer.MAX_VALUE);
+        System.out.println("addressInfo = " + addressInfo);
+
+
         //following line will always cause error as the private key is not set
         String txHash = c.send("5JFL....private_key_for_1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN", new BigDecimal("0.0002"), "34ZzYw5xB8JTFcECJrFo12sCEGK9St11bU");
         System.out.println("txHash = " + txHash);

@@ -29,6 +29,9 @@ public class AddressInfo {
     private long totalSent;
     private List<TxInfo> txInfos;
 
+    public AddressInfo() {
+    }
+
     public AddressInfo(String address, long numberOfTransactions, long finalBalance, long totalReceived, long totalSent) {
         this.address = address;
         this.numberOfTransactions = numberOfTransactions;
@@ -69,6 +72,30 @@ public class AddressInfo {
             txInfos = new ArrayList<TxInfo>();
         }
         txInfos.add(txInfo);
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setNumberOfTransactions(long numberOfTransactions) {
+        this.numberOfTransactions = numberOfTransactions;
+    }
+
+    public void setFinalBalance(long finalBalance) {
+        this.finalBalance = finalBalance;
+    }
+
+    public void setTotalReceived(long totalReceived) {
+        this.totalReceived = totalReceived;
+    }
+
+    public void setTotalSent(long totalSent) {
+        this.totalSent = totalSent;
+    }
+
+    public void setTxInfos(List<TxInfo> txInfos) {
+        this.txInfos = txInfos;
     }
 
     @Override
