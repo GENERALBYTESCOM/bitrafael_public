@@ -77,7 +77,7 @@ public class BlockchainWatcher implements IBlockchainWatcher{
         private IBlockchainWatcherWalletListener listener;
         private Object tag;
         private TxInfo lastTxInfo;
-        private List<TxInfo> oldTxInfos = new ArrayList<>();
+        private List<TxInfo> oldTxInfos = new ArrayList<TxInfo>();
 
 
         public WalletRecord(String walletAddress, IBlockchainWatcherWalletListener listener, Object tag, TxInfo lastTxInfo) {
@@ -279,7 +279,7 @@ public class BlockchainWatcher implements IBlockchainWatcher{
                 return;
             }
         }
-        addresses = new ArrayList<>();
+        addresses = new ArrayList<String>();
         for (int i = 0; i < walletRecords.size(); i++) {
             WalletRecord record = walletRecords.get(i);
             addresses.add(record.getWalletAddress());

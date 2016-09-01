@@ -41,7 +41,7 @@ public class Transaction implements ITransaction{
     }
 
     public static List<Transaction> buildTransactions(List<TxInfo> txInfos, String relativeToAddress) {
-        List<Transaction> result = new ArrayList<>();
+        List<Transaction> result = new ArrayList<Transaction>();
         for (int i = 0; i < txInfos.size(); i++) {
             TxInfo txInfo = txInfos.get(i);
             result.add(buildTransaction(txInfo,relativeToAddress));
