@@ -25,14 +25,6 @@ Notes
 * There is also BIP32,29,44 compatible WalletTools utility class that simplifies work with deterministic wallets <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/blob/master/bitrafael_client/src/com/generalbytes/bitrafael/api/wallet/WalletTools.java">WalletTools</a>.
 
 
-
-
-Android
-=======
-If you want to use this project on Android OS make sure you:
-* 1. Use in your Android project <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/tree/master/bitrafael_client/libs_android">different</a> bitcoinj libraries.
-* 2. Add <a href="https://github.com/GENERALBYTESCOM/bitrafael_public/tree/master/bitrafael_common/src_android">following</a> sources to your Android project.
-
 Build information
 =================
 Just run the following command:
