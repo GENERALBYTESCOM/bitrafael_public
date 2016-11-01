@@ -154,6 +154,22 @@ public class WalletTools implements IWalletTools{
         return masterPubKeyFromBytes;
     }
 
+    @Override
+    public boolean isAddressValid(String address) {
+        if (address == null) {
+            return false;
+        }else{
+            if (!(address.startsWith("1") || address.startsWith("3"))){
+                return false;
+            }
+        }
 
-
+        try {
+            Base58.decodeChecked(address);
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }

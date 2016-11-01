@@ -35,4 +35,5 @@ public interface IWalletTools {
     public String getWalletPrivateKey(MasterPrivateKey master, int accountIndex, int chainIndex, int index);
     public String getWalletAddressFromAccountXPUB(String accountXPUB, int chainIndex, int index);
     public String getWalletAddressFromPrivateKey(String privateKey);
+    public boolean isAddressValid(String bitcoinAddress);
 }
