@@ -183,6 +183,12 @@
               <method name="**" />
               <field name="**" />
           </keep>
+          <keep name="com.google.common.base.MoreObjects" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
+
+
 
           <keepclassmembers name="*" />
           <keepclassmembernames name="*" />
