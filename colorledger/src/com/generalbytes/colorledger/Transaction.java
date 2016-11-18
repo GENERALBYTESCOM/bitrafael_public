@@ -18,8 +18,6 @@
 package com.generalbytes.colorledger;
 
 
-import com.caucho.hessian.io.Hessian2Input;
-import com.caucho.hessian.io.Hessian2Output;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Sha256Hash;
@@ -27,7 +25,6 @@ import org.bitcoinj.core.Utils;
 import org.bitcoinj.params.MainNetParams;
 import org.spongycastle.util.encoders.Hex;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
