@@ -5,13 +5,20 @@
     <!-- set global properties for this build -->
     <property name="src_common" location="bitrafael_common/src"/>
     <property name="src_client" location="bitrafael_client/src"/>
+    <property name="src_colorledger" location="colorledger/src"/>
     <property name="build_common" location="bitrafael_common/build"/>
     <property name="build_client" location="bitrafael_client/build"/>
+    <property name="build_colorledger" location="colorledger/build"/>
     <property name="dist"  location="dist"/>
     <property name="lib"  location="bitrafael_client/lib"/>
+    <property name="lib_colorledger"  location="colorledger/lib"/>
 
     <path id="classpath">
         <fileset dir="${lib}" includes="**/*.jar"/>
+    </path>
+
+    <path id="classpath_colorledger">
+        <fileset dir="${lib_colorledger}" includes="**/*.jar"/>
     </path>
 
     <target name="init">
@@ -20,6 +27,8 @@
         <mkdir dir="${build_common}"/>
         <delete dir="${build_client}" />
         <mkdir dir="${build_client}"/>
+        <delete dir="${build_colorledger}" />
+        <mkdir dir="${build_colorledger}"/>
         <delete dir="${dist}" />
         <mkdir dir="${dist}"/>
     </target>
@@ -44,6 +53,13 @@
             <fileset dir="${build_client}" includes="**/test/**"/>
         </delete>
 
+        <javac srcdir="${src_colorledger}" source="1.6" target="1.6" destdir="${build_colorledger}" debug="true">
+            <classpath>
+                <path refid="classpath_colorledger" />
+                <dirset dir="${build_colorledger}" />
+            </classpath>
+        </javac>
+
     </target>
 
     <target name="dist" depends="compile" description="generate the distribution" >
@@ -53,6 +69,10 @@
         <jar jarfile="${dist}/lib/${ant.project.name}_client.jar" >
             <fileset dir="${build_client}"/>
             <fileset dir="${build_common}"/>
+        </jar>
+
+        <jar jarfile="${dist}/lib/colorledger.jar" >
+            <fileset dir="${build_colorledger}"/>
         </jar>
 
         <tstamp>
