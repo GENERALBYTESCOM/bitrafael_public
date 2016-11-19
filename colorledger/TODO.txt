@@ -1,0 +1,5 @@
+find pagehash by transaction
+add transaction timestamps into pages
+transaction hashes in page should be sorted by timestamp
+make the ledger threadsafe (add locks)
+

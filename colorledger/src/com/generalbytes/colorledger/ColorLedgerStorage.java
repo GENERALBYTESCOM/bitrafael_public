@@ -20,6 +20,7 @@ package com.generalbytes.colorledger;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -29,12 +30,17 @@ public class ColorLedgerStorage implements IColorLedgerStorage {
     private File dir;
     private File txDir;
     private File colorsDir;
+    private File incomingDir;
+    private File pagesDir;
+
     private Serializer serializer = new Serializer();
 
     public ColorLedgerStorage(File dir) {
         this.dir = dir;
         this.txDir = new File(dir,"tx");
         this.colorsDir = new File(dir,"colors");
+        this.incomingDir = new File(dir,"incoming");
+        this.pagesDir = new File(dir,"pages");
     }
 
     @Override
@@ -78,15 +84,25 @@ public class ColorLedgerStorage implements IColorLedgerStorage {
     }
 
     @Override
-    public boolean addTransaction(Transaction tx) {
+    public boolean addTransaction(Transaction tx, long timestamp) {
         if (!txDir.exists()){
             txDir.mkdirs();
+        }
+
+        if (!incomingDir.exists()){
+            incomingDir.mkdirs();
         }
 
         final String hash = tx.getHash();
         File txFile = new File(txDir, hash);
         writeFile(txFile,serializer.serializeTransaction(tx));
 
+        txFile = new File(incomingDir, hash);
+        writeFile(txFile, ByteBuffer.allocate(8).putLong(timestamp).array());
+
+
+
+        //write lookup data into from Wallet
         File fromDir = new File(dir,tx.getFromAddress());
         if (!fromDir.exists()) {
             fromDir.mkdirs();
@@ -98,16 +114,19 @@ public class ColorLedgerStorage implements IColorLedgerStorage {
             e.printStackTrace();
         }
 
+        //write lookup data into to Wallet
         File toDir = new File(dir,tx.getToAddress());
         if (!toDir.exists()) {
             toDir.mkdirs();
         }
+
         File toFile = new File(toDir, hash);
         try {
             toFile.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         return true;
     }
@@ -139,6 +158,69 @@ public class ColorLedgerStorage implements IColorLedgerStorage {
                     result.add(d);
                 }
             }
+        }
+        return result;
+    }
+
+
+    @Override
+    public Page getGenesisPage() {
+        return getPage("_genesis");
+    }
+
+    @Override
+    public Page getLastPage() {
+        return getPage("_last");
+    }
+
+    @Override
+    public boolean setGenesisPage(Page page) {
+        if (addPage(page)){
+            File txFile = new File(pagesDir, "_genesis");
+            writeFile(txFile,serializer.serializePage(page));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Page getPage(String pageHash) {
+        File txFile = new File(pagesDir, pageHash);
+        if (txFile.exists()) {
+            return serializer.deserializePage(readFile(txFile.getAbsolutePath()));
+        }
+        return null;
+    }
+
+    @Override
+    public boolean addPage(Page page) {
+        if (!pagesDir.exists()){
+            pagesDir.mkdirs();
+        }
+        File txFile = new File(pagesDir, page.getHash());
+        writeFile(txFile,serializer.serializePage(page));
+
+        txFile = new File(pagesDir, "_last");
+        writeFile(txFile,serializer.serializePage(page));
+
+        //remove all incoming transactions that were included into block
+        final List<String> txHashes = page.getTxHashes();
+        for (int i = 0; i < txHashes.size(); i++) {
+            String txHash = txHashes.get(i);
+            txFile = new File(incomingDir, txHash);
+            txFile.delete();
+        }
+
+        return true;
+    }
+
+    @Override
+    public List<String> getIncomingTransactionHashes() {
+        List<String> result = new ArrayList<String>();
+        final String[] list = incomingDir.list();
+        for (int i = 0; i < list.length; i++) {
+            String txHash = list[i];
+            result.add(txHash);
         }
         return result;
     }

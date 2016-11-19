@@ -27,7 +27,16 @@ public interface IColorLedgerStorage {
     List<String> getEmitters(String color);
 
     boolean hasTransaction(String txHash);
-    boolean addTransaction(Transaction tx);
+    boolean addTransaction(Transaction tx, long timstamp);
     Transaction getTransaction(String txHash);
     List<Transaction> getTransactions(String address, String coinColor);
+    List<String> getIncomingTransactionHashes();
+
+
+    Page getGenesisPage();
+    Page getLastPage();
+    Page getPage(String pageHash);
+    boolean setGenesisPage(Page page);
+    boolean addPage(Page page);
+
 }

@@ -30,5 +30,9 @@ public interface IColorLedger {
     boolean transferCoins(Transaction tx); //new coins are issued by this from emitter's address
     long getBalance(String address, String coinColor);
 
+    Page createNewPage(Key minerKey, long timestamp);
+    Page getPage(String pageHash);
+    Page getGenesisPage();
+    Page getPageByTransaction(String txHash);
 
 }

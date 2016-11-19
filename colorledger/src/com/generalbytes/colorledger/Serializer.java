@@ -36,4 +36,28 @@ public class Serializer {
         return (Transaction)o;
     }
 
+    public byte[] serializePage(Page page) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        Hessian2Output ho = new Hessian2Output(bos);
+        try {
+            ho.writeObject(page);
+            ho.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bos.toByteArray();
+    }
+
+    public Page deserializePage(byte[] data) {
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        Hessian2Input input = new Hessian2Input(bis);
+        Object o = null;
+        try {
+            o = input.readObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return (Page)o;
+    }
+
 }

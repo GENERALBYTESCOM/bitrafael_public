@@ -37,16 +37,23 @@ public class Transaction implements Serializable{
     private String toAddress;
     private String coinColor;
     private long amount;
+    private byte[] metaData;
+
     byte[] signature;
     private String hash;
 
-    public Transaction(byte[] nonce, String fromAddress, byte[] fromPublicKey, String toAddress, String coinColor, long amount, byte[] signature) {
+    public Transaction(byte[] nonce, String fromAddress, byte[] fromPublicKey, String toAddress, String coinColor, long amount) {
+        this(nonce,fromAddress,fromPublicKey,toAddress,coinColor,amount,null,null);
+    }
+
+    public Transaction(byte[] nonce, String fromAddress, byte[] fromPublicKey, String toAddress, String coinColor, long amount, byte[] metaData, byte[] signature) {
         this.nonce = nonce;
         this.fromAddress = fromAddress;
         this.fromPublicKey = fromPublicKey;
         this.toAddress = toAddress;
         this.coinColor = coinColor;
         this.amount = amount;
+        this.metaData = metaData != null ? metaData : new byte[]{};
         this.signature = signature;
     }
 
@@ -78,6 +85,10 @@ public class Transaction implements Serializable{
         return signature;
     }
 
+    public byte[] getMetaData() {
+        return metaData;
+    }
+
     public String getHash() {
         if (hash == null) {
             byte[] txb = toByteArray();
@@ -86,7 +97,7 @@ public class Transaction implements Serializable{
         return hash;
     }
 
-    private byte[] toByteArray() {
+    public byte[] toByteArray() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             bos.write(getDataToSign());
@@ -105,8 +116,8 @@ public class Transaction implements Serializable{
             bos.write(fromPublicKey);
             bos.write(toAddress.getBytes());
             bos.write(coinColor.getBytes());
-            byte[] am = ByteBuffer.allocate(8).putLong(amount).array();
-            bos.write(am);
+            bos.write(ByteBuffer.allocate(8).putLong(amount).array());
+            bos.write(metaData);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -114,9 +125,7 @@ public class Transaction implements Serializable{
     }
 
     public void sign(ECKey key) {
-        byte[] toSign = getDataToSign();
-        final Sha256Hash hash = Sha256Hash.of(toSign);
-        final ECKey.ECDSASignature s = key.sign(hash);
+        final ECKey.ECDSASignature s = key.sign(Sha256Hash.of(getDataToSign()));
         signature = s.encodeToDER();
     }
 
@@ -138,6 +147,7 @@ public class Transaction implements Serializable{
                 ", toAddress='" + toAddress + '\'' +
                 ", coinColor='" + coinColor + '\'' +
                 ", amount=" + amount +
+                ", data=" + Hex.toHexString(metaData) +
                 ", signature=" + Hex.toHexString(signature) +
                 ", hash='" + getHash() + '\'' +
                 '}';

@@ -24,23 +24,23 @@ import org.bitcoinj.params.MainNetParams;
 
 import java.security.SecureRandom;
 
-public class ColorWallet {
+public class Key {
     private String privateKey;
     private String address;
     private ECKey key;
     private static SecureRandom random = new SecureRandom();
 
-    public ColorWallet() {
+    public Key() {
         this(new ECKey());
     }
 
-    public ColorWallet(ECKey key) {
+    public Key(ECKey key) {
         this.key = key;
         address = new Address(MainNetParams.get(),key.getPubKeyHash()).toString();
         privateKey = key.getPrivateKeyAsWiF(MainNetParams.get());
     }
 
-    public ColorWallet(String privateKey) {
+    public Key(String privateKey) {
         this(DumpedPrivateKey.fromBase58(MainNetParams.get(), privateKey).getKey());
     }
 
@@ -52,9 +52,13 @@ public class ColorWallet {
         return privateKey;
     }
 
+    public ECKey getECKey() {
+        return key;
+    }
+
     public Transaction createTransaction(String toAddress, String coinColor, long amount) {
         byte[] nonce = generateNonce();
-        Transaction t = new Transaction(nonce,address,key.getPubKey(),toAddress,coinColor,amount, null);
+        Transaction t = new Transaction(nonce,address,key.getPubKey(),toAddress,coinColor,amount);
         t.sign(key);
         return t;
     }
