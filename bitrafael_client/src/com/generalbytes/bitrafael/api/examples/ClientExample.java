@@ -21,7 +21,6 @@ package com.generalbytes.bitrafael.api.examples;
 import com.generalbytes.bitrafael.api.client.Client;
 import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.dto.AddressInfo;
-import com.generalbytes.bitrafael.api.dto.TxFeesInfo;
 import com.generalbytes.bitrafael.api.dto.TxInfo;
 import com.generalbytes.bitrafael.api.transaction.Transaction;
 
@@ -32,9 +31,13 @@ public class ClientExample {
     public static void main(String[] args) {
         IClient c = new Client("https://coin.cz");
 
-        final TxFeesInfo fees = c.getRecommendedTransactionFeesPerByte();
-        System.out.println("Recommended transaction fees per byte: " + c.getRecommendedTransactionFeesPerByte());
+//        final TxFeesInfo fees = c.getRecommendedTransactionFeesPerByte();
+//        System.out.println("Recommended transaction fees per byte: " + fees);
 
+        final IClient.RiskLevel transactionRiskLevel = c.getTransactionRiskLevel("3047dff08cd6e2dce2febfc7592bedd46d4dcb400e654b700e0c64b7178cbd3f");
+        System.out.println("transactionRiskLevel = " + transactionRiskLevel);
+
+        System.exit(0);
         //test currency conversion related functions
         BigDecimal amount = c.convertAmount(BigDecimal.ONE, "USD", "BTC");
         System.out.println("1 USD = " + amount + " BTC");
@@ -82,5 +85,7 @@ public class ClientExample {
         System.out.println("currentBlockchainHeight = " + currentBlockchainHeight);
         final TxInfo txinfo = c.getAddressLastTransactionInfo("17oM8y8YEARHHpi6TmoXjLEcF5VMmdGqrR");
         System.out.println("txinfo = " + txinfo);
+
+
     }
 }

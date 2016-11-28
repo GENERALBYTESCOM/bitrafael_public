@@ -48,4 +48,21 @@ public interface IClient {
     List<AmountsPair> convertAmounts(List<AmountsPair> amountsPairs);
     TxFeesInfo getRecommendedTransactionFeesPerByte();
 
+    public RiskLevel getTransactionRiskLevel(String txHash);
+
+    public enum RiskLevel {
+        high("high"),
+        low("low"),
+        none("none");
+
+        String level;
+
+        RiskLevel(String level) {
+            this.level = level;
+        }
+
+        public String getLevel() {
+            return level;
+        }
+    }
 }

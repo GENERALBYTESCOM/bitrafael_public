@@ -86,6 +86,10 @@ public interface IBitrafaelBitcoinAPI {
     public TxInfoResponse getTransactionInfo(@PathParam("txhash") String txHash);
 
     @GET
+    @Path("/transactions/{txhash}/risk")
+    public TxRiskLevelInfoResponse getTransactionRiskLevel(@PathParam("txhash") String txHash);
+
+    @GET
     @Path("/transactions/fees")
     public TxFeesInfoResponse getTransactionFeesInfo();
 

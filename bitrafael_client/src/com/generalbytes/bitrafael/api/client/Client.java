@@ -140,6 +140,21 @@ public class Client implements IClient {
     }
 
     @Override
+    public RiskLevel getTransactionRiskLevel(String txHash) {
+        try {
+            final TxRiskLevelInfoResponse response = api.getTransactionRiskLevel(txHash);
+
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                final TxRiskLevelInfo data = response.getData();
+                return RiskLevel.valueOf(data.getRisk());
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return RiskLevel.high;
+    }
+
+    @Override
     public TxInfo getAddressLastTransactionInfo(String address){
         try {
             final TxInfoResponse response = api.getAddressLastTransactionInfo(address);
