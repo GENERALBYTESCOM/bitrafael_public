@@ -30,6 +30,10 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public interface IBitrafaelBitcoinAPI {
 
+    public static final long FEE_LOW = -1;
+    public static final long FEE_MEDIUM = -2;
+    public static final long FEE_HIGH = -3;
+
     @GET
     @Path("/addresses/{address}")
     public AddressBalanceResponse getAddressBalance(@PathParam("address") String address);

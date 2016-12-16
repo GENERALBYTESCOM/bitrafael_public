@@ -52,6 +52,13 @@ public class Client implements IClient {
     }
 
     public static long bigDecimalToSatoshis(BigDecimal amount) {
+        if (amount.compareTo(FEE_LOW) == 0) {
+            return -1;
+        }else if (amount.compareTo(FEE_MEDIUM) == 0) {
+            return -2;
+        }else if (amount.compareTo(FEE_HIGH) == 0) {
+            return -3;
+        }
         return amount.multiply(ONE_BTC_IN_SATOSHIS).longValueExact();
     }
 
@@ -257,7 +264,7 @@ public class Client implements IClient {
                     tinputs,
                     toutputs,
                     tinputs[0].getAddress(),
-                    (fee == null ? 0 : bigDecimalToSatoshis(fee))));
+                    (fee == null ? bigDecimalToSatoshis(IClient.FEE_LOW) : bigDecimalToSatoshis(fee))));
 
 
             if (txTemplateResponse != null && txTemplateResponse.isSuccess() && txTemplateResponse.getData() != null) {

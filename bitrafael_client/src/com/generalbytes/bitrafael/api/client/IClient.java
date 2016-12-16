@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface IClient {
+    public static final BigDecimal FEE_LOW = new BigDecimal("-1");
+    public static final BigDecimal FEE_MEDIUM = new BigDecimal("-2");
+    public static final BigDecimal FEE_HIGH = new BigDecimal("-3");
+
     long getCurrentBlockchainHeight();
 
     BigDecimal getAddressBalance(String address);
@@ -40,7 +44,7 @@ public interface IClient {
     long getTransactionHeight(String txHash);
     long getTransactionConfirmations(String txHash);
 
-    String send(String fromPrivateKey, BigDecimal amount, String toAddress);
+    String send(String fromPrivateKey, BigDecimal amount, String toAddress); //LOW fee
     String send(String fromPrivateKey, BigDecimal amount, String toAddress, BigDecimal fee);
     String send(String[] fromPrivateKeys, BigDecimal[] fromAmounts, String[] toAddresses, BigDecimal[] toAmounts, BigDecimal fee);
 
