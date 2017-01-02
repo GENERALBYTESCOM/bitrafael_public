@@ -20,7 +20,9 @@ package com.generalbytes.bitrafael.api.examples;
 
 import com.generalbytes.bitrafael.api.client.Client;
 import com.generalbytes.bitrafael.api.client.IClient;
+import com.generalbytes.bitrafael.api.dto.AccountBalance;
 import com.generalbytes.bitrafael.api.dto.AddressInfo;
+import com.generalbytes.bitrafael.api.dto.TxFeesInfo;
 import com.generalbytes.bitrafael.api.dto.TxInfo;
 import com.generalbytes.bitrafael.api.transaction.Transaction;
 
@@ -30,9 +32,15 @@ import java.util.List;
 public class ClientExample {
     public static void main(String[] args) {
         IClient c = new Client("https://coin.cz");
+        final AccountBalance account = c.getAccountBalance("xpub6CLuyGaJwJngMH6H7v7NGV4jtjwN7JS7QNH6p9TJ2SPEVCvwSaeL9nm6y3zjvV5M4eKPJEzRHyiTLq2probsxzdyxEj2yb17HiEsBXbJXQc");
+        final String nextReceivingAddress = account.getNextReceivingAddress();
+        final int nextReceivingIndex = account.getNextReceivingIndex();
+        System.out.println("nextReceivingIndex = " + nextReceivingIndex);
+        System.out.println("nextReceivingAddress = " + nextReceivingAddress);
 
-//        final TxFeesInfo fees = c.getRecommendedTransactionFeesPerByte();
-//        System.out.println("Recommended transaction fees per byte: " + fees);
+
+        final TxFeesInfo fees = c.getRecommendedTransactionFeesPerByte();
+        System.out.println("Recommended transaction fees per byte: " + fees);
 
         final IClient.RiskLevel transactionRiskLevel = c.getTransactionRiskLevel("3047dff08cd6e2dce2febfc7592bedd46d4dcb400e654b700e0c64b7178cbd3f");
         System.out.println("transactionRiskLevel = " + transactionRiskLevel);

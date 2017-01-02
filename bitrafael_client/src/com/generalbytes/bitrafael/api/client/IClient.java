@@ -17,13 +17,8 @@
  ************************************************************************************/
 package com.generalbytes.bitrafael.api.client;
 
-import com.generalbytes.bitrafael.api.dto.AddressInfo;
-import com.generalbytes.bitrafael.api.dto.AmountsPair;
-import com.generalbytes.bitrafael.api.dto.TxFeesInfo;
-import com.generalbytes.bitrafael.api.dto.TxInfo;
-
+import com.generalbytes.bitrafael.api.dto.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +31,8 @@ public interface IClient {
 
     BigDecimal getAddressBalance(String address);
     BigDecimal getAddressBalanceConfirmed(String address);
+    AccountBalance getAccountBalance(String xpub);
+
     TxInfo getAddressLastTransactionInfo(String address);
     AddressInfo getAddressInfo(String address, int limit);
     Map<String,TxInfo> getAddressesLastTransactionInfos(List<String> addresses);

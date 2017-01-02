@@ -25,8 +25,24 @@ import javax.xml.bind.annotation.XmlTransient;
 
 public class AccountBalance {
     private String xpub;
-    private long total;
 
+    @JsonProperty("next_receiving_address")
+    @XmlElement(name="next_receiving_address")
+    private String nextReceivingAddress;
+
+    @JsonProperty("next_receiving_index")
+    @XmlElement(name="next_receiving_index")
+    private int nextReceivingIndex;
+
+    @JsonProperty("next_change_address")
+    @XmlElement(name="next_change_address")
+    private String nextChangeAddress;
+
+    @JsonProperty("next_change_index")
+    @XmlElement(name="next_change_index")
+    private int nextChangeIndex;
+
+    private long total;
     @JsonProperty("total_confirmed")
     @XmlElement(name="total_confirmed")
     private long totalConfirmed;
@@ -34,11 +50,17 @@ public class AccountBalance {
     public AccountBalance() {
     }
 
-    public AccountBalance(String xpub, long total, long totalConfirmed) {
+
+    public AccountBalance(String xpub, String nextReceivingAddress, int nextReceivingIndex, String nextChangeAddress, int nextChangeIndex, long total, long totalConfirmed) {
         this.xpub = xpub;
+        this.nextReceivingAddress = nextReceivingAddress;
+        this.nextReceivingIndex = nextReceivingIndex;
+        this.nextChangeAddress = nextChangeAddress;
+        this.nextChangeIndex = nextChangeIndex;
         this.total = total;
         this.totalConfirmed = totalConfirmed;
     }
+
 
     public String getXpub() {
         return xpub;
@@ -66,10 +88,46 @@ public class AccountBalance {
         this.totalConfirmed = totalConfirmed;
     }
 
+    public String getNextReceivingAddress() {
+        return nextReceivingAddress;
+    }
+
+    public void setNextReceivingAddress(String nextReceivingAddress) {
+        this.nextReceivingAddress = nextReceivingAddress;
+    }
+
+    public int getNextReceivingIndex() {
+        return nextReceivingIndex;
+    }
+
+    public void setNextReceivingIndex(int nextReceivingIndex) {
+        this.nextReceivingIndex = nextReceivingIndex;
+    }
+
+    public String getNextChangeAddress() {
+        return nextChangeAddress;
+    }
+
+    public void setNextChangeAddress(String nextChangeAddress) {
+        this.nextChangeAddress = nextChangeAddress;
+    }
+
+    public int getNextChangeIndex() {
+        return nextChangeIndex;
+    }
+
+    public void setNextChangeIndex(int nextChangeIndex) {
+        this.nextChangeIndex = nextChangeIndex;
+    }
+
     @Override
     public String toString() {
         return "AccountBalance{" +
                 "xpub='" + xpub + '\'' +
+                ", nextReceivingAddress='" + nextReceivingAddress + '\'' +
+                ", nextReceivingIndex=" + nextReceivingIndex +
+                ", nextChangeAddress='" + nextChangeAddress + '\'' +
+                ", nextChangeIndex=" + nextChangeIndex +
                 ", total=" + total +
                 ", totalConfirmed=" + totalConfirmed +
                 '}';

@@ -95,6 +95,19 @@ public class Client implements IClient {
     }
 
     @Override
+    public AccountBalance getAccountBalance(String xpub) {
+        try {
+            final AccountBalanceResponse accountBalance = api.getAccountBalance(xpub);
+            if (accountBalance != null && accountBalance.isSuccess() && accountBalance.getData() != null) {
+                return accountBalance.getData();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public BigDecimal getAddressBalanceConfirmed(String address) {
         try {
             final AddressBalanceResponse addressBalance = api.getAddressBalance(address);
