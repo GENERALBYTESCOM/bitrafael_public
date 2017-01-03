@@ -25,6 +25,9 @@ import com.generalbytes.bitrafael.api.dto.AddressInfo;
 import com.generalbytes.bitrafael.api.dto.TxFeesInfo;
 import com.generalbytes.bitrafael.api.dto.TxInfo;
 import com.generalbytes.bitrafael.api.transaction.Transaction;
+import com.generalbytes.bitrafael.api.wallet.IWalletTools;
+import com.generalbytes.bitrafael.api.wallet.IXPUBMgr;
+import com.generalbytes.bitrafael.api.wallet.XPUBMgr;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -32,12 +35,18 @@ import java.util.List;
 public class ClientExample {
     public static void main(String[] args) {
         IClient c = new Client("https://coin.cz");
-        final AccountBalance account = c.getAccountBalance("xpub6CLuyGaJwJngMH6H7v7NGV4jtjwN7JS7QNH6p9TJ2SPEVCvwSaeL9nm6y3zjvV5M4eKPJEzRHyiTLq2probsxzdyxEj2yb17HiEsBXbJXQc");
-        final String nextReceivingAddress = account.getNextReceivingAddress();
+        final String testXpub = "xpub6CLuyGaJwJngMH6H7v7NGV4jtjwN7JS7QNH6p9TJ2SPEVCvwSaeL9nm6y3zjvV5M4eKPJEzRHyiTLq2probsxzdyxEj2yb17HiEsBXbJXQc";
+        final AccountBalance account = c.getAccountBalance(testXpub);
+        String nextReceivingAddress = account.getNextReceivingAddress();
         final int nextReceivingIndex = account.getNextReceivingIndex();
         System.out.println("nextReceivingIndex = " + nextReceivingIndex);
         System.out.println("nextReceivingAddress = " + nextReceivingAddress);
 
+        IXPUBMgr mgr  = new XPUBMgr(c);
+        nextReceivingAddress = mgr.getNextWalletAddressFromAccountXPUB(testXpub, IWalletTools.CHAIN_EXTERNAL);
+        System.out.println("nextReceivingAddress = " + nextReceivingAddress);
+        nextReceivingAddress = mgr.getNextWalletAddressFromAccountXPUB(testXpub, IWalletTools.CHAIN_EXTERNAL);
+        System.out.println("nextReceivingAddress = " + nextReceivingAddress);
 
         final TxFeesInfo fees = c.getRecommendedTransactionFeesPerByte();
         System.out.println("Recommended transaction fees per byte: " + fees);
