@@ -37,6 +37,7 @@ public class BlockInfo {
     private long version;
     private long nonce;
     private long reward;
+    private TxFeesInfo feesInfo;
 
     private List<TxInfo> txInfos;
 
@@ -120,6 +121,14 @@ public class BlockInfo {
 
     public List<TxInfo> getTxInfos() {
         return txInfos;
+    }
+
+    public TxFeesInfo getFeesInfo() {
+        return feesInfo;
+    }
+
+    public void setFeesInfo(TxFeesInfo feesInfo) {
+        this.feesInfo = feesInfo;
     }
 
     public void addTXInfo(TxInfo txInfo) {
