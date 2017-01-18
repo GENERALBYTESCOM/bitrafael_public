@@ -47,7 +47,7 @@ public class PaymentMgr implements IPaymentMgr{
 
     private static final PaymentMgr instance = new PaymentMgr();
     private File xpubIndexesFile = new File("./payment_indexes.properties");
-    private IClient IClient = new Client("https://coin.cz");
+    private IClient IClient = new Client(System.getProperty("coin.cz", "https://coin.cz"));
     private Object INDEXES_LOCK = new Object();
 
     private Object PAYMENTS_LOCK = new Object();
