@@ -39,7 +39,7 @@ public class BlockchainWatcher implements IBlockchainWatcher{
     private final List<TransactionRecord> transactionRecords = new LinkedList<TransactionRecord>();
     private final List<WalletRecord> walletRecords = new LinkedList<WalletRecord>();
     private final List<IBlockchainWatcherListener> listeners = new LinkedList<IBlockchainWatcherListener>();
-    private IClient client = new Client("https://coin.cz");
+    private IClient client = new Client(System.getProperty("coin.cz", "https://coin.cz"));
     private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
     private long lastBlockChainHeight = -1;
 
