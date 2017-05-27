@@ -18,6 +18,6 @@
 package com.generalbytes.bitrafael.api.wallet;
 
 public interface IXPUBMgr {
-    public String getNextWalletAddressFromAccountXPUB(String accountXPUB, int chainIndex);
+    String getNextWalletAddressFromAccountXPUB(String accountXPUB, String cryptoCurrency, int chainIndex);
 
 }

@@ -20,7 +20,7 @@ package com.generalbytes.bitrafael.api.payment;
 import java.math.BigDecimal;
 
 
- class PaymentRequestInternal extends PaymentRequest{
+class PaymentRequestInternal extends PaymentRequest{
     private IPaymentListener listener;
 
     public PaymentRequestInternal(PaymentRequestSpec spec, BigDecimal cryptoAmount, BigDecimal cryptoToleranceAmount, String cryptoCurrency, String cryptoAddress, IPaymentListener listener) {

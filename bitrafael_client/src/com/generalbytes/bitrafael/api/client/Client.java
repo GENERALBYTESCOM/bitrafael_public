@@ -19,11 +19,18 @@
 
 package com.generalbytes.bitrafael.api.client;
 
+import com.generalbytes.bitrafael.api.IBitrafaelAPI;
 import com.generalbytes.bitrafael.api.IBitrafaelBitcoinAPI;
+import com.generalbytes.bitrafael.api.IBitrafaelLitecoinAPI;
 import com.generalbytes.bitrafael.api.dto.*;
 import com.generalbytes.bitrafael.api.dto.rest.*;
-import org.bitcoinj.core.*;
-import org.bitcoinj.params.MainNetParams;
+
+
+import com.generalbytes.bitrafael.api.wallet.ISignature;
+import com.generalbytes.bitrafael.api.wallet.IWalletTools;
+import com.generalbytes.bitrafael.api.wallet.WalletTools;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Utils;
 import si.mazi.rescu.RestProxyFactory;
 
 import java.math.BigDecimal;
@@ -33,18 +40,28 @@ import java.util.Map;
 
 public class Client implements IClient {
     private String server;
-    private IBitrafaelBitcoinAPI api;
+    private String cryptoCurrency;
+    private IBitrafaelAPI api;
+    private IWalletTools walletTools;
     private static final BigDecimal ONE_BTC_IN_SATOSHIS = new BigDecimal("100000000");
-    public static final BigDecimal MINIMUM_FEE = new BigDecimal("0.0001");
-
 
     public Client() {
         this("https://coin.cz");
     }
 
     public Client(String server) {
+        this(server, IClient.BTC);
+    }
+
+    public Client(String server, String cryptoCurrency) {
         this.server = server;
-        api = RestProxyFactory.createProxy(IBitrafaelBitcoinAPI.class, server + "/api");
+        this.cryptoCurrency = cryptoCurrency;
+        walletTools = new WalletTools();
+        if (BTC.equalsIgnoreCase(cryptoCurrency)) {
+            api = RestProxyFactory.createProxy(IBitrafaelBitcoinAPI.class, server + "/api");
+        }else if (LTC.equalsIgnoreCase(cryptoCurrency)) {
+            api = RestProxyFactory.createProxy(IBitrafaelLitecoinAPI.class, server + "/api");
+        }
     }
 
     public static BigDecimal satoshisToBigDecimal(long satoshis) {
@@ -254,14 +271,14 @@ public class Client implements IClient {
     public String send(String[] fromPrivateKeys, BigDecimal[] fromAmounts, String[] toAddresses, BigDecimal[] toAmounts, BigDecimal fee) {
         try {
             //build input data for template
-            DumpedPrivateKey[] dpks = new DumpedPrivateKey[fromPrivateKeys.length];
+            String[] privateKeyAddresses = new String[fromPrivateKeys.length];
             TxTemplateInput[] tinputs = new TxTemplateInput[fromPrivateKeys.length];
 
             for (int i = 0; i < fromPrivateKeys.length; i++) {
                 String fromPrivateKey = fromPrivateKeys[i];
-                final DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), fromPrivateKey);
-                dpks[i] = dp;
-                final TxTemplateInput ti = new TxTemplateInput(new Address(MainNetParams.get(), dp.getKey().getPubKeyHash()).toBase58());
+                final String walletAddressFromPrivateKey = walletTools.getWalletAddressFromPrivateKey(fromPrivateKey, cryptoCurrency);
+                privateKeyAddresses[i] = walletAddressFromPrivateKey;
+                final TxTemplateInput ti = new TxTemplateInput(walletAddressFromPrivateKey);
                 ti.setAmount(bigDecimalToSatoshis(fromAmounts[i]));
                 tinputs[i] = ti;
             }
@@ -286,13 +303,13 @@ public class Client implements IClient {
                 for (int i = 0; i < inputs.length; i++) {
                     TxTemplateInput input = inputs[i];
                     final TxSignature signature = input.getSignature();
-                    for (int j = 0; j < dpks.length; j++) {
-                        DumpedPrivateKey dp = dpks[j];
-                        String address = new Address(MainNetParams.get(), dp.getKey().getPubKeyHash()).toBase58();
+                    for (int j = 0; j < privateKeyAddresses.length; j++) {
+                        String address = privateKeyAddresses[j];
                         if (address.equals(signature.getAddress())) {
                             //sign input with this key
-                            signature.setPublicKey(dp.getKey().getPublicKeyAsHex());
-                            signature.setSignature(Utils.HEX.encode(dp.getKey().sign(Sha256Hash.wrap(signature.getHashToSign())).encodeToDER()));
+                            ISignature sig = walletTools.sign(fromPrivateKeys[j], Utils.HEX.decode(signature.getHashToSign()), cryptoCurrency);
+                            signature.setPublicKey(Utils.HEX.encode(sig.getPublicKey()));
+                            signature.setSignature(Utils.HEX.encode(sig.getSignature()));
                         }
                     }
                 }
@@ -335,12 +352,12 @@ public class Client implements IClient {
 
 
     public static final String formatAmount(long amountInSatoshis, String currency, long time) {
-        if ( currency == null || "BTC".equalsIgnoreCase(currency)) {
+        if ( currency == null || IClient.BTC.equalsIgnoreCase(currency) || IClient.LTC.equalsIgnoreCase(currency)) {
             if (amountInSatoshis == 0) {
                 return "0 " + currency;
             }
             return new BigDecimal(Coin.valueOf(amountInSatoshis).toPlainString()).stripTrailingZeros().toPlainString() + " " + currency;
-        } else if ( "mBTC".equalsIgnoreCase(currency)) {
+        } else if (("m"+ IClient.BTC).equalsIgnoreCase(currency) || ("m"+ IClient.LTC).equalsIgnoreCase(currency)) {
             if (amountInSatoshis == 0) {
                 return "0 " + currency;
             }

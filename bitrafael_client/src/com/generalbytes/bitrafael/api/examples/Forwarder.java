@@ -16,7 +16,8 @@ public class Forwarder {
     public static void main(String[] args) {
         WalletTools wt = new WalletTools();
         BlockchainWatcher bw = new BlockchainWatcher();
-        final IClient c = new Client("https://coin.cz");
+        final String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
+        final IClient c = new Client("https://coin.cz", cryptoCurrency);
 
         final String[] privatekeys = {
                 "L54zVtKQ3kY8CuoEjhijsgTiGZVWhEHDcCeTZc7ssYjwMLemQ5xu",
@@ -34,12 +35,12 @@ public class Forwarder {
 
         for (int i = 0; i < privatekeys.length; i++) {
             final String privatekey = privatekeys[i];
-            final String fromAddress = wt.getWalletAddressFromPrivateKey(privatekey);
+            final String fromAddress = wt.getWalletAddressFromPrivateKey(privatekey,cryptoCurrency);
 
             System.out.println("Watching " + fromAddress + " for transactions...");
-            bw.addWallet(fromAddress, new AbstractBlockchainWatcherWalletListener() {
+            bw.addWallet(fromAddress,cryptoCurrency, new AbstractBlockchainWatcherWalletListener() {
                 @Override
-                public void walletContainsChanged(String walletAddress, Object tag, TxInfo tx) {
+                public void walletContainsChanged(String walletAddress, String cryptoCurrency,Object tag, TxInfo tx) {
                     System.out.println("New transaction on " + tag + " (" + walletAddress +") txhash: " + tx.getTxHash());
                     final BigDecimal addressBalance = c.getAddressBalance(fromAddress);
                     if (addressBalance.compareTo(BigDecimal.ZERO) > 0) {

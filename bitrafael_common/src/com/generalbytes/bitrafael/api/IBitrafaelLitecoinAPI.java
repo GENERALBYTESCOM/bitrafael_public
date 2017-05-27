@@ -16,11 +16,18 @@
  *
  ************************************************************************************/
 
-package com.generalbytes.bitrafael.api.watch;
+package com.generalbytes.bitrafael.api;
 
+import com.generalbytes.bitrafael.api.dto.AmountsPair;
+import com.generalbytes.bitrafael.api.dto.TxTemplate;
+import com.generalbytes.bitrafael.api.dto.rest.*;
 
-public interface IBlockchainWatcherTransactionListener {
-    void removedTransactionFromWatch(String transactionHash, String cryptoCurrency, Object tag);
-    void newBlockMined(String transactionHash, String cryptoCurrency, Object tag, long blockHeight);
-    void numberOfConfirmationsChanged(String transactionHash, String cryptoCurrency, Object tag, int numberOfConfirmations);
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.util.List;
+
+@Path("/litecoin/v1")
+@Produces(MediaType.APPLICATION_JSON)
+public interface IBitrafaelLitecoinAPI extends IBitrafaelAPI{
+
 }

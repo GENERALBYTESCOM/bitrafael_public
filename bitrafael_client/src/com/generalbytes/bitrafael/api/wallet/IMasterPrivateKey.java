@@ -1,5 +1,5 @@
 /*************************************************************************************
- * Copyright (C) 2016 GENERAL BYTES s.r.o. All rights reserved.
+ * Copyright (C) 2017 GENERAL BYTES s.r.o. All rights reserved.
  *
  * This software may be distributed and modified under the terms of the GNU
  * General Public License version 2 (GPL2) as published by the Free Software
@@ -15,12 +15,12 @@
  * Web      :  http://www.generalbytes.com
  *
  ************************************************************************************/
+package com.generalbytes.bitrafael.api.wallet;
 
-package com.generalbytes.bitrafael.api.watch;
 
-
-public interface IBlockchainWatcherTransactionListener {
-    void removedTransactionFromWatch(String transactionHash, String cryptoCurrency, Object tag);
-    void newBlockMined(String transactionHash, String cryptoCurrency, Object tag, long blockHeight);
-    void numberOfConfirmationsChanged(String transactionHash, String cryptoCurrency, Object tag, int numberOfConfirmations);
+public interface IMasterPrivateKey {
+    long getCreationTimeSeconds();
+    String getXPRV();
+    String getXPUB();
+    boolean hasPrv();
 }

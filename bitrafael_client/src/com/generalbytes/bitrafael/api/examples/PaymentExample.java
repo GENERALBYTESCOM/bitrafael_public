@@ -24,9 +24,10 @@ import java.math.BigDecimal;
 
 public class PaymentExample {
     public static void main(String[] args) {
+        String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
         String myTrezorAccountXpub = "xpub6CLuyGaJwJngMH6H7v7NGV4jtjwN7JS7QNH6p9TJ2SPEVCvwSaeL9nm6y3zjvV5M4eKPJEzRHyiTLq2probsxzdyxEj2yb17HiEsBXbJXQc";
         final PaymentRequest paymentRequest = PaymentMgr.getInstance().createPaymentRequest(
-                new PaymentRequestSpec(new BigDecimal("1"),new BigDecimal("0.05"), "USD", myTrezorAccountXpub), new IPaymentListener() {
+                new PaymentRequestSpec(new BigDecimal("1"),new BigDecimal("0.05"), "USD", cryptoCurrency, myTrezorAccountXpub), new IPaymentListener() {
                     @Override
                     public void paymentArriving(Payment payment) {
                         System.out.println("Payment is arriving....: " + payment);

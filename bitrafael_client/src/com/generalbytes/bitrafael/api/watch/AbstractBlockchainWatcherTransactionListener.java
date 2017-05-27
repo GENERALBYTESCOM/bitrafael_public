@@ -19,17 +19,17 @@ package com.generalbytes.bitrafael.api.watch;
 
 public class AbstractBlockchainWatcherTransactionListener implements IBlockchainWatcherTransactionListener{
     @Override
-    public void removedTransactionFromWatch(String transactionHash, Object tag) {
+    public void removedTransactionFromWatch(String transactionHash, String cryptoCurrency,  Object tag) {
 
     }
 
     @Override
-    public void newBlockMined(String transactionHash, Object tag, long blockHeight) {
+    public void newBlockMined(String transactionHash, String cryptoCurrency, Object tag, long blockHeight) {
 
     }
 
     @Override
-    public void numberOfConfirmationsChanged(String transactionHash, Object tag, int numberOfConfirmations) {
+    public void numberOfConfirmationsChanged(String transactionHash, String cryptoCurrency, Object tag, int numberOfConfirmations) {
 
     }
 }

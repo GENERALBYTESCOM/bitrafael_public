@@ -29,6 +29,7 @@
       <mkdir dir="${dist}"/>
 
       <unjar src="./libs_org/bitcoinj-core-0.14-SNAPSHOT-bundled.jar" dest="${build}/content" />
+      <unjar src="./libs_org/litecoinj-core-0.15-SNAPSHOT.jar" dest="${build}/content" />
       <jar basedir="${build}/content" destfile="${build}/content.jar" />
 
 
@@ -108,7 +109,15 @@
               <method name="**" />
               <field name="**" />
           </keep>
+          <keep name="org.litecoinj.params.MainNetParams" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
           <keep name="org.bitcoinj.core.DumpedPrivateKey" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
+          <keep name="org.litecoinj.core.DumpedPrivateKey" >
               <method name="**" />
               <field name="**" />
           </keep>
@@ -116,7 +125,15 @@
               <method name="**" />
               <field name="**" />
           </keep>
+          <keep name="org.litecoinj.core.Address" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
           <keep name="org.bitcoinj.core.Utils" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
+          <keep name="org.litecoinj.core.Utils" >
               <method name="**" />
               <field name="**" />
           </keep>
@@ -124,7 +141,15 @@
               <method name="**" />
               <field name="**" />
           </keep>
+          <keep name="org.litecoinj.core.Coin" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
           <keep name="org.bitcoinj.core.Sha256Hash" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
+          <keep name="org.litecoinj.core.Sha256Hash" >
               <method name="**" />
               <field name="**" />
           </keep>
@@ -134,12 +159,27 @@
               <field name="**" />
           </keep>
 
+          <keep name="org.litecoinj.core.ECKey" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
+
           <keep name="org.bitcoinj.core.ECKey$ECDSASignature" >
               <method name="**" />
               <field name="**" />
           </keep>
 
+          <keep name="org.litecoinj.core.ECKey$ECDSASignature" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
+
           <keep name="org.bitcoinj.wallet.DeterministicSeed" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
+
+          <keep name="org.litecoinj.wallet.DeterministicSeed" >
               <method name="**" />
               <field name="**" />
           </keep>
@@ -159,7 +199,17 @@
               <field name="**" />
           </keep>
 
+          <keep name="org.litecoinj.crypto.DeterministicKey" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
+
           <keep name="org.bitcoinj.crypto.MnemonicCode" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
+
+          <keep name="org.litecoinj.crypto.MnemonicCode" >
               <method name="**" />
               <field name="**" />
           </keep>
@@ -169,7 +219,17 @@
               <field name="**" />
           </keep>
 
+          <keep name="org.litecoinj.crypto.MnemonicException" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
+
           <keep name="org.bitcoinj.crypto.HDKeyDerivation" >
+              <method name="**" />
+              <field name="**" />
+          </keep>
+
+          <keep name="org.litecoinj.crypto.HDKeyDerivation" >
               <method name="**" />
               <field name="**" />
           </keep>
@@ -183,6 +243,7 @@
               <method name="**" />
               <field name="**" />
           </keep>
+
           <keep name="com.google.common.base.MoreObjects" >
               <method name="**" />
               <field name="**" />

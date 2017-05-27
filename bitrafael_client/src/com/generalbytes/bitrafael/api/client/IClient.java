@@ -27,6 +27,9 @@ public interface IClient {
     public static final BigDecimal FEE_MEDIUM = new BigDecimal("-2");
     public static final BigDecimal FEE_HIGH = new BigDecimal("-3");
 
+    public static final String BTC = "BTC";
+    public static final String LTC = "LTC";
+
     long getCurrentBlockchainHeight();
 
     BigDecimal getAddressBalance(String address);

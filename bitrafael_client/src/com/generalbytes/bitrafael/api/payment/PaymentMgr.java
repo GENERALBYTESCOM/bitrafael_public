@@ -34,30 +34,32 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 public class PaymentMgr implements IPaymentMgr{
-    private static final String BTC = "BTC";
 
     private static final PaymentMgr instance = new PaymentMgr();
-    private File xpubIndexesFile = new File("./payment_indexes.properties");
-    private IClient IClient = new Client(System.getProperty("coin.cz", "https://coin.cz"));
+    private Map<String,IClient> clients = null;
+
     private Object INDEXES_LOCK = new Object();
 
     private Object PAYMENTS_LOCK = new Object();
     private List<Payment> watchedPayments = new ArrayList<Payment>();
-    private BlockchainWatcher watcher = new BlockchainWatcher();
+    private BlockchainWatcher watcher;
     private static final int EXPIRATION_FOR_REQUIRED_CONFIRMATIONS_IN_SECONDS = 12 * 60 * 60; //12hours
 
     private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
     private PaymentMgr() {
+        clients = new HashMap<>();
+        clients.put(IClient.BTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.BTC));
+        clients.put(IClient.LTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.LTC));
+
+        watcher = new BlockchainWatcher();
         watcher.start();
     }
 
@@ -84,24 +86,19 @@ public class PaymentMgr implements IPaymentMgr{
         return instance;
     }
 
-    public void setXpubIndexesFile(File xpubIndexesFile) {
-        this.xpubIndexesFile = xpubIndexesFile;
-    }
-
     public PaymentRequest createPaymentRequest(PaymentRequestSpec spec, IPaymentListener listener) {
-        String receivingAddress = getReceivingAddress(spec.getAccountXPUBForReceivingPayment(), IWalletTools.CHAIN_EXTERNAL);
+        String receivingAddress = getReceivingAddress(spec.getAccountXPUBForReceivingPayment(), IWalletTools.CHAIN_EXTERNAL, spec.getCryptoCurrency());
 
         final ArrayList<AmountsPair> amountsPairs = new ArrayList<AmountsPair>();
-        final String cryptoCurrency = BTC;
-        amountsPairs.add(new AmountsPair(spec.getFiatAmount(),spec.getFiatCurrency(),null, cryptoCurrency));
-        amountsPairs.add(new AmountsPair(spec.getFiatToleranceAmount(),spec.getFiatCurrency(),null, cryptoCurrency));
+        amountsPairs.add(new AmountsPair(spec.getFiatAmount(),spec.getFiatCurrency(),null, spec.getCryptoCurrency()));
+        amountsPairs.add(new AmountsPair(spec.getFiatToleranceAmount(),spec.getFiatCurrency(),null, spec.getCryptoCurrency()));
 
-        final List<AmountsPair> results = IClient.convertAmounts(amountsPairs);
+        final List<AmountsPair> results = clients.get(spec.getCryptoCurrency()).convertAmounts(amountsPairs);
 
         if (results != null && results.size() == 2) {
             BigDecimal cryptoAmount = results.get(0).getToAmount();
             BigDecimal cryptoToleranceAmount = results.get(1).getToAmount();
-            final PaymentRequestInternal paymentRequest = new PaymentRequestInternal(spec, cryptoAmount, cryptoToleranceAmount, cryptoCurrency, receivingAddress,listener);
+            final PaymentRequestInternal paymentRequest = new PaymentRequestInternal(spec, cryptoAmount, cryptoToleranceAmount, spec.getCryptoCurrency(), receivingAddress,listener);
             //register and start watch following payment request
             final Payment payment = new Payment(System.currentTimeMillis(),paymentRequest, Payment.State.NEW);
             registerPayment(payment);
@@ -130,9 +127,9 @@ public class PaymentMgr implements IPaymentMgr{
 
 
 
-            watcher.addWallet(payment.getRequest().getCryptoAddress(), new AbstractBlockchainWatcherWalletListener() {
+            watcher.addWallet(payment.getRequest().getCryptoAddress(), payment.getRequest().getCryptoCurrency(), new AbstractBlockchainWatcherWalletListener() {
                 @Override
-                public void walletContainsChanged(String walletAddress, Object tag, final TxInfo tx) {
+                public void walletContainsChanged(String walletAddress, String cryptoCurrency, Object tag, final TxInfo tx) {
                     boolean processed = false;
                     Payment p = (Payment) tag;
 
@@ -206,16 +203,16 @@ public class PaymentMgr implements IPaymentMgr{
                                         case ARRIVING:
                                             listener.paymentArriving(p);
                                             //start listening for transaction confirmations
-                                            watcher.addTransaction(tx.getTxHash(), new AbstractBlockchainWatcherTransactionListener() {
+                                            watcher.addTransaction(tx.getTxHash(), p.getRequest().getCryptoCurrency(), new AbstractBlockchainWatcherTransactionListener() {
                                                 private int lastNumberOfConfirmations = 0;
 
                                                 @Override
-                                                public void numberOfConfirmationsChanged(String transactionHash, Object tag, int numberOfConfirmations) {
+                                                public void numberOfConfirmationsChanged(String transactionHash, String cryptoCurrency, Object tag, int numberOfConfirmations){
                                                     Payment p = (Payment) tag;
                                                     if (numberOfConfirmations > lastNumberOfConfirmations) {
                                                         if (p.getState() == Payment.State.ARRIVING) {
                                                             if (numberOfConfirmations >= p.getRequest().getSpec().getSafeNumberOfBlockConfirmations()) {
-                                                                watcher.removeTransaction(transactionHash);
+                                                                watcher.removeTransaction(transactionHash,p.getRequest().getCryptoCurrency());
                                                                 p.setState(Payment.State.RECEIVED);
                                                                 listener.paymentReceived(p);
                                                                 //payment was received stop watching for it
@@ -227,7 +224,7 @@ public class PaymentMgr implements IPaymentMgr{
 
                                                     if (payment.getState() == Payment.State.FAILED) {
                                                         //stop listening if transaction already failed
-                                                        watcher.removeTransaction(transactionHash);
+                                                        watcher.removeTransaction(transactionHash,payment.getRequest().getCryptoCurrency());
                                                     }
                                                 }
                                             }, p);
@@ -242,7 +239,7 @@ public class PaymentMgr implements IPaymentMgr{
                                                             listener.paymentFailed(payment);
                                                         }
                                                         unregisterPayment(payment);
-                                                        watcher.removeTransaction(tx.getTxHash());
+                                                        watcher.removeTransaction(tx.getTxHash(),payment.getRequest().getCryptoCurrency());
                                                     }
                                                 }
                                             }, EXPIRATION_FOR_REQUIRED_CONFIRMATIONS_IN_SECONDS, TimeUnit.SECONDS);
@@ -302,12 +299,13 @@ public class PaymentMgr implements IPaymentMgr{
     private void unregisterPayment(Payment payment) {
         synchronized (PAYMENTS_LOCK) {
             watchedPayments.remove(payment);
-            watcher.removeWallet(payment.getRequest().getCryptoAddress());
+            watcher.removeWallet(payment.getRequest().getCryptoAddress(),payment.getRequest().getCryptoCurrency());
         }
     }
 
-    private String getReceivingAddress(String xpubAccount, int chainIndex) {
+    private String getReceivingAddress(String xpubAccount, int chainIndex, String cryptoCurrency) {
         synchronized (INDEXES_LOCK) {
+            File xpubIndexesFile = new File("./payment_indexes_" + cryptoCurrency.toLowerCase() + ".properties");
             Properties p = new Properties();
             String address = null;
             try {
@@ -323,7 +321,7 @@ public class PaymentMgr implements IPaymentMgr{
                 index++;
                 p.setProperty(chainKey,index +"");
 
-                address = wt.getWalletAddressFromAccountXPUB(xpubAccount, chainIndex, index);
+                address = wt.getWalletAddressFromAccountXPUB(xpubAccount, cryptoCurrency, chainIndex, index);
 
                 FileOutputStream fos = new FileOutputStream(xpubIndexesFile);
                 p.store(fos,"Bitrafael");

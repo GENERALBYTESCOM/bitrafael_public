@@ -22,18 +22,20 @@ package com.generalbytes.bitrafael.api.wallet;
 public interface IWalletTools {
     public static final int PURPOSE_BIP44 = 44 ;
     public static final int COIN_TYPE_BITCOIN = 0;
+    public static final int COIN_TYPE_LITECOIN = 2;
     public static final int CHAIN_EXTERNAL = 0;
     public static final int CHAIN_CHANGE = 1;
 
     public String generateSeedMnemonicSeparatedBySpaces();
-    public MasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password);
-    public MasterPrivateKey getMasterPrivateKey(String xprv);
-    public String getAccountXPUB(MasterPrivateKey master, int accountIndex);
+    public IMasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password);
+    public IMasterPrivateKey getMasterPrivateKey(String xprv);
+    public String getAccountXPUB(IMasterPrivateKey master, String cryptoCurrency, int accountIndex);
 
 
-    public String getWalletAddress(MasterPrivateKey master, int accountIndex, int chainIndex, int index);
-    public String getWalletPrivateKey(MasterPrivateKey master, int accountIndex, int chainIndex, int index);
-    public String getWalletAddressFromAccountXPUB(String accountXPUB, int chainIndex, int index);
-    public String getWalletAddressFromPrivateKey(String privateKey);
-    public boolean isAddressValid(String bitcoinAddress);
+    String getWalletAddress(IMasterPrivateKey master, String cryptoCurrency, int accountIndex, int chainIndex, int index);
+    String getWalletPrivateKey(IMasterPrivateKey master, String cryptoCurrency, int accountIndex, int chainIndex, int index);
+    String getWalletAddressFromAccountXPUB(String accountXPUB, String cryptoCurrency, int chainIndex, int index);
+    public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency);
+    public ISignature sign(String privateKey, byte[] hashToSign, String cryptoCurrency);
+    boolean isAddressValid(String address, String cryptoCurrency);
 }

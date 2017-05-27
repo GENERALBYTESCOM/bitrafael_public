@@ -20,6 +20,6 @@ package com.generalbytes.bitrafael.api.payment;
 
 
 public interface IPaymentMgr {
-    public PaymentRequest createPaymentRequest(PaymentRequestSpec spec, IPaymentListener listener);
+    PaymentRequest createPaymentRequest(PaymentRequestSpec spec, IPaymentListener listener);
 
 }

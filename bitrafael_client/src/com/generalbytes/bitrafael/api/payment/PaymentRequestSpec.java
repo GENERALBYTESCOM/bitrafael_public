@@ -23,18 +23,20 @@ public class PaymentRequestSpec {
     private BigDecimal fiatAmount;
     private BigDecimal fiatToleranceAmount;
     private String fiatCurrency;
+    private String cryptoCurrency;
     private String accountXPUBForReceivingPayment;
     private Object tag;
     private int safeNumberOfBlockConfirmations;
     private long validityDurationInSeconds;
 
-    public PaymentRequestSpec(BigDecimal fiatAmount, BigDecimal fiatToleranceAmount, String fiatCurrency, String accountXPUBForReceivingPayment) {
-        this(fiatAmount,fiatToleranceAmount, fiatCurrency,accountXPUBForReceivingPayment,null,3,15 * 60); //15 minutes
+    public PaymentRequestSpec(BigDecimal fiatAmount, BigDecimal fiatToleranceAmount, String fiatCurrency, String cryptoCurrency,  String accountXPUBForReceivingPayment) {
+        this(fiatAmount,fiatToleranceAmount, fiatCurrency, cryptoCurrency, accountXPUBForReceivingPayment,null,3,15 * 60); //15 minutes
     }
 
-    public PaymentRequestSpec(BigDecimal fiatAmount, BigDecimal fiatToleranceAmount, String fiatCurrency, String accountXPUBForReceivingPayment, Object tag, int safeNumberOfBlockConfirmations, long validityDurationInSeconds) {
+    public PaymentRequestSpec(BigDecimal fiatAmount, BigDecimal fiatToleranceAmount, String fiatCurrency, String cryptoCurrency, String accountXPUBForReceivingPayment, Object tag, int safeNumberOfBlockConfirmations, long validityDurationInSeconds) {
         this.fiatAmount = fiatAmount;
         this.fiatCurrency = fiatCurrency;
+        this.cryptoCurrency = cryptoCurrency;
         this.accountXPUBForReceivingPayment = accountXPUBForReceivingPayment;
         this.tag = tag;
         this.safeNumberOfBlockConfirmations = safeNumberOfBlockConfirmations;
@@ -71,12 +73,17 @@ public class PaymentRequestSpec {
         return fiatToleranceAmount;
     }
 
+    public String getCryptoCurrency() {
+        return cryptoCurrency;
+    }
+
     @Override
     public String toString() {
         return "PaymentRequestSpec{" +
                 "fiatAmount=" + fiatAmount +
                 ", fiatToleranceAmount=" + fiatToleranceAmount +
                 ", fiatCurrency='" + fiatCurrency + '\'' +
+                ", cryptoCurrency='" + cryptoCurrency + '\'' +
                 ", accountXPUBForReceivingPayment='" + accountXPUBForReceivingPayment + '\'' +
                 ", tag=" + tag +
                 ", safeNumberOfBlockConfirmations=" + safeNumberOfBlockConfirmations +

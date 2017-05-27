@@ -28,10 +28,11 @@ public class SendAllCoinsExample {
     public static void main(String[] args) {
         WalletTools wt = new WalletTools();
         IClient c = new Client();
+        String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
 
         final BigDecimal FEE = new BigDecimal("0.01");
         String privateKey = "5Jt8.............................................";
-        final BigDecimal balance = c.getAddressBalance(wt.getWalletAddressFromPrivateKey(privateKey));
+        final BigDecimal balance = c.getAddressBalance(wt.getWalletAddressFromPrivateKey(privateKey,cryptoCurrency));
         final String txhash = c.send(privateKey, balance.subtract(FEE), "1DiMeHfaPxDAEY13wd5nX8HyKgfuATdaW5", FEE);
         System.out.println("Sent. txhash = " + txhash);
     }

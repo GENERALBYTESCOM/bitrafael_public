@@ -21,11 +21,11 @@ package com.generalbytes.bitrafael.api.watch;
 public interface IBlockchainWatcher {
     void addBlockchainListener(IBlockchainWatcherListener listener);
     void removeBlockchainListener(IBlockchainWatcherListener listener);
-    void addWallet(String walletAddress, IBlockchainWatcherWalletListener listener, Object tag);
-    Object removeWallet(String walletAddress);
+    void addWallet(String walletAddress, String cryptoCurrency, IBlockchainWatcherWalletListener listener, Object tag);
+    Object removeWallet(String walletAddress, String cryptoCurrency);
     Object removeWallet(IBlockchainWatcherWalletListener listener);
 
-    void addTransaction(String transactionHash, IBlockchainWatcherTransactionListener listener, Object tag);
-    Object removeTransaction(String transactionHash);
+    void addTransaction(String transactionHash, String cryptoCurrency, IBlockchainWatcherTransactionListener listener, Object tag);
+    Object removeTransaction(String transactionHash, String cryptoCurrency);
     Object removeTransaction(IBlockchainWatcherTransactionListener listener);
 }

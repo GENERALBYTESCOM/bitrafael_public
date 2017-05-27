@@ -25,23 +25,24 @@ import com.generalbytes.bitrafael.api.watch.IBlockchainWatcherListener;
 
 public class TransactionWatcherExample {
     public static void main(String[] args) {
+        String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
         BlockchainWatcher bw = new BlockchainWatcher();
         bw.start();
         bw.addBlockchainListener(new IBlockchainWatcherListener() {
             @Override
-            public void newBlockMined(long blockHeight) {
-                System.out.println("New Block is mined: " + blockHeight);
+            public void newBlockMined(long blockHeight, String cryptoCurrency) {
+                System.out.println("New Block is mined: " + blockHeight + " on " +cryptoCurrency + " network.");
             }
         });
 
-        bw.addTransaction("50f8b0b9c76a155989783775bd61889a0f6d20b3d99978971f67ba9b0943286f",new AbstractBlockchainWatcherTransactionListener() {
+        bw.addTransaction("50f8b0b9c76a155989783775bd61889a0f6d20b3d99978971f67ba9b0943286f", cryptoCurrency, new AbstractBlockchainWatcherTransactionListener() {
             @Override
-            public void numberOfConfirmationsChanged(String transactionHash, Object tag, int numberOfConfirmations) {
+            public void numberOfConfirmationsChanged(String transactionHash, String cryptoCurrency, Object tag, int numberOfConfirmations) {
                 System.out.println("numberOfConfirmationsChanged " + transactionHash + " = " + numberOfConfirmations );
             }
 
             @Override
-            public void newBlockMined(String transactionHash, Object tag, long blockHeight) {
+            public void newBlockMined(String transactionHash, String cryptoCurrency, Object tag, long blockHeight) {
                 System.out.println("New block mined: " + transactionHash + " = " + blockHeight);
             }
 

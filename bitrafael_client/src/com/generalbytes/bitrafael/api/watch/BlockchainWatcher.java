@@ -23,10 +23,7 @@ import com.generalbytes.bitrafael.api.client.Client;
 import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.dto.TxInfo;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -39,21 +36,22 @@ public class BlockchainWatcher implements IBlockchainWatcher{
     private final List<TransactionRecord> transactionRecords = new LinkedList<TransactionRecord>();
     private final List<WalletRecord> walletRecords = new LinkedList<WalletRecord>();
     private final List<IBlockchainWatcherListener> listeners = new LinkedList<IBlockchainWatcherListener>();
-    private IClient client = new Client(System.getProperty("coin.cz", "https://coin.cz"));
+    private Map<String,IClient> clients = null;
     private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-    private long lastBlockChainHeight = -1;
-
+    private Map<String,Long> lastBlockChainHeights = null;
 
 
     class TransactionRecord {
         private String transactionHash;
+        private String cryptoCurrency;
         private IBlockchainWatcherTransactionListener listener;
         private Object tag;
         private int lastNumberOfConfirmations;
 
 
-        TransactionRecord(String transactionHash, IBlockchainWatcherTransactionListener listener, Object tag) {
+        TransactionRecord(String transactionHash, String cryptoCurrency, IBlockchainWatcherTransactionListener listener, Object tag) {
             this.transactionHash = transactionHash;
+            this.cryptoCurrency = cryptoCurrency;
             this.listener = listener;
             this.tag = tag;
             this.lastNumberOfConfirmations = -1;
@@ -70,18 +68,24 @@ public class BlockchainWatcher implements IBlockchainWatcher{
         public IBlockchainWatcherTransactionListener getListener() {
             return listener;
         }
+
+        public String getCryptoCurrency() {
+            return cryptoCurrency;
+        }
     }
 
     class WalletRecord {
         private String walletAddress;
+        private String cryptoCurrency;
         private IBlockchainWatcherWalletListener listener;
         private Object tag;
         private TxInfo lastTxInfo;
         private List<TxInfo> oldTxInfos = new ArrayList<TxInfo>();
 
 
-        public WalletRecord(String walletAddress, IBlockchainWatcherWalletListener listener, Object tag, TxInfo lastTxInfo) {
+        public WalletRecord(String walletAddress, String cryptoCurrency, IBlockchainWatcherWalletListener listener, Object tag, TxInfo lastTxInfo) {
             this.walletAddress = walletAddress;
+            this.cryptoCurrency = cryptoCurrency;
             this.listener = listener;
             this.tag = tag;
             this.lastTxInfo = lastTxInfo;
@@ -115,6 +119,32 @@ public class BlockchainWatcher implements IBlockchainWatcher{
             return oldTxInfos;
         }
 
+        public String getCryptoCurrency() {
+            return cryptoCurrency;
+        }
+    }
+
+    public BlockchainWatcher() {
+        this(IClient.BTC);
+    }
+
+    public BlockchainWatcher(String cryptoCurrency) {
+        this(new String[]{cryptoCurrency});
+    }
+
+    public BlockchainWatcher(String[] cryptoCurrencies) {
+        lastBlockChainHeights = new HashMap<>();
+        clients = new HashMap<>();
+        for (int i = 0; i < cryptoCurrencies.length; i++) {
+            String cryptoCurrency = cryptoCurrencies[i];
+            if (IClient.BTC.equalsIgnoreCase(cryptoCurrency)) {
+                clients.put(IClient.BTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.BTC));
+                lastBlockChainHeights.put(IClient.BTC,-1L);
+            }else if (IClient.LTC.equalsIgnoreCase(cryptoCurrency)) {
+                clients.put(IClient.LTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.LTC));
+                lastBlockChainHeights.put(IClient.LTC,-1L);
+            }
+        }
     }
 
     @Override
@@ -132,22 +162,26 @@ public class BlockchainWatcher implements IBlockchainWatcher{
     }
 
     @Override
-    public void addWallet(String walletAddress, IBlockchainWatcherWalletListener listener, Object tag) {
-        final TxInfo last = client.getAddressLastTransactionInfo(walletAddress);
-        final WalletRecord wr = new WalletRecord(walletAddress, listener, tag, last);
+    public void addWallet(String walletAddress, String cryptoCurrency, IBlockchainWatcherWalletListener listener, Object tag) {
+        final TxInfo last = getClient(cryptoCurrency).getAddressLastTransactionInfo(walletAddress);
+        final WalletRecord wr = new WalletRecord(walletAddress, cryptoCurrency, listener, tag, last);
         synchronized (walletRecords) {
             walletRecords.add(wr);
         }
     }
 
+    private IClient getClient(String cryptoCurrency) {
+        return clients.get(cryptoCurrency);
+    }
+
     @Override
-    public Object removeWallet(String walletAddress) {
+    public Object removeWallet(String walletAddress, String cryptoCurrency) {
         synchronized (walletRecords) {
             for (int i = 0; i < walletRecords.size(); i++) {
                 WalletRecord record = walletRecords.get(i);
                 if (record.getWalletAddress().equals(walletAddress)) {
                     walletRecords.remove(record);
-                    record.getListener().removedWalletFromWatch(record.walletAddress, record.tag);
+                    record.getListener().removedWalletFromWatch(record.walletAddress, record.cryptoCurrency, record.tag);
                     return record.getTag();
                 }
             }
@@ -162,7 +196,7 @@ public class BlockchainWatcher implements IBlockchainWatcher{
                 WalletRecord walletRecord = walletRecords.get(i);
                 if (walletRecord.getListener() == listener) {
                     walletRecords.remove(walletRecord);
-                    walletRecord.getListener().removedWalletFromWatch(walletRecord.walletAddress, walletRecord.tag);
+                    walletRecord.getListener().removedWalletFromWatch(walletRecord.walletAddress, walletRecord.cryptoCurrency,  walletRecord.tag);
                     return walletRecord.getTag();
                 }
             }
@@ -170,21 +204,21 @@ public class BlockchainWatcher implements IBlockchainWatcher{
         return null;
     }
 
-    public void addTransaction(String transactionHash, IBlockchainWatcherTransactionListener l, Object tag) {
+    public void addTransaction(String transactionHash, String cryptoCurrency, IBlockchainWatcherTransactionListener l, Object tag) {
         synchronized (transactionRecords) {
-            final TransactionRecord e = new TransactionRecord(transactionHash, l, tag);
+            final TransactionRecord e = new TransactionRecord(transactionHash, cryptoCurrency, l, tag);
 
             transactionRecords.add(e);
         }
     }
 
-    public Object removeTransaction(String transactionHash) {
+    public Object removeTransaction(String transactionHash, String cryptoCurrency) {
         synchronized (transactionRecords) {
             for (int i = 0; i < transactionRecords.size(); i++) {
                 TransactionRecord transactionRecord = transactionRecords.get(i);
-                if (transactionRecord.getTransactionHash().equals(transactionHash)) {
+                if (transactionRecord.getTransactionHash().equals(transactionHash) && transactionRecord.getCryptoCurrency().equalsIgnoreCase(cryptoCurrency)) {
                     transactionRecords.remove(transactionRecord);
-                    transactionRecord.getListener().removedTransactionFromWatch(transactionRecord.transactionHash, transactionRecord.tag);
+                    transactionRecord.getListener().removedTransactionFromWatch(transactionRecord.transactionHash, transactionRecord.cryptoCurrency, transactionRecord.tag);
                     return transactionRecord.getTag();
                 }
             }
@@ -198,7 +232,7 @@ public class BlockchainWatcher implements IBlockchainWatcher{
                 TransactionRecord transactionRecord = transactionRecords.get(i);
                 if (transactionRecord.getListener() == listener) {
                     transactionRecords.remove(transactionRecord);
-                    transactionRecord.getListener().removedTransactionFromWatch(transactionRecord.transactionHash, transactionRecord.tag);
+                    transactionRecord.getListener().removedTransactionFromWatch(transactionRecord.transactionHash, transactionRecord.cryptoCurrency, transactionRecord.tag);
                     return transactionRecord.getTag();
                 }
             }
@@ -243,71 +277,84 @@ public class BlockchainWatcher implements IBlockchainWatcher{
     }
 
     private void checkForNewBlocks() {
-        long currentBlockChainHeight  = client.getCurrentBlockchainHeight();
-        if (currentBlockChainHeight != lastBlockChainHeight && currentBlockChainHeight != 0) {
-            if (lastBlockChainHeight == -1) {
-                //skip first iteration
-                lastBlockChainHeight = currentBlockChainHeight;
-            }else {
-                lastBlockChainHeight = currentBlockChainHeight;
-                synchronized (listeners) {
-                    for (int i = 0; i < listeners.size(); i++) {
-                        IBlockchainWatcherListener listener = listeners.get(i);
-                        listener.newBlockMined(lastBlockChainHeight);
+        final Set<String> cryptoCurrencies = lastBlockChainHeights.keySet();
+        for (String cryptoCurrency : cryptoCurrencies) {
+            long currentBlockChainHeight  = getClient(cryptoCurrency).getCurrentBlockchainHeight();
+            long lastBlockChainHeight = lastBlockChainHeights.get(cryptoCurrency);
+            if (currentBlockChainHeight != lastBlockChainHeight && currentBlockChainHeight != 0) {
+                if (lastBlockChainHeight == -1) {
+                    //skip first iteration
+                    lastBlockChainHeight = currentBlockChainHeight;
+                    lastBlockChainHeights.put(cryptoCurrency,lastBlockChainHeight);
+                }else {
+                    lastBlockChainHeight = currentBlockChainHeight;
+                    lastBlockChainHeights.put(cryptoCurrency,lastBlockChainHeight);
+                    synchronized (listeners) {
+                        for (int i = 0; i < listeners.size(); i++) {
+                            IBlockchainWatcherListener listener = listeners.get(i);
+                            listener.newBlockMined(lastBlockChainHeight,cryptoCurrency);
+                        }
                     }
-                }
-                List<TransactionRecord> res = null;
-                synchronized (transactionRecords) {
-                    res = new LinkedList<TransactionRecord>(this.transactionRecords);
-                }
-                if (!res.isEmpty()) {
-                    for (int i = 0; i < res.size(); i++) {
-                        TransactionRecord transactionRecord = res.get(i);
-                        checkRecord(transactionRecord, currentBlockChainHeight);
+                    List<TransactionRecord> res = null;
+                    synchronized (transactionRecords) {
+                        res = new LinkedList<TransactionRecord>(this.transactionRecords);
+                    }
+                    if (!res.isEmpty()) {
+                        for (int i = 0; i < res.size(); i++) {
+                            TransactionRecord transactionRecord = res.get(i);
+                            if (cryptoCurrency.equalsIgnoreCase(transactionRecord.getCryptoCurrency())) {
+                                checkRecord(transactionRecord, currentBlockChainHeight);
+                            }
+                        }
                     }
                 }
             }
+
         }
     }
 
     private void checkForWalletChanges() {
         List<WalletRecord> rec = null;
-        List<String> addresses = null;
         synchronized (walletRecords) {
             rec = new ArrayList<WalletRecord>(walletRecords);
             if (rec.isEmpty()) {
                 return;
             }
         }
-        addresses = new ArrayList<String>();
-        for (int i = 0; i < walletRecords.size(); i++) {
-            WalletRecord record = walletRecords.get(i);
-            addresses.add(record.getWalletAddress());
-        }
-        final Map<String, TxInfo> results = client.getAddressesLastTransactionInfos(addresses);
-        if (results == null || results.isEmpty()) {
-            return;
-        }
-        for (int i = 0; i < rec.size(); i++) {
-            WalletRecord record = rec.get(i);
-            final TxInfo linfo = results.get(record.getWalletAddress());
+        final Set<String> cryptoCurrencies = clients.keySet();
+        for (String cryptoCurrency : cryptoCurrencies) {
+            List<String> addresses = new ArrayList<String>();
+            for (int i = 0; i < walletRecords.size(); i++) {
+                WalletRecord record = walletRecords.get(i);
+                if (cryptoCurrency.equalsIgnoreCase(record.getCryptoCurrency())) {
+                    addresses.add(record.getWalletAddress());
+                }
+            }
+            final Map<String, TxInfo> results = getClient(cryptoCurrency).getAddressesLastTransactionInfos(addresses);
+            if (results == null || results.isEmpty()) {
+                continue;
+            }
+            for (int i = 0; i < rec.size(); i++) {
+                WalletRecord record = rec.get(i);
+                final TxInfo linfo = results.get(record.getWalletAddress());
 
-            if (linfo != null) {
-                if (record.getLastTxInfo() == null || !linfo.getTxHash().equals(record.getLastTxInfo().getTxHash())) {
-                    boolean isNewTx = true;
-                    final List<TxInfo> oldTxInfos = record.getOldTxInfos();
-                    for (int j = 0; j < oldTxInfos.size(); j++) {
-                        TxInfo txInfo = oldTxInfos.get(j);
-                        if (txInfo.getTxHash().equals(linfo.getTxHash())) {
-                            isNewTx = false;
-                            break;
+                if (linfo != null) {
+                    if (record.getLastTxInfo() == null || !linfo.getTxHash().equals(record.getLastTxInfo().getTxHash())) {
+                        boolean isNewTx = true;
+                        final List<TxInfo> oldTxInfos = record.getOldTxInfos();
+                        for (int j = 0; j < oldTxInfos.size(); j++) {
+                            TxInfo txInfo = oldTxInfos.get(j);
+                            if (txInfo.getTxHash().equals(linfo.getTxHash())) {
+                                isNewTx = false;
+                                break;
+                            }
                         }
-                    }
-                    record.setLastTxInfo(linfo);
-                    if (isNewTx) {
-                        oldTxInfos.add(linfo);
-                        if (record.getListener() != null) {
-                            record.getListener().walletContainsChanged(record.getWalletAddress(), record.getTag(), record.getLastTxInfo());
+                        record.setLastTxInfo(linfo);
+                        if (isNewTx) {
+                            oldTxInfos.add(linfo);
+                            if (record.getListener() != null) {
+                                record.getListener().walletContainsChanged(record.getWalletAddress(), record.getCryptoCurrency(), record.getTag(), record.getLastTxInfo());
+                            }
                         }
                     }
                 }
@@ -318,16 +365,16 @@ public class BlockchainWatcher implements IBlockchainWatcher{
     private void checkRecord(TransactionRecord transactionRecord, long currentBlockChainHeight) {
         String txHash = transactionRecord.getTransactionHash();
         if (transactionRecord.getListener() != null) {
-            transactionRecord.getListener().newBlockMined(txHash, transactionRecord.tag, currentBlockChainHeight);
+            transactionRecord.getListener().newBlockMined(txHash, transactionRecord.cryptoCurrency, transactionRecord.tag, currentBlockChainHeight);
         }
-        long transactionHeight = client.getTransactionHeight(txHash);
+        long transactionHeight = getClient(transactionRecord.getCryptoCurrency()).getTransactionHeight(txHash);
         if (transactionHeight != 0) {
             //transaction is in block
             int numberOfConfirmations = 1 + (int)(currentBlockChainHeight - transactionHeight);
             if (numberOfConfirmations > transactionRecord.lastNumberOfConfirmations) {
                 transactionRecord.lastNumberOfConfirmations = numberOfConfirmations;
                 if (transactionRecord.getListener() != null) {
-                    transactionRecord.getListener().numberOfConfirmationsChanged(txHash, transactionRecord.tag, numberOfConfirmations);
+                    transactionRecord.getListener().numberOfConfirmationsChanged(txHash, transactionRecord.cryptoCurrency, transactionRecord.tag, numberOfConfirmations);
                 }
             }
         }

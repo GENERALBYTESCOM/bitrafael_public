@@ -22,12 +22,12 @@ import com.generalbytes.bitrafael.api.dto.TxInfo;
 public abstract class AbstractBlockchainWatcherWalletListener implements IBlockchainWatcherWalletListener{
 
     @Override
-    public void walletContainsChanged(String walletAddress, Object tag, TxInfo tx) {
+    public void walletContainsChanged(String walletAddress, String cryptoCurrency, Object tag, TxInfo tx) {
 
     }
 
     @Override
-    public void removedWalletFromWatch(String walletAddress, Object tag) {
+    public void removedWalletFromWatch(String walletAddress, String cryptoCurrency, Object tag) {
 
     }
 }

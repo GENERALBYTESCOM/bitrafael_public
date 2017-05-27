@@ -34,7 +34,8 @@ import java.util.List;
 
 public class ClientExample {
     public static void main(String[] args) {
-        IClient c = new Client("https://coin.cz");
+        String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
+        IClient c = new Client("https://coin.cz", cryptoCurrency);
         final String testXpub = "xpub6CLuyGaJwJngMH6H7v7NGV4jtjwN7JS7QNH6p9TJ2SPEVCvwSaeL9nm6y3zjvV5M4eKPJEzRHyiTLq2probsxzdyxEj2yb17HiEsBXbJXQc";
         final AccountBalance account = c.getAccountBalance(testXpub);
         String nextReceivingAddress = account.getNextReceivingAddress();
@@ -43,9 +44,9 @@ public class ClientExample {
         System.out.println("nextReceivingAddress = " + nextReceivingAddress);
 
         IXPUBMgr mgr  = new XPUBMgr(c);
-        nextReceivingAddress = mgr.getNextWalletAddressFromAccountXPUB(testXpub, IWalletTools.CHAIN_EXTERNAL);
+        nextReceivingAddress = mgr.getNextWalletAddressFromAccountXPUB(testXpub, cryptoCurrency, IWalletTools.CHAIN_EXTERNAL);
         System.out.println("nextReceivingAddress = " + nextReceivingAddress);
-        nextReceivingAddress = mgr.getNextWalletAddressFromAccountXPUB(testXpub, IWalletTools.CHAIN_EXTERNAL);
+        nextReceivingAddress = mgr.getNextWalletAddressFromAccountXPUB(testXpub, cryptoCurrency, IWalletTools.CHAIN_EXTERNAL);
         System.out.println("nextReceivingAddress = " + nextReceivingAddress);
 
         final TxFeesInfo fees = c.getRecommendedTransactionFeesPerByte();
@@ -54,17 +55,16 @@ public class ClientExample {
         final IClient.RiskLevel transactionRiskLevel = c.getTransactionRiskLevel("3047dff08cd6e2dce2febfc7592bedd46d4dcb400e654b700e0c64b7178cbd3f");
         System.out.println("transactionRiskLevel = " + transactionRiskLevel);
 
-        System.exit(0);
         //test currency conversion related functions
-        BigDecimal amount = c.convertAmount(BigDecimal.ONE, "USD", "BTC");
-        System.out.println("1 USD = " + amount + " BTC");
-        amount = c.convertAmount(BigDecimal.ONE, "BTC", "USD");
-        System.out.println("1 BTC = " + amount + " USD");
+        BigDecimal amount = c.convertAmount(BigDecimal.ONE, "USD", cryptoCurrency);
+        System.out.println("1 USD = " + amount + " " + cryptoCurrency);
+        amount = c.convertAmount(BigDecimal.ONE, cryptoCurrency, "USD");
+        System.out.println("1 " + cryptoCurrency + " = " + amount + " USD");
 
-        amount = c.convertAmount(BigDecimal.ONE, "mBTC", "BTC");
-        System.out.println("1 mBTC = " + amount + " BTC");
-        amount = c.convertAmount(BigDecimal.ONE, "BTC", "mBTC");
-        System.out.println("1 BTC = " + amount + " mBTC");
+        amount = c.convertAmount(BigDecimal.ONE, "m" + cryptoCurrency, cryptoCurrency);
+        System.out.println("1 m" + cryptoCurrency + " = " + amount + " "+ cryptoCurrency);
+        amount = c.convertAmount(BigDecimal.ONE, cryptoCurrency, "m" + cryptoCurrency);
+        System.out.println("1 " + cryptoCurrency + " = " + amount + " m" + cryptoCurrency);
 
         BigDecimal b1 = c.getAddressBalance("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
         BigDecimal b2 = c.getAddressBalanceConfirmed("1tEsTvxKTYsejxMQmAEMMNXB5M5JWTXAN");
@@ -80,6 +80,7 @@ public class ClientExample {
             System.out.println(" " + i +". " + transaction);
         }
 
+        System.exit(0);
 
 
         //following line will always cause error as the private key is not set

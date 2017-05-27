@@ -34,7 +34,7 @@ public class XPUBMgr implements IXPUBMgr{
     }
 
     @Override
-    public String getNextWalletAddressFromAccountXPUB(String accountXPUB, int chainIndex) {
+    public String getNextWalletAddressFromAccountXPUB(String accountXPUB, String cryptoCurrency, int chainIndex) {
         if (accountXPUB == null) {
             return null;
         }
@@ -66,6 +66,6 @@ public class XPUBMgr implements IXPUBMgr{
             }
         }
 
-        return wt.getWalletAddressFromAccountXPUB(accountXPUB, chainIndex, newIndex);
+        return wt.getWalletAddressFromAccountXPUB(accountXPUB, cryptoCurrency, chainIndex, newIndex);
     }
 }

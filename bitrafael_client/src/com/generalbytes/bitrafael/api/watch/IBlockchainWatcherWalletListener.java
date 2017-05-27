@@ -19,11 +19,8 @@ package com.generalbytes.bitrafael.api.watch;
 
 import com.generalbytes.bitrafael.api.dto.TxInfo;
 
-import java.math.BigDecimal;
-
-
 public interface IBlockchainWatcherWalletListener {
-    void walletContainsChanged(String walletAddress, Object tag, TxInfo tx);
-    void removedWalletFromWatch(String walletAddress, Object tag);
+    void walletContainsChanged(String walletAddress, String cryptoCurrency, Object tag, TxInfo tx);
+    void removedWalletFromWatch(String walletAddress, String cryptoCurrency, Object tag);
 
 }

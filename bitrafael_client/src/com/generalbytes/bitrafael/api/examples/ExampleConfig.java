@@ -15,37 +15,19 @@
  * Web      :  http://www.generalbytes.com
  *
  ************************************************************************************/
+package com.generalbytes.bitrafael.api.examples;
 
-package com.generalbytes.bitrafael.api.wallet;
 
-import org.bitcoinj.crypto.DeterministicKey;
-import org.bitcoinj.crypto.MnemonicCode;
-import org.bitcoinj.params.MainNetParams;
+import com.generalbytes.bitrafael.api.client.IClient;
 
-public class MasterPrivateKey {
-    private DeterministicKey key;
+public class ExampleConfig {
+    private static final ExampleConfig config = new ExampleConfig();
 
-    public MasterPrivateKey(String xprv) {
-        key = DeterministicKey.deserializeB58(xprv,MainNetParams.get());
+    public static ExampleConfig getConfig() {
+        return config;
     }
 
-    public long getCreationTimeSeconds() {
-        return MnemonicCode.BIP39_STANDARDISATION_TIME_SECS;
-    }
-
-    @Override
-    public String toString() {
-        return getXPUB();
-    }
-
-    public String getXPRV() {
-        return key.serializePrivB58(MainNetParams.get());
-    }
-    public String getXPUB() {
-        return key.serializePubB58(MainNetParams.get());
-    }
-
-    boolean hasPrv() {
-        return key.hasPrivKey();
+    public String getCryptoCurrency() {
+        return IClient.LTC;
     }
 }

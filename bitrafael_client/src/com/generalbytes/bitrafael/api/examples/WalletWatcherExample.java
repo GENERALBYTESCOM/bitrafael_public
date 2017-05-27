@@ -25,12 +25,13 @@ import com.generalbytes.bitrafael.api.watch.BlockchainWatcher;
 
 public class WalletWatcherExample {
     public static void main(String[] args) {
-        BlockchainWatcher bw = new BlockchainWatcher();
+        String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
+        BlockchainWatcher bw = new BlockchainWatcher(cryptoCurrency);
         bw.start();
         String testAddress = "13zq3yaBAiuUaEUPxhYwk5bXNadgnGeP28";
-        bw.addWallet(testAddress, new AbstractBlockchainWatcherWalletListener() {
+        bw.addWallet(testAddress, cryptoCurrency, new AbstractBlockchainWatcherWalletListener() {
             @Override
-            public void walletContainsChanged(String walletAddress, Object tag, TxInfo tx) {
+            public void walletContainsChanged(String walletAddress, String cryptoCurrency, Object tag, TxInfo tx) {
                 System.out.println("New transaction on " + tag + " (" + walletAddress +") txhash: " + tx.getTxHash());
             }
         },"MyWallet");

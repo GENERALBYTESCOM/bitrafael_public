@@ -20,5 +20,5 @@ package com.generalbytes.bitrafael.api.watch;
 
 
 public interface IBlockchainWatcherListener {
-    void newBlockMined(long blockHeight);
+    void newBlockMined(long blockHeight, String cryptoCurrency);
 }
