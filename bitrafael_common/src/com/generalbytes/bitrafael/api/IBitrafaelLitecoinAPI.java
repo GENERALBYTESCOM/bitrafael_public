@@ -18,13 +18,8 @@
 
 package com.generalbytes.bitrafael.api;
 
-import com.generalbytes.bitrafael.api.dto.AmountsPair;
-import com.generalbytes.bitrafael.api.dto.TxTemplate;
-import com.generalbytes.bitrafael.api.dto.rest.*;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 @Path("/litecoin/v1")
 @Produces(MediaType.APPLICATION_JSON)
