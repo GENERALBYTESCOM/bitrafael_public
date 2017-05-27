@@ -20,7 +20,6 @@ package com.generalbytes.bitrafael.api.wallet;
 
 
 import com.generalbytes.bitrafael.api.client.IClient;
-import com.generalbytes.bitrafael.api.wallet.btc.MasterPrivateKeyBTC;
 import com.generalbytes.bitrafael.api.wallet.btc.WalletToolsBTC;
 import com.generalbytes.bitrafael.api.wallet.ltc.WalletToolsLTC;
 
@@ -45,13 +44,13 @@ public class WalletTools implements IWalletTools{
     }
 
     @Override
-    public IMasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password) {
-        return getDefaultWalletTools().getMasterPrivateKey(seedMnemonicSeparatedBySpaces,password);
+    public IMasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency) {
+        return tools.get(cryptoCurrency).getMasterPrivateKey(seedMnemonicSeparatedBySpaces,password, cryptoCurrency);
     }
 
     @Override
-    public IMasterPrivateKey getMasterPrivateKey(String xprv) {
-        return getDefaultWalletTools().getMasterPrivateKey(xprv);
+    public IMasterPrivateKey getMasterPrivateKey(String xprv, String cryptoCurrency) {
+        return tools.get(cryptoCurrency).getMasterPrivateKey(xprv, cryptoCurrency);
     }
 
     @Override

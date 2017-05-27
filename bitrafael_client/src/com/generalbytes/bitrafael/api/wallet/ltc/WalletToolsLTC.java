@@ -22,7 +22,6 @@ import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.IMasterPrivateKey;
 import com.generalbytes.bitrafael.api.wallet.ISignature;
 import com.generalbytes.bitrafael.api.wallet.IWalletTools;
-import com.generalbytes.bitrafael.api.wallet.btc.MasterPrivateKeyBTC;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -52,7 +51,7 @@ public class WalletToolsLTC implements IWalletTools {
         return null;
     }
 
-    public MasterPrivateKeyBTC getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password){
+    public IMasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency){
         if (password == null) {
             password = "";
         }
@@ -60,12 +59,12 @@ public class WalletToolsLTC implements IWalletTools {
         DeterministicSeed seed = new DeterministicSeed(split,null,password, MnemonicCode.BIP39_STANDARDISATION_TIME_SECS);
         DeterministicKey masterKey = HDKeyDerivation.createMasterPrivateKey(seed.getSeedBytes());
         final String xprv = masterKey.serializePrivB58(MainNetParams.get());
-        return getMasterPrivateKey(xprv);
+        return getMasterPrivateKey(xprv, cryptoCurrency);
     }
 
     @Override
-    public MasterPrivateKeyBTC getMasterPrivateKey(String xprv) {
-        return new MasterPrivateKeyBTC(xprv);
+    public IMasterPrivateKey getMasterPrivateKey(String xprv, String cryptoCurrency) {
+        return new MasterPrivateKeyLTC(xprv);
     }
 
     @Override
@@ -73,7 +72,7 @@ public class WalletToolsLTC implements IWalletTools {
         masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
 
         final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(PURPOSE_BIP44, true));
-        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(COIN_TYPE_BITCOIN, true));
+        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(COIN_TYPE_LITECOIN, true));
         final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
         final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
         final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
@@ -83,14 +82,14 @@ public class WalletToolsLTC implements IWalletTools {
 
     @Override
     public String getWalletAddressFromAccountXPUB(String accountXPUB, String cryptoCurrency, int chainIndex, int index) {
-        if (!accountXPUB.startsWith("xpub")) {
+        if (!accountXPUB.startsWith("Ltub")) {
             return null;
         }
-        byte[] serializedKey = org.bitcoinj.core.Base58.decodeChecked(accountXPUB);
+        byte[] serializedKey = org.litecoinj.core.Base58.decodeChecked(accountXPUB);
         ByteBuffer buffer = ByteBuffer.wrap(serializedKey);
         int header = buffer.getInt();
         if(header != MainNetParams.get().getBip32HeaderPriv() && header != MainNetParams.get().getBip32HeaderPub()) {
-            throw new IllegalArgumentException("Unknown header bytes in xpub: " + accountXPUB);
+            throw new IllegalArgumentException("Unknown header bytes in Ltub: " + accountXPUB);
         } else {
             boolean pub = header == MainNetParams.get().getBip32HeaderPub();
             if (pub) {
@@ -147,6 +146,7 @@ public class WalletToolsLTC implements IWalletTools {
         DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
         return (new Address(MainNetParams.get(),dp.getKey().getPubKeyHash())) +"";
     }
+
 
     public static DeterministicKey createMasterPubKeyFromPubB58(String xpubstr) throws AddressFormatException
     {

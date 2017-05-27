@@ -11,7 +11,7 @@ public class WalletToolsExample {
     public static void main(String[] args) {
         IWalletTools wt = new WalletTools();
         String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
-        final IMasterPrivateKey mKey = wt.getMasterPrivateKey("letter advice cage absurd amount doctor acoustic avoid letter advice cage above", "TREZOR");
+        final IMasterPrivateKey mKey = wt.getMasterPrivateKey("letter advice cage absurd amount doctor acoustic avoid letter advice cage above", "TREZOR", cryptoCurrency);
         System.out.println("mKey = " + mKey);
         final String xpub = mKey.getXPUB();
         System.out.println("xpub = " + xpub);

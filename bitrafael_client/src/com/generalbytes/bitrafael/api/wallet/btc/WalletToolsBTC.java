@@ -51,7 +51,7 @@ public class WalletToolsBTC implements IWalletTools {
         return null;
     }
 
-    public MasterPrivateKeyBTC getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password){
+    public MasterPrivateKeyBTC getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency){
         if (password == null) {
             password = "";
         }
@@ -59,11 +59,11 @@ public class WalletToolsBTC implements IWalletTools {
         DeterministicSeed seed = new DeterministicSeed(split,null,password, MnemonicCode.BIP39_STANDARDISATION_TIME_SECS);
         DeterministicKey masterKey = HDKeyDerivation.createMasterPrivateKey(seed.getSeedBytes());
         final String xprv = masterKey.serializePrivB58(MainNetParams.get());
-        return getMasterPrivateKey(xprv);
+        return getMasterPrivateKey(xprv,cryptoCurrency);
     }
 
     @Override
-    public MasterPrivateKeyBTC getMasterPrivateKey(String xprv) {
+    public MasterPrivateKeyBTC getMasterPrivateKey(String xprv, String cryptoCurrency) {
         return new MasterPrivateKeyBTC(xprv);
     }
 
