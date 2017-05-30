@@ -16,7 +16,7 @@
  *
  ************************************************************************************/
 
-package com.generalbytes.bitrafael.api.examples;
+package com.generalbytes.bitrafael.api.examples.bitcoin;
 
 import com.generalbytes.bitrafael.api.client.Client;
 import com.generalbytes.bitrafael.api.client.IClient;
@@ -34,7 +34,7 @@ import java.util.List;
 
 public class ClientExample {
     public static void main(String[] args) {
-        String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
+        String cryptoCurrency = IClient.BTC;
         IClient c = new Client("https://coin.cz", cryptoCurrency);
         final String testXpub = "xpub6CLuyGaJwJngMH6H7v7NGV4jtjwN7JS7QNH6p9TJ2SPEVCvwSaeL9nm6y3zjvV5M4eKPJEzRHyiTLq2probsxzdyxEj2yb17HiEsBXbJXQc";
         final AccountBalance account = c.getAccountBalance(testXpub);

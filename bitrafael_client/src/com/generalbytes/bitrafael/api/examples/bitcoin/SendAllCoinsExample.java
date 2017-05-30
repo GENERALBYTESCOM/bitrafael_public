@@ -15,7 +15,7 @@
  * Web      :  http://www.generalbytes.com
  *
  ************************************************************************************/
-package com.generalbytes.bitrafael.api.examples;
+package com.generalbytes.bitrafael.api.examples.bitcoin;
 
 import com.generalbytes.bitrafael.api.client.Client;
 import com.generalbytes.bitrafael.api.client.IClient;
@@ -28,7 +28,7 @@ public class SendAllCoinsExample {
     public static void main(String[] args) {
         WalletTools wt = new WalletTools();
         IClient c = new Client();
-        String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
+        String cryptoCurrency = IClient.BTC;
 
         final BigDecimal FEE = new BigDecimal("0.01");
         String privateKey = "5Jt8.............................................";

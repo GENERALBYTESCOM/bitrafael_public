@@ -16,8 +16,9 @@
  *
  ************************************************************************************/
 
-package com.generalbytes.bitrafael.api.examples;
+package com.generalbytes.bitrafael.api.examples.bitcoin;
 
+import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.watch.AbstractBlockchainWatcherTransactionListener;
 import com.generalbytes.bitrafael.api.watch.BlockchainWatcher;
 import com.generalbytes.bitrafael.api.watch.IBlockchainWatcherListener;
@@ -25,7 +26,7 @@ import com.generalbytes.bitrafael.api.watch.IBlockchainWatcherListener;
 
 public class TransactionWatcherExample {
     public static void main(String[] args) {
-        String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
+        String cryptoCurrency = IClient.BTC;
         BlockchainWatcher bw = new BlockchainWatcher();
         bw.start();
         bw.addBlockchainListener(new IBlockchainWatcherListener() {

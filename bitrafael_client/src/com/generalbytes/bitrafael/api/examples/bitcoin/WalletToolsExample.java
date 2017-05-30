@@ -15,8 +15,9 @@
  * Web      :  http://www.generalbytes.com
  *
  ************************************************************************************/
-package com.generalbytes.bitrafael.api.examples;
+package com.generalbytes.bitrafael.api.examples.bitcoin;
 
+import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.IMasterPrivateKey;
 import com.generalbytes.bitrafael.api.wallet.IWalletTools;
 import com.generalbytes.bitrafael.api.wallet.WalletTools;
@@ -24,7 +25,7 @@ import com.generalbytes.bitrafael.api.wallet.WalletTools;
 public class WalletToolsExample {
     public static void main(String[] args) {
         IWalletTools wt = new WalletTools();
-        String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
+        String cryptoCurrency = IClient.BTC;
         final IMasterPrivateKey mKey = wt.getMasterPrivateKey("letter advice cage absurd amount doctor acoustic avoid letter advice cage above", "TREZOR", cryptoCurrency);
         System.out.println("mKey = " + mKey);
         final String xpub = mKey.getXPUB();

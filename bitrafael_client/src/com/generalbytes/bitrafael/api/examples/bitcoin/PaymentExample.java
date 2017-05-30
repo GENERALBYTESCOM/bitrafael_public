@@ -15,8 +15,9 @@
  * Web      :  http://www.generalbytes.com
  *
  ************************************************************************************/
-package com.generalbytes.bitrafael.api.examples;
+package com.generalbytes.bitrafael.api.examples.bitcoin;
 
+import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.payment.*;
 
 import java.math.BigDecimal;
@@ -24,7 +25,7 @@ import java.math.BigDecimal;
 
 public class PaymentExample {
     public static void main(String[] args) {
-        String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
+        String cryptoCurrency = IClient.BTC;
         String myTrezorAccountXpub = "xpub6CLuyGaJwJngMH6H7v7NGV4jtjwN7JS7QNH6p9TJ2SPEVCvwSaeL9nm6y3zjvV5M4eKPJEzRHyiTLq2probsxzdyxEj2yb17HiEsBXbJXQc";
         final PaymentRequest paymentRequest = PaymentMgr.getInstance().createPaymentRequest(
                 new PaymentRequestSpec(new BigDecimal("1"),new BigDecimal("0.05"), "USD", cryptoCurrency, myTrezorAccountXpub), new IPaymentListener() {

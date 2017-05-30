@@ -16,7 +16,7 @@
  *
  ************************************************************************************/
 
-package com.generalbytes.bitrafael.api.examples;
+package com.generalbytes.bitrafael.api.examples.bitcoin;
 
 import com.generalbytes.bitrafael.api.client.Client;
 import com.generalbytes.bitrafael.api.client.IClient;
@@ -31,7 +31,7 @@ public class Forwarder {
     public static void main(String[] args) {
         WalletTools wt = new WalletTools();
         BlockchainWatcher bw = new BlockchainWatcher();
-        final String cryptoCurrency = ExampleConfig.getConfig().getCryptoCurrency();
+        final String cryptoCurrency = IClient.BTC;
         final IClient c = new Client("https://coin.cz", cryptoCurrency);
 
         final String[] privatekeys = {
