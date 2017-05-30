@@ -38,4 +38,5 @@ public interface IWalletTools {
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency);
     public ISignature sign(String privateKey, byte[] hashToSign, String cryptoCurrency);
     boolean isAddressValid(String address, String cryptoCurrency);
+    Classification classify(String input);
 }

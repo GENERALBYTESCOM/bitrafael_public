@@ -19,6 +19,7 @@
 package com.generalbytes.bitrafael.api.wallet.ltc;
 
 import com.generalbytes.bitrafael.api.client.IClient;
+import com.generalbytes.bitrafael.api.wallet.Classification;
 import com.generalbytes.bitrafael.api.wallet.IMasterPrivateKey;
 import com.generalbytes.bitrafael.api.wallet.ISignature;
 import com.generalbytes.bitrafael.api.wallet.IWalletTools;
@@ -212,5 +213,60 @@ public class WalletToolsLTC implements IWalletTools {
         }
     }
 
+    @Override
+    public Classification classify(String input) {
+        if (input == null) {
+            return new Classification(Classification.TYPE_UNKNOWN);
+        }
+        input = input.trim().replace("\n","");
+        if (input.contains(":")) {
+            //remove leading protocol
+            input = input.substring(input.indexOf(":") + 1);
+        }
+
+        //remove leading slashes
+        if (input.startsWith("//")) {
+            input = input.substring("//".length());
+        }
+
+        //remove things after
+        if (input.contains("?")) {
+            input = input.substring(0,input.indexOf("?"));
+        }
+
+        if ((input.startsWith("L") || input.startsWith("3") || input.startsWith("M")) &&  input.length() <= 34) {
+            //most likely address lets check it
+            try {
+                if (isAddressValidInternal(input)) {
+                    return new Classification(Classification.TYPE_ADDRESS,IClient.LTC,input);
+                }
+            } catch (AddressFormatException e) {
+                e.printStackTrace();
+            }
+        }else if ((input.startsWith("6")) && input.length() >= 51) {
+            //most likely private key
+            try {
+                DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
+                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.LTC,input);
+            } catch (AddressFormatException e) {
+                e.printStackTrace();
+            }
+        }else if (input.startsWith("Ltub")) {
+            return new Classification(Classification.TYPE_XPUB,IClient.LTC,input);
+        }
+
+        return new Classification(Classification.TYPE_UNKNOWN);
+
+    }
+
+    private static boolean isAddressValidInternal(String address) {
+        try {
+            Base58.decodeChecked(address);
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 
 }

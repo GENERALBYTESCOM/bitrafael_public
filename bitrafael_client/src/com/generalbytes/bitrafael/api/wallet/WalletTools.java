@@ -87,4 +87,28 @@ public class WalletTools implements IWalletTools{
     public boolean isAddressValid(String address, String cryptoCurrency) {
         return tools.get(cryptoCurrency).isAddressValid(address, cryptoCurrency);
     }
+
+    @Override
+    public Classification classify(String input) {
+        if (input == null) {
+            return new Classification(Classification.TYPE_UNKNOWN);
+        }
+        input = input.trim();
+        if (input.toLowerCase().startsWith("bitcoin")) {
+            return tools.get(IClient.BTC).classify(input);
+        }else if (input.toLowerCase().startsWith("litecoin")) {
+            return tools.get(IClient.LTC).classify(input);
+        }
+        //not specified
+        Classification result = new Classification(Classification.TYPE_UNKNOWN);
+        if (input.startsWith("1") || input.startsWith("3") || input.startsWith("5") || input.startsWith("xpub")) {
+            result = tools.get(IClient.BTC).classify(input);
+        }
+
+        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("L") || input.startsWith("3") || input.startsWith("6") || input.startsWith("M") || input.startsWith("Ltub"))) {
+            return tools.get(IClient.LTC).classify(input);
+        }
+
+        return result;
+    }
 }

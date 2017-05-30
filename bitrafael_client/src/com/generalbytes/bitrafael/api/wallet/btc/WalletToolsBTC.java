@@ -19,9 +19,7 @@
 package com.generalbytes.bitrafael.api.wallet.btc;
 
 import com.generalbytes.bitrafael.api.client.IClient;
-import com.generalbytes.bitrafael.api.wallet.IMasterPrivateKey;
-import com.generalbytes.bitrafael.api.wallet.ISignature;
-import com.generalbytes.bitrafael.api.wallet.IWalletTools;
+import com.generalbytes.bitrafael.api.wallet.*;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -211,5 +209,59 @@ public class WalletToolsBTC implements IWalletTools {
         }
     }
 
+    @Override
+    public Classification classify(String input) {
+        if (input == null) {
+            return new Classification(Classification.TYPE_UNKNOWN);
+        }
+        input = input.trim().replace("\n","");
+        if (input.contains(":")) {
+            //remove leading protocol
+            input = input.substring(input.indexOf(":") + 1);
+        }
 
+        //remove leading slashes
+        if (input.startsWith("//")) {
+            input = input.substring("//".length());
+        }
+
+        //remove things after
+        if (input.contains("?")) {
+            input = input.substring(0,input.indexOf("?"));
+        }
+
+        if ((input.startsWith("1") || input.startsWith("3")) &&  input.length() <= 34) {
+            //most likely address lets check it
+            try {
+                if (isAddressValidInternal(input)) {
+                    return new Classification(Classification.TYPE_ADDRESS,IClient.BTC,input);
+                }
+            } catch (AddressFormatException e) {
+                e.printStackTrace();
+            }
+        }else if ((input.startsWith("5") || input.startsWith("L") || input.startsWith("K")) && input.length() >= 51) {
+            //most likely bitcoin private key
+            try {
+                DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
+                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.BTC,input);
+            } catch (AddressFormatException e) {
+                e.printStackTrace();
+            }
+        }else if (input.startsWith("xpub")) {
+            return new Classification(Classification.TYPE_XPUB,IClient.BTC,input);
+        }
+
+        return new Classification(Classification.TYPE_UNKNOWN);
+
+    }
+
+    private static boolean isAddressValidInternal(String address) {
+        try {
+            Base58.decodeChecked(address);
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }
