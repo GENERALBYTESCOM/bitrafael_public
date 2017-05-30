@@ -28,6 +28,6 @@ public class ExampleConfig {
     }
 
     public String getCryptoCurrency() {
-        return IClient.LTC;
+        return IClient.BTC;
     }
 }

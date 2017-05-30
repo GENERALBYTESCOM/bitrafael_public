@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WalletTools implements IWalletTools{
-    private Map<String,IWalletTools> tools = new HashMap<>();
+    private Map<String,IWalletTools> tools = new HashMap<String,IWalletTools>();
 
     public WalletTools() {
         tools.put(IClient.BTC,new WalletToolsBTC());

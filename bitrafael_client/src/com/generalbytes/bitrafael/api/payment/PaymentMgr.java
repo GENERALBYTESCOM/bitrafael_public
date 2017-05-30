@@ -55,7 +55,7 @@ public class PaymentMgr implements IPaymentMgr{
     private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
     private PaymentMgr() {
-        clients = new HashMap<>();
+        clients = new HashMap<String,IClient>();
         clients.put(IClient.BTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.BTC));
         clients.put(IClient.LTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.LTC));
 

@@ -133,8 +133,8 @@ public class BlockchainWatcher implements IBlockchainWatcher{
     }
 
     public BlockchainWatcher(String[] cryptoCurrencies) {
-        lastBlockChainHeights = new HashMap<>();
-        clients = new HashMap<>();
+        lastBlockChainHeights = new HashMap<String,Long>();
+        clients = new HashMap<String,IClient>();
         for (int i = 0; i < cryptoCurrencies.length; i++) {
             String cryptoCurrency = cryptoCurrencies[i];
             if (IClient.BTC.equalsIgnoreCase(cryptoCurrency)) {
