@@ -247,7 +247,7 @@ public class WalletToolsLTC implements IWalletTools {
             //most likely private key
             try {
                 DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
-                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.LTC,input);
+                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.LTC,dp.toString());
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }

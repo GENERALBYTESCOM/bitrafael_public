@@ -93,7 +93,7 @@ public class WalletTools implements IWalletTools{
         if (input == null) {
             return new Classification(Classification.TYPE_UNKNOWN);
         }
-        input = input.trim();
+        input = input.trim().replace("\n","");
         if (input.toLowerCase().startsWith("bitcoin")) {
             return tools.get(IClient.BTC).classify(input);
         }else if (input.toLowerCase().startsWith("litecoin")) {

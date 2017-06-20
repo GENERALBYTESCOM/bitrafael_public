@@ -243,7 +243,7 @@ public class WalletToolsBTC implements IWalletTools {
             //most likely bitcoin private key
             try {
                 DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
-                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.BTC,input);
+                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.BTC,dp.toString());
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }
