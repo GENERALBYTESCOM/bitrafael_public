@@ -17,13 +17,17 @@
  ************************************************************************************/
 package com.generalbytes.bitrafael.api.examples.litecoin;
 
+import com.generalbytes.bitrafael.api.client.IClient;
+import com.generalbytes.bitrafael.api.wallet.Classification;
 import com.generalbytes.bitrafael.api.wallet.WalletTools;
 
 
 public class ClassificationExample {
     public static void main(String[] args) {
         String[] testStrings = {
-                "5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF",
+                "KxMvHfvs7xi75388Y1h1i1CAbWHnRvaqm243b3bTm1uN79goSeK6",//1GBU9jDHaezEQCZ7tcWW2fqgxrKpgMhmm2
+                "L3B17K8TvDLBsyozrBUAer79CB19N5d5NtUBuUsnFFtBmycyJvYx", //149eZmWi1VR4Po1yJVE1hWQ5f14ZyrpxDW
+                "5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF", //1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj
                 "1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj",
                 "xpub6EVt68TrKV5YPXF9oXfEPsqWc5sRjLFQg7GAtLKwF4oss4sZKRvjQqNGYk4ZvrsC3hzuL87LvB7phibDDQSuCEeTRii4ST8Y28DuyfoFxJB",
                 "LiY355FRj3C3F9XK1YjBHAhw4Xy7gEYU6o",
@@ -39,7 +43,18 @@ public class ClassificationExample {
         WalletTools wt = new WalletTools();
         for (int i = 0; i < testStrings.length; i++) {
             String testString = testStrings[i];
-            System.out.println("               " + testString + "  = " + wt.classify(testString));
+            final Classification classify = wt.classify(testString);
+            String note = "";
+            if (classify != null && classify.getType() == Classification.TYPE_PRIVATE_KEY_IN_WIF) {
+                if (classify.getCryptoCurrency().equalsIgnoreCase(IClient.BTC)) {
+                    org.bitcoinj.core.DumpedPrivateKey dp = new org.bitcoinj.core.DumpedPrivateKey(org.bitcoinj.params.MainNetParams.get(),testString);
+                    note = " >>> " + new org.bitcoinj.core.Address(org.bitcoinj.params.MainNetParams.get(),dp.getKey().getPubKeyHash());
+                }else if (classify.getCryptoCurrency().equalsIgnoreCase(IClient.LTC)) {
+                    org.litecoinj.core.DumpedPrivateKey dp = new org.litecoinj.core.DumpedPrivateKey(org.litecoinj.params.MainNetParams.get(),classify.getCleanData());
+                    note = " >>> " + new org.litecoinj.core.Address(org.litecoinj.params.MainNetParams.get(),dp.getKey().getPubKeyHash());
+                }
+            }
+            System.out.println("               " + testString + "  = " + classify + " "+ note);
         }
     }
 }

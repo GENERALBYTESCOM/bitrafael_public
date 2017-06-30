@@ -101,7 +101,7 @@ public class WalletTools implements IWalletTools{
         }
         //not specified
         Classification result = new Classification(Classification.TYPE_UNKNOWN);
-        if (input.startsWith("1") || input.startsWith("3") || input.startsWith("5") || input.startsWith("xpub")) {
+        if (input.startsWith("1") || input.startsWith("3") || input.startsWith("5") || (input.startsWith("K") && input.length() > 50) || (input.startsWith("L") && input.length() > 50) || input.startsWith("xpub")) {
             result = tools.get(IClient.BTC).classify(input);
         }
 
