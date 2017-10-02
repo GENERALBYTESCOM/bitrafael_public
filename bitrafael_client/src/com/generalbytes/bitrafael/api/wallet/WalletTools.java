@@ -88,6 +88,28 @@ public class WalletTools implements IWalletTools{
         return tools.get(cryptoCurrency).isAddressValid(address, cryptoCurrency);
     }
 
+
+    @Override
+    public Classification classify(String input, String cryptoCurrencyHint) {
+        if (input == null) {
+            return new Classification(Classification.TYPE_UNKNOWN);
+        }
+        input = input.trim().replace("\n","");
+
+        if (cryptoCurrencyHint == null) {
+            return classify(input);
+        }
+
+        Classification result = null;
+        if (IClient.BTC.equalsIgnoreCase(cryptoCurrencyHint)) {
+            result = tools.get(IClient.BTC).classify(input);
+        }else if (IClient.LTC.equalsIgnoreCase(cryptoCurrencyHint)) {
+            result = tools.get(IClient.LTC).classify(input);
+        }
+
+        return result;
+    }
+
     @Override
     public Classification classify(String input) {
         if (input == null) {
@@ -99,6 +121,7 @@ public class WalletTools implements IWalletTools{
         }else if (input.toLowerCase().startsWith("litecoin")) {
             return tools.get(IClient.LTC).classify(input);
         }
+
         //not specified
         Classification result = new Classification(Classification.TYPE_UNKNOWN);
         if (input.startsWith("1") || input.startsWith("3") || input.startsWith("5") || (input.startsWith("K") && input.length() > 50) || (input.startsWith("L") && input.length() > 50) || input.startsWith("xpub")) {

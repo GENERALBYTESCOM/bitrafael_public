@@ -210,6 +210,11 @@ public class WalletToolsBTC implements IWalletTools {
     }
 
     @Override
+    public Classification classify(String input, String cryptoCurrencyHint) {
+        return classify(input);
+    }
+
+    @Override
     public Classification classify(String input) {
         if (input == null) {
             return new Classification(Classification.TYPE_UNKNOWN);
