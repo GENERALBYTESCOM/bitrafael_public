@@ -130,7 +130,7 @@ public class WalletTools implements IWalletTools{
             result = tools.get(IClient.BTC).classify(input);
         }
 
-        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("L") || input.startsWith("3") || input.startsWith("6") || input.startsWith("M") || input.startsWith("Ltub"))) {
+        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("L") || input.startsWith("3") || input.startsWith("6") || input.startsWith("M") || input.startsWith("Ltub") || input.startsWith("T"))) {
             return tools.get(IClient.LTC).classify(input);
         }
 

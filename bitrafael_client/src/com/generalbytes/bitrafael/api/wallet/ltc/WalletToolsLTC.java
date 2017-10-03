@@ -250,7 +250,7 @@ public class WalletToolsLTC implements IWalletTools {
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }
-        }else if ((input.startsWith("6")) && input.length() >= 51) {
+        }else if (((input.startsWith("6")) && input.length() >= 51) || ((input.startsWith("T")) && input.length() >= 51))  {
             //most likely private key
             try {
                 DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);

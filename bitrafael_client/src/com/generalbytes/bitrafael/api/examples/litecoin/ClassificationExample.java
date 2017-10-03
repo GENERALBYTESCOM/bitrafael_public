@@ -40,6 +40,7 @@ public class ClassificationExample {
                 "bitcoin:1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj?amount=222&ddd=d33",
                 "iban:XE617J3HKGK4CG10FNU6YNJ68R5P9SEW27M", //ETH iban format
                 "MQH3zAjbbcaC36RNpLQhGDEcFMxbKziYro",
+                "T7oXc1BjCmaq3Hp6nnQhwKqZcPYZawBrgcMpucXCEzt7ByBqoZvx",
 
         };
         WalletTools wt = new WalletTools();
