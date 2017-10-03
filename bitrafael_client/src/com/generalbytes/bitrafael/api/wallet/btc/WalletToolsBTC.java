@@ -31,7 +31,9 @@ import org.bitcoinj.wallet.DeterministicSeed;
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class WalletToolsBTC implements IWalletTools {
 
@@ -268,5 +270,12 @@ public class WalletToolsBTC implements IWalletTools {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public Set<String> supportedCryptoCurrencies() {
+        final HashSet<String> result = new HashSet<String>();
+        result.add(IClient.BTC);
+        return result;
     }
 }

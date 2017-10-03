@@ -19,6 +19,8 @@
 package com.generalbytes.bitrafael.api.wallet;
 
 
+import java.util.Set;
+
 public interface IWalletTools {
     public static final int PURPOSE_BIP44 = 44 ;
     public static final int COIN_TYPE_BITCOIN = 0;
@@ -40,4 +42,5 @@ public interface IWalletTools {
     boolean isAddressValid(String address, String cryptoCurrency);
     Classification classify(String input);
     Classification classify(String input, String cryptoCurrencyHint);
+    Set<String> supportedCryptoCurrencies();
 }

@@ -34,7 +34,9 @@ import org.litecoinj.wallet.DeterministicSeed;
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class WalletToolsLTC implements IWalletTools {
 
@@ -274,4 +276,10 @@ public class WalletToolsLTC implements IWalletTools {
         return true;
     }
 
+    @Override
+    public Set<String> supportedCryptoCurrencies() {
+        final HashSet<String> result = new HashSet<String>();
+        result.add(IClient.LTC);
+        return result;
+    }
 }

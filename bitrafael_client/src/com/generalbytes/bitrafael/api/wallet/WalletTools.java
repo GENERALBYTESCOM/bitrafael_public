@@ -24,7 +24,9 @@ import com.generalbytes.bitrafael.api.wallet.btc.WalletToolsBTC;
 import com.generalbytes.bitrafael.api.wallet.ltc.WalletToolsLTC;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class WalletTools implements IWalletTools{
     private Map<String,IWalletTools> tools = new HashMap<String,IWalletTools>();
@@ -100,7 +102,7 @@ public class WalletTools implements IWalletTools{
             return classify(input);
         }
 
-        Classification result = null;
+        Classification result = new Classification(Classification.TYPE_UNKNOWN);
         if (IClient.BTC.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = tools.get(IClient.BTC).classify(input);
         }else if (IClient.LTC.equalsIgnoreCase(cryptoCurrencyHint)) {
@@ -134,4 +136,11 @@ public class WalletTools implements IWalletTools{
 
         return result;
     }
-}
+
+    @Override
+    public Set<String> supportedCryptoCurrencies() {
+        final HashSet<String> result = new HashSet<String>();
+        result.add(IClient.LTC);
+        result.add(IClient.BTC);
+        return result;
+    }}
