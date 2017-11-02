@@ -105,4 +105,15 @@ public interface IBitrafaelAPI {
     @Path("/currencies/convert")
     public ConvertAmountsResponse convertAmounts(List<AmountsPair> amountsPairs);
 
+    @GET
+    @Path("/currencies/list")
+    public CurrenciesResponse getCurrencies();
+
+    @GET
+    @Path("/currencies/quotes?source={source}")
+    public QuotesResponse getQuotes(@PathParam("source") String source);
+
+
+
+
 }
