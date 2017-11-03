@@ -84,7 +84,7 @@ public class CurrencyRateSource implements IRatesProvider{
 
         final QuotesResponse resp = cache.get(fromCurrency);
         if (resp != null) {
-            if (System.currentTimeMillis()/1000 < (resp.getTimestamp() + 30 * 60)) {
+            if (System.currentTimeMillis() < (resp.getTimestamp() + 60 * 60 * 1000)) {
                 return resp.getQuotes().get(fromCurrency + toCurrency);
             }
         }
@@ -92,25 +92,31 @@ public class CurrencyRateSource implements IRatesProvider{
 
         final QuotesResponse quotes = api.getQuotes(fromCurrency);
         if (quotes != null && quotes.isSuccess()) {
+            quotes.setTimestamp(System.currentTimeMillis());
             cache.put(fromCurrency,quotes);
             return quotes.getQuotes().get(fromCurrency+toCurrency);
         }
         return null;
     }
 
-    public static void main(String[] args) {
-        System.setProperty("org.slf4j.simpleLogger.log.si.mazi.rescu","trace");
-
-        CurrencyRateSource r = new CurrencyRateSource();
-        final Set<String> fiatCurrenciesFrom = r.getFiatCurrenciesFrom();
-        for (String s : fiatCurrenciesFrom) {
-            System.out.println("s = " + s);
-        }
-
-        BigDecimal rate = r.getRate("USD","CZK");
-        System.out.println("rate = " + rate);
-
-        rate = r.getRate("USD","CZK");
-        System.out.println("rate = " + rate);
-    }
+//    public static void main(String[] args) {
+//        System.setProperty("org.slf4j.simpleLogger.log.si.mazi.rescu","trace");
+//
+//        CurrencyRateSource r = new CurrencyRateSource();
+//        final Set<String> fiatCurrenciesFrom = r.getFiatCurrenciesFrom();
+//        for (String s : fiatCurrenciesFrom) {
+//            System.out.println("s = " + s);
+//        }
+//
+//        BigDecimal rate = r.getRate("USD","CZK");
+//        try {
+//            Thread.sleep(60 * 1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println("rate = " + rate);
+//
+//        rate = r.getRate("USD","EUR");
+//        System.out.println("rate = " + rate);
+//    }
 }
