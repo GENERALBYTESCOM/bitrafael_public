@@ -41,6 +41,7 @@ public class ClassificationExample {
                 "iban:XE617J3HKGK4CG10FNU6YNJ68R5P9SEW27M", //ETH iban format
                 "MQH3zAjbbcaC36RNpLQhGDEcFMxbKziYro",
                 "T7oXc1BjCmaq3Hp6nnQhwKqZcPYZawBrgcMpucXCEzt7ByBqoZvx",
+                "xpub6CZZ5vfHsskmdyAiSjQfxBLNg5bwssoKe1dm2B3HGx1Efo2wCMsm6Wr17LEVMzJq3UbyFXg3RjC7EJ5qxz2pG9FkZuyzbsHd1aGwL2WF85A",
 
         };
         WalletTools wt = new WalletTools();
