@@ -1,0 +1,40 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+group = projectGroup
+version = projectVersion
+
+repositories {
+    //jcenter()
+    maven {
+        credentials {
+            username GBArtifactoryUser
+            password GBArtifactoryPassword
+        }
+        url 'https://source.generalbytes.com/artifactory/jcenter-virt'
+    }
+}
+
+dependencies {
+    compile project(':bitrafael-common')
+    compile project(':bitrafael-trim')
+    compile(group: 'com.github.mmazi', name: 'rescu', version: '1.7.2')
+}
+
+publishing {
+    repositories {
+        maven {
+            credentials {
+                username GBArtifactoryUser
+                password GBArtifactoryPassword
+            }
+            url 'https://source.generalbytes.com/artifactory/gradle-dev-local'
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}

@@ -1,0 +1,231 @@
+group = projectGroup
+version = projectVersion
+
+buildscript {
+    repositories {
+//        jcenter()
+        maven {
+            credentials {
+                username GBArtifactoryUser
+                password GBArtifactoryPassword
+            }
+            url 'https://source.generalbytes.com/artifactory/jcenter-virt'
+        }
+    }
+    dependencies {
+        classpath(group: 'net.sf.proguard', name: 'proguard-gradle', version: '5.3.3')
+    }
+}
+
+repositories {
+//        jcenter()
+    maven {
+        credentials {
+            username GBArtifactoryUser
+            password GBArtifactoryPassword
+        }
+        url 'https://source.generalbytes.com/artifactory/jcenter-virt'
+    }
+    maven {
+        credentials {
+            username GBArtifactoryUser
+            password GBArtifactoryPassword
+        }
+        url 'https://source.generalbytes.com/artifactory/jcenter-virt'
+    }
+}
+
+configurations {
+    trimmedBitcoinJ
+    trimmedLitecoinJ
+    bitcoinJ {
+        transitive false
+    }
+    litecoinJ {
+        transitive false
+    }
+    'default' {}
+}
+
+dependencies {
+    bitcoinJ(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1', classifier: 'bundled')
+    litecoinJ(group: 'org.litecoinj', name: 'litecoinj-core', version: '0.15-SNAPSHOT')
+}
+
+['bitcoinJ', 'litecoinJ'].each { sourceConfName ->
+    String trimmedConfName = "trimmed${sourceConfName.capitalize()}"
+    String trimTaskName = "trim${sourceConfName.capitalize()}"
+
+    def newTask = project.task(trimTaskName, type: proguard.gradle.ProGuardTask) {
+        def inJarFile = configurations."${sourceConfName}".singleFile
+        injars inJarFile
+        outjars "build/proguard/${trimmedConfName}/${inJarFile.name}"
+        printmapping "build/proguard/${trimmedConfName}.map"
+
+        libraryjars files("${System.env.JDK_HOME}/jre/lib/rt.jar", "${System.env.JDK_HOME}/jre/lib/jce.jar")
+
+        printseeds
+        dontwarn
+
+        renamesourcefileattribute 'GB'
+        dontobfuscate
+        dontoptimize
+        optimizations 'class/marking/final, method/marking/private, method/marking/static'
+
+        keepclassmembers '''enum ** {
+            public static **[] values();
+            public static ** valueOf(java.lang.String);
+        }'''
+
+        keepclassmembers '''enum *$* {
+            public static **[] values();
+            public static ** valueOf(java.lang.String);
+        }'''
+
+        keepclassmembers '''class ** implements java.io.Serializable {
+            static final long serialVersionUID;
+            static final java.io.ObjectStreamField[] serialPersistentFields;
+            private void writeObject(java.io.ObjectOutputStream);
+            private void readObject(java.io.ObjectInputStream);
+            java.lang.Object writeReplace();
+            java.lang.Object readResolve();
+        }'''
+
+        keep '''class com.google.common.collect.ImmutableList {
+            <fields>;
+            <methods>;
+        }'''
+
+        keep '''class  org.bitcoinj.params.MainNetParams {
+            <fields>;
+            <methods>;
+        } '''
+        keep '''class  org.litecoinj.params.MainNetParams {
+            <fields>;
+            <methods>;
+        } '''
+        keep '''class  org.bitcoinj.core.DumpedPrivateKey {
+            <fields>;
+            <methods>;
+        } '''
+        keep '''class  org.litecoinj.core.DumpedPrivateKey {
+            <fields>;
+            <methods>;
+        } '''
+        keep '''class  org.bitcoinj.core.Address {
+            <fields>;
+            <methods>;
+        } '''
+        keep '''class  org.litecoinj.core.Address {
+            <fields>;
+            <methods>;
+        } '''
+        keep '''class  org.bitcoinj.core.Utils {
+            <fields>;
+            <methods>;
+        } '''
+        keep '''class  org.litecoinj.core.Utils {
+            <fields>;
+            <methods>;
+        } '''
+        keep '''class  org.bitcoinj.core.Coin {
+            <fields>;
+            <methods>;
+        } '''
+        keep '''class  org.litecoinj.core.Coin {
+            <fields>;
+            <methods>;
+        } '''
+        keep '''class org.bitcoinj.core.Sha256Hash {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.litecoinj.core.Sha256Hash {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.bitcoinj.core.ECKey {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.litecoinj.core.ECKey {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.bitcoinj.core.ECKey$ECDSASignature {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.litecoinj.core.ECKey$ECDSASignature {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.bitcoinj.wallet.DeterministicSeed {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.litecoinj.wallet.DeterministicSeed {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class com.google.common.base.Joiner {
+            <fields>;
+            <methods>;
+        } '''
+        keep '''class com.google.common.base.Splitter {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.bitcoinj.crypto.DeterministicKey {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.litecoinj.crypto.DeterministicKey {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.bitcoinj.crypto.MnemonicCode {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.litecoinj.crypto.MnemonicCode {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.bitcoinj.crypto.MnemonicException {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.litecoinj.crypto.MnemonicException {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.bitcoinj.crypto.HDKeyDerivation {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.litecoinj.crypto.HDKeyDerivation {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class com.google.common.base.Ascii {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class org.slf4j.Logger {
+            <fields>;
+            <methods>;
+        }'''
+        keep '''class com.google.common.base.MoreObjects {
+            <fields>;
+            <methods>;
+        }'''
+
+        keepclassmembers 'class *'
+        keepclassmembernames 'class *'
+        keepattributes 'class *'
+    }
+
+    artifacts.add(trimmedConfName, [file: newTask.outputs.files.getSingleFile(),builtBy: newTask])
+    artifacts.add('default', [file: newTask.outputs.files.getSingleFile(),builtBy: newTask])
+}

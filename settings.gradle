@@ -1,0 +1,4 @@
+include 'bitrafael-common'
+include 'bitrafael-client'
+include 'bitrafael-trim'
+include 'colorledger'
