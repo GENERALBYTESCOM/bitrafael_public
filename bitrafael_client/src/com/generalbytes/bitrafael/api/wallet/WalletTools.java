@@ -21,6 +21,7 @@ package com.generalbytes.bitrafael.api.wallet;
 
 import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.btc.WalletToolsBTC;
+import com.generalbytes.bitrafael.api.wallet.dash.WalletToolsDASH;
 import com.generalbytes.bitrafael.api.wallet.ltc.WalletToolsLTC;
 
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public class WalletTools implements IWalletTools{
     public WalletTools() {
         tools.put(IClient.BTC,new WalletToolsBTC());
         tools.put(IClient.LTC,new WalletToolsLTC());
+        tools.put(IClient.DASH,new WalletToolsDASH());
     }
 
     private IWalletTools getDefaultWalletTools() {
@@ -107,6 +109,8 @@ public class WalletTools implements IWalletTools{
             result = tools.get(IClient.BTC).classify(input);
         }else if (IClient.LTC.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = tools.get(IClient.LTC).classify(input);
+        }else if (IClient.DASH.equalsIgnoreCase(cryptoCurrencyHint)) {
+            result = tools.get(IClient.DASH).classify(input);
         }
 
         return result;
@@ -122,6 +126,8 @@ public class WalletTools implements IWalletTools{
             return tools.get(IClient.BTC).classify(input);
         }else if (input.toLowerCase().startsWith("litecoin")) {
             return tools.get(IClient.LTC).classify(input);
+        }else if (input.toLowerCase().startsWith("dash")) {
+            return tools.get(IClient.DASH).classify(input);
         }
 
         //not specified
@@ -134,6 +140,10 @@ public class WalletTools implements IWalletTools{
             return tools.get(IClient.LTC).classify(input);
         }
 
+        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("X"))) {
+            return tools.get(IClient.DASH).classify(input);
+        }
+
         return result;
     }
 
@@ -142,5 +152,6 @@ public class WalletTools implements IWalletTools{
         final HashSet<String> result = new HashSet<String>();
         result.add(IClient.LTC);
         result.add(IClient.BTC);
+        result.add(IClient.DASH);
         return result;
     }}
