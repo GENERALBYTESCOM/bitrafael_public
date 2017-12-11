@@ -21,6 +21,7 @@ package com.generalbytes.bitrafael.api.client;
 
 import com.generalbytes.bitrafael.api.IBitrafaelAPI;
 import com.generalbytes.bitrafael.api.IBitrafaelBitcoinAPI;
+import com.generalbytes.bitrafael.api.IBitrafaelDashAPI;
 import com.generalbytes.bitrafael.api.IBitrafaelLitecoinAPI;
 import com.generalbytes.bitrafael.api.dto.*;
 import com.generalbytes.bitrafael.api.dto.rest.*;
@@ -61,6 +62,8 @@ public class Client implements IClient {
             api = RestProxyFactory.createProxy(IBitrafaelBitcoinAPI.class, server + "/api");
         }else if (LTC.equalsIgnoreCase(cryptoCurrency)) {
             api = RestProxyFactory.createProxy(IBitrafaelLitecoinAPI.class, server + "/api");
+        }else if (DASH.equalsIgnoreCase(cryptoCurrency)) {
+            api = RestProxyFactory.createProxy(IBitrafaelDashAPI.class, server + "/api");
         }
     }
 
