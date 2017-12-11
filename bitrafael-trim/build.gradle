@@ -39,10 +39,10 @@ configurations {
     trimmedBitcoinJ
     trimmedLitecoinJ
     bitcoinJ {
-        transitive false
+        transitive=false
     }
     litecoinJ {
-        transitive false
+        transitive=false
     }
     'default' {}
 }
