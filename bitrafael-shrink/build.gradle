@@ -1,3 +1,5 @@
+apply plugin: 'maven-publish'
+
 group = projectGroup
 version = projectVersion
 
@@ -36,8 +38,8 @@ repositories {
 }
 
 configurations {
-    trimmedBitcoinJ
-    trimmedLitecoinJ
+    shrinkedBitcoinJ
+    shrinkedLitecoinJ
     bitcoinJ {
         transitive=false
     }
@@ -53,14 +55,14 @@ dependencies {
 }
 
 ['bitcoinJ', 'litecoinJ'].each { sourceConfName ->
-    String trimmedConfName = "trimmed${sourceConfName.capitalize()}"
-    String trimTaskName = "trim${sourceConfName.capitalize()}"
+    String shrinkedConfName = "shrinked${sourceConfName.capitalize()}"
+    String shrinkTaskName = "shrink${sourceConfName.capitalize()}"
 
-    def newTask = project.task(trimTaskName, type: proguard.gradle.ProGuardTask) {
+    def newTask = project.task(shrinkTaskName, type: proguard.gradle.ProGuardTask) {
         def inJarFile = configurations."${sourceConfName}".singleFile
         injars inJarFile
-        outjars "build/proguard/${trimmedConfName}/${inJarFile.name}"
-        printmapping "build/proguard/${trimmedConfName}.map"
+        outjars "build/proguard/${shrinkedConfName}/${inJarFile.name}"
+        printmapping "build/proguard/${shrinkedConfName}.map"
 
         libraryjars files("${System.env.JDK_HOME}/jre/lib/rt.jar", "${System.env.JDK_HOME}/jre/lib/jce.jar")
 
@@ -226,6 +228,30 @@ dependencies {
         keepattributes 'class *'
     }
 
-    artifacts.add(trimmedConfName, [file: newTask.outputs.files.getSingleFile(),builtBy: newTask])
-    artifacts.add('default', [file: newTask.outputs.files.getSingleFile(),builtBy: newTask])
+    artifacts.add(shrinkedConfName, [file: newTask.outputs.files.getSingleFile(), builtBy: newTask])
+    artifacts.add('default', [file: newTask.outputs.files.getSingleFile(), builtBy: newTask])
 }
+
+publishing {
+    repositories {
+        maven {
+            credentials {
+                username GBArtifactoryUser
+                password GBArtifactoryPassword
+            }
+            url 'https://source.generalbytes.com/artifactory/gradle-dev-local'
+        }
+    }
+
+    publications.create('shrinkedBitcoinJ', MavenPublication) {
+        groupId 'org.bitcoinj'
+        artifactId 'bitcoinj-core'
+        version '0.14.1'
+
+        artifact(shrinkBitcoinJ.outputs.files.getSingleFile()) {
+            classifier 'bundled+shrinked'
+            builtBy shrinkBitcoinJ
+        }
+    }
+}
+
