@@ -16,7 +16,7 @@
  *
  ************************************************************************************/
 
-package com.generalbytes.bitrafael.api.wallet.ltc;
+package com.generalbytes.bitrafael.api.wallet.dash;
 
 import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.Classification;
@@ -26,10 +26,10 @@ import com.generalbytes.bitrafael.api.wallet.IWalletTools;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
-import org.litecoinj.core.*;
-import org.litecoinj.crypto.*;
-import org.litecoinj.params.MainNetParams;
-import org.litecoinj.wallet.DeterministicSeed;
+import org.dashj.core.*;
+import org.dashj.crypto.*;
+import org.dashj.params.MainNetParams;
+import org.dashj.wallet.DeterministicSeed;
 
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
@@ -38,7 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class WalletToolsLTC implements IWalletTools {
+public class WalletToolsDASH implements IWalletTools {
 
     @Override
     public String generateSeedMnemonicSeparatedBySpaces() {
@@ -54,7 +54,7 @@ public class WalletToolsLTC implements IWalletTools {
         return null;
     }
 
-    public IMasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency){
+    public MasterPrivateKeyDASH getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency){
         if (password == null) {
             password = "";
         }
@@ -62,12 +62,12 @@ public class WalletToolsLTC implements IWalletTools {
         DeterministicSeed seed = new DeterministicSeed(split,null,password, MnemonicCode.BIP39_STANDARDISATION_TIME_SECS);
         DeterministicKey masterKey = HDKeyDerivation.createMasterPrivateKey(seed.getSeedBytes());
         final String xprv = masterKey.serializePrivB58(MainNetParams.get());
-        return getMasterPrivateKey(xprv, cryptoCurrency);
+        return getMasterPrivateKey(xprv,cryptoCurrency);
     }
 
     @Override
-    public IMasterPrivateKey getMasterPrivateKey(String xprv, String cryptoCurrency) {
-        return new MasterPrivateKeyLTC(xprv);
+    public MasterPrivateKeyDASH getMasterPrivateKey(String xprv, String cryptoCurrency) {
+        return new MasterPrivateKeyDASH(xprv);
     }
 
     @Override
@@ -85,14 +85,14 @@ public class WalletToolsLTC implements IWalletTools {
 
     @Override
     public String getWalletAddressFromAccountXPUB(String accountXPUB, String cryptoCurrency, int chainIndex, int index) {
-        if (!accountXPUB.startsWith("Ltub")) {
+        if (!accountXPUB.startsWith("drkp")) {
             return null;
         }
-        byte[] serializedKey = org.litecoinj.core.Base58.decodeChecked(accountXPUB);
+        byte[] serializedKey = Base58.decodeChecked(accountXPUB);
         ByteBuffer buffer = ByteBuffer.wrap(serializedKey);
         int header = buffer.getInt();
         if(header != MainNetParams.get().getBip32HeaderPriv() && header != MainNetParams.get().getBip32HeaderPub()) {
-            throw new IllegalArgumentException("Unknown header bytes in Ltub: " + accountXPUB);
+            throw new IllegalArgumentException("Unknown header bytes in xpub: " + accountXPUB);
         } else {
             boolean pub = header == MainNetParams.get().getBip32HeaderPub();
             if (pub) {
@@ -140,8 +140,10 @@ public class WalletToolsLTC implements IWalletTools {
             return COIN_TYPE_BITCOIN;
         }else if (IClient.LTC.equalsIgnoreCase(cryptoCurrency)) {
             return COIN_TYPE_LITECOIN;
+        }else if (IClient.DASH.equalsIgnoreCase(cryptoCurrency)) {
+            return COIN_TYPE_DASH;
         }
-        return COIN_TYPE_BITCOIN;
+        return COIN_TYPE_DASH;
     }
 
     @Override
@@ -149,7 +151,6 @@ public class WalletToolsLTC implements IWalletTools {
         DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
         return (new Address(MainNetParams.get(),dp.getKey().getPubKeyHash())) +"";
     }
-
 
     public static DeterministicKey createMasterPubKeyFromPubB58(String xpubstr) throws AddressFormatException
     {
@@ -174,7 +175,7 @@ public class WalletToolsLTC implements IWalletTools {
         if (address == null) {
             return false;
         }else{
-            if (!(address.startsWith("L") || address.startsWith("3") || address.startsWith("M"))){
+            if (!(address.startsWith("X"))){
                 return false;
             }
         }
@@ -241,25 +242,24 @@ public class WalletToolsLTC implements IWalletTools {
             input = input.substring(0,input.indexOf("?"));
         }
 
-        if ((input.startsWith("L") || input.startsWith("3") || input.startsWith("M")) &&  input.length() <= 34) {
+        if ((input.startsWith("X")) &&  input.length() <= 34) {
             //most likely address lets check it
             try {
                 if (isAddressValidInternal(input)) {
-                    return new Classification(Classification.TYPE_ADDRESS,IClient.LTC,input);
+                    return new Classification(Classification.TYPE_ADDRESS,IClient.DASH,input);
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }
-        }else if (((input.startsWith("6")) && input.length() >= 51) || ((input.startsWith("T")) && input.length() >= 51))  {
-            //most likely private key
+        }else if ((input.startsWith("7") || input.startsWith("X")) && input.length() >= 51) {
             try {
                 DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
-                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.LTC,input);
+                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.DASH,input);
             } catch (AddressFormatException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
-        }else if (input.startsWith("Ltub")) {
-            return new Classification(Classification.TYPE_XPUB,IClient.LTC,input);
+        }else if (input.startsWith("drkp")) {
+            return new Classification(Classification.TYPE_XPUB,IClient.DASH,input);
         }
 
         return new Classification(Classification.TYPE_UNKNOWN);
@@ -279,7 +279,7 @@ public class WalletToolsLTC implements IWalletTools {
     @Override
     public Set<String> supportedCryptoCurrencies() {
         final HashSet<String> result = new HashSet<String>();
-        result.add(IClient.LTC);
+        result.add(IClient.DASH);
         return result;
     }
 }

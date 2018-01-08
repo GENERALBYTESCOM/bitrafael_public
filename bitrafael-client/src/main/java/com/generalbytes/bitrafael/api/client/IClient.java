@@ -29,6 +29,7 @@ public interface IClient {
 
     public static final String BTC = "BTC";
     public static final String LTC = "LTC";
+    public static final String DASH = "DASH";
 
     long getCurrentBlockchainHeight();
 

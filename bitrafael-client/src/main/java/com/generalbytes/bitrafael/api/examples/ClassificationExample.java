@@ -15,7 +15,7 @@
  * Web      :  http://www.generalbytes.com
  *
  ************************************************************************************/
-package com.generalbytes.bitrafael.api.examples.litecoin;
+package com.generalbytes.bitrafael.api.examples;
 
 import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.Classification;
@@ -42,6 +42,8 @@ public class ClassificationExample {
                 "MQH3zAjbbcaC36RNpLQhGDEcFMxbKziYro",
                 "T7oXc1BjCmaq3Hp6nnQhwKqZcPYZawBrgcMpucXCEzt7ByBqoZvx",
                 "xpub6CZZ5vfHsskmdyAiSjQfxBLNg5bwssoKe1dm2B3HGx1Efo2wCMsm6Wr17LEVMzJq3UbyFXg3RjC7EJ5qxz2pG9FkZuyzbsHd1aGwL2WF85A",
+                "XbmPwcZCdaRMa4m4JedspBPkUqY1FKRhsX", //dash address
+
 
         };
         WalletTools wt = new WalletTools();
