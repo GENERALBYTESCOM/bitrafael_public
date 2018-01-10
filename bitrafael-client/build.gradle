@@ -12,7 +12,7 @@ repositories {
             username GBArtifactoryUser
             password GBArtifactoryPassword
         }
-        url 'https://source.generalbytes.com/artifactory/jcenter-virt'
+        url 'https://source.generalbytes.com/artifactory/gradle-dev'
     }
 }
 
