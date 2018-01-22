@@ -12,7 +12,7 @@ repositories {
             username GBArtifactoryUser
             password GBArtifactoryPassword
         }
-        url 'https://source.generalbytes.com/artifactory/gradle-dev'
+        url GBArtifactoryUrl
     }
 }
 
@@ -28,7 +28,7 @@ publishing {
                 username GBArtifactoryUser
                 password GBArtifactoryPassword
             }
-            url 'https://source.generalbytes.com/artifactory/gradle-dev-local'
+            url GBArtifactoryUploadUrl
         }
     }
 
