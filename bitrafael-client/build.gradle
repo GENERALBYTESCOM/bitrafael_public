@@ -5,17 +5,6 @@ apply plugin: 'gb-gradle'
 group = projectGroup
 version = projectVersion
 
-repositories {
-    //jcenter()
-    maven {
-        credentials {
-            username GBArtifactoryUser
-            password GBArtifactoryPassword
-        }
-        url GBArtifactoryUrl
-    }
-}
-
 dependencies {
     compile project(':bitrafael-common')
     compile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1', classifier: 'bundled')
@@ -35,10 +24,10 @@ publishing {
     repositories {
         maven {
             credentials {
-                username GBArtifactoryUser
-                password GBArtifactoryPassword
+                username gbArtifactoryUser
+                password gbArtifactoryPassword
             }
-            url GBArtifactoryUploadUrl
+            url gbArtifactoryUploadUrl
         }
     }
 

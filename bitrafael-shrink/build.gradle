@@ -4,29 +4,8 @@ group = projectGroup
 version = projectVersion
 
 buildscript {
-    repositories {
-//        jcenter()
-        maven {
-            credentials {
-                username GBArtifactoryUser
-                password GBArtifactoryPassword
-            }
-            url GBArtifactoryUrl
-        }
-    }
     dependencies {
         classpath(group: 'net.sf.proguard', name: 'proguard-gradle', version: '5.3.3')
-    }
-}
-
-repositories {
-//        jcenter()
-    maven {
-        credentials {
-            username GBArtifactoryUser
-            password GBArtifactoryPassword
-        }
-        url GBArtifactoryUrl
     }
 }
 
@@ -229,10 +208,10 @@ publishing {
     repositories {
         maven {
             credentials {
-                username GBArtifactoryUser
-                password GBArtifactoryPassword
+                username gbArtifactoryUser
+                password gbArtifactoryPassword
             }
-            url GBArtifactoryUploadUrl
+            url gbArtifactoryUploadUrl
         }
     }
 

@@ -4,17 +4,6 @@ apply plugin: 'gb-gradle'
 group = projectGroup
 version = projectVersion
 
-repositories {
-    //jcenter()
-    maven {
-        credentials {
-            username GBArtifactoryUser
-            password GBArtifactoryPassword
-        }
-        url GBArtifactoryUrl
-    }
-}
-
 dependencies {
     compile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1') //bitcoinj
     compile(group: 'com.caucho', name: 'hessian', version: '3.2.1') //hessian

@@ -1,0 +1,44 @@
+allprojects {
+    buildscript {
+        repositories {
+//            jcenter()
+            maven {
+                credentials {
+                    username gbArtifactoryUser
+                    password gbArtifactoryPassword
+                }
+                url gbArtifactoryUrl
+            }
+        }
+    }
+    repositories {
+//        jcenter()
+        maven {
+            credentials {
+                username gbArtifactoryUser
+                password gbArtifactoryPassword
+            }
+            url gbArtifactoryUrl
+        }
+    }
+}
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    repositories {
+        maven {
+            credentials {
+                username gbArtifactoryUser
+                password gbArtifactoryPassword
+            }
+            url gbArtifactoryUrl
+        }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
+ext.with {
+    BatmDependencySubstitutionConfig = file('dependencySubstitutions.txt')
+}

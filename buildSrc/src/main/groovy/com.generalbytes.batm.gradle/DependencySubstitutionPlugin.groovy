@@ -27,10 +27,13 @@ class DependencySubstitutionPlugin implements Plugin<Project> {
             'compile',
             'compileOnly',
             'compileClasspath',
+            'implementation',
+            'providedCompile',
 
             'testCompile',
             'testCompileOnly',
-            'testCompileClasspath'
+            'testCompileClasspath',
+            'testImplementation'
         ])
 
         project.afterEvaluate {
