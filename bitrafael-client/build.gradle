@@ -1,0 +1,40 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'gb-gradle'
+
+group = projectGroup
+version = projectVersion
+
+dependencies {
+    compile project(':bitrafael-common')
+    compile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1')
+    compile(group: 'com.google.guava', name: 'guava', version: '18.0')
+    compile(group: 'org.litecoinj', name: 'litecoinj-core', version: '0.15-SNAPSHOT')
+    compile(group: 'org.dashj', name: 'dashj-core', version: '0.14.4.1.20180205')
+    compile(group: 'com.github.mmazi', name: 'rescu', version: '1.9.0')
+}
+
+dependencySubstitutions {
+    substitute from: 'com.madgag.spongycastle:core:1.51.0.0', toVersion: '1.52.0.0'
+    substitute from: 'org.slf4j:slf4j-api:1.7.20', toVersion: '1.7.21'
+    substitute from: 'com.google.code.findbugs:jsr305:2.0.1', toVersion: '3.0.1'
+    substitute from: 'com.squareup.okio:okio:1.6.0', toVersion: '1.11.0'
+}
+
+publishing {
+    repositories {
+        maven {
+            credentials {
+                username gbArtifactoryUser
+                password gbArtifactoryPassword
+            }
+            url gbArtifactoryUploadUrl
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
