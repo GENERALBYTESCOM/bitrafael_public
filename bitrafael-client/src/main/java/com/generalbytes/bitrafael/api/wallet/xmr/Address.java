@@ -60,43 +60,47 @@ public class Address {
     }
 
     public static Address parse(String address){
-        byte[] decoded = Base58.decode(address.getBytes());
-        byte[] prefix = Arrays.copyOfRange(decoded, 0, 1);
-        boolean isStandard  = prefix[0] == 0x12;
-        boolean isIntegrated  = prefix[0] == 0x13;
-        int prefixLen = 1;
-        byte[] publicSpendKeyEncoded = null;
-        byte[] publicViewKeyEncoded = null;
-        byte[] checksum = null;
-        byte[] paymentId = null;
-
-        if (isStandard) {
-            publicSpendKeyEncoded = Arrays.copyOfRange(decoded, prefixLen + 0, prefixLen + 32);
-            publicViewKeyEncoded = Arrays.copyOfRange(decoded,  prefixLen + 32, prefixLen + 32 + 32);
-            checksum = Arrays.copyOfRange(decoded,  prefixLen + 32 +32, prefixLen + 32 + 32 + 4);
-        }else if (isIntegrated) {
-            publicSpendKeyEncoded = Arrays.copyOfRange(decoded, prefixLen + 0, prefixLen + 32);
-            publicViewKeyEncoded = Arrays.copyOfRange(decoded, prefixLen + 32, prefixLen + 32 + 32);
-            paymentId = Arrays.copyOfRange(decoded, prefixLen + 32 + 32, prefixLen + 32 + 32 + 8);
-            checksum = Arrays.copyOfRange(decoded, prefixLen + 32 + 32 + 8, prefixLen + 32 + 32 + 8 + 4);
-        }
-
-        byte[] contains = Arrays.copyOfRange(decoded,0, decoded.length - 4);
-        final Keccak256 keccak = new Keccak256();
-        keccak.reset();
-        keccak.update(contains);
-        byte[] checksum2 = Arrays.copyOfRange(keccak.digest().array(), 0, 4);
-        if (!Arrays.equals(checksum,checksum2)) {
-            return null;//checksum failed
-        }
-
-
         try {
-            KeyFactory kf = new KeyFactory();
-            Address result = new Address(kf.decodePublicKey(publicSpendKeyEncoded), kf.decodePublicKey(publicViewKeyEncoded), paymentId);
-            return result;
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
+            byte[] decoded = Base58.decode(address.getBytes());
+            byte[] prefix = Arrays.copyOfRange(decoded, 0, 1);
+            boolean isStandard = prefix[0] == 0x12;
+            boolean isIntegrated = prefix[0] == 0x13;
+            int prefixLen = 1;
+            byte[] publicSpendKeyEncoded = null;
+            byte[] publicViewKeyEncoded = null;
+            byte[] checksum = null;
+            byte[] paymentId = null;
+
+            if (isStandard) {
+                publicSpendKeyEncoded = Arrays.copyOfRange(decoded, prefixLen + 0, prefixLen + 32);
+                publicViewKeyEncoded = Arrays.copyOfRange(decoded, prefixLen + 32, prefixLen + 32 + 32);
+                checksum = Arrays.copyOfRange(decoded, prefixLen + 32 + 32, prefixLen + 32 + 32 + 4);
+            } else if (isIntegrated) {
+                publicSpendKeyEncoded = Arrays.copyOfRange(decoded, prefixLen + 0, prefixLen + 32);
+                publicViewKeyEncoded = Arrays.copyOfRange(decoded, prefixLen + 32, prefixLen + 32 + 32);
+                paymentId = Arrays.copyOfRange(decoded, prefixLen + 32 + 32, prefixLen + 32 + 32 + 8);
+                checksum = Arrays.copyOfRange(decoded, prefixLen + 32 + 32 + 8, prefixLen + 32 + 32 + 8 + 4);
+            }
+
+            byte[] contains = Arrays.copyOfRange(decoded, 0, decoded.length - 4);
+            final Keccak256 keccak = new Keccak256();
+            keccak.reset();
+            keccak.update(contains);
+            byte[] checksum2 = Arrays.copyOfRange(keccak.digest().array(), 0, 4);
+            if (!Arrays.equals(checksum, checksum2)) {
+                return null;//checksum failed
+            }
+
+
+            try {
+                KeyFactory kf = new KeyFactory();
+                Address result = new Address(kf.decodePublicKey(publicSpendKeyEncoded), kf.decodePublicKey(publicViewKeyEncoded), paymentId);
+                return result;
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
+            }
+        }catch (Throwable t){
+            t.printStackTrace();
         }
         return null;
 

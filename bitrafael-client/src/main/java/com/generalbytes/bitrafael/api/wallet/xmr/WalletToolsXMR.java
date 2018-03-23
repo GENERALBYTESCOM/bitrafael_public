@@ -32,6 +32,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.StringTokenizer;
 
 public class WalletToolsXMR implements IClassificator{
 
@@ -76,34 +77,38 @@ public class WalletToolsXMR implements IClassificator{
 
 
     public Account getAccount(String seedMnemonicSeparatedBySpaces) {
-        byte[] seed = XMRMnemonicUtility.toEntropy(seedMnemonicSeparatedBySpaces);
-        if (seed != null) {
+        try {
+            byte[] seed = XMRMnemonicUtility.toEntropy(seedMnemonicSeparatedBySpaces);
+            if (seed != null) {
 
-            if (seed.length != 256/8) { //if seed is not long enough make it 256bit (MyMonero case)
+                if (seed.length != 256/8) { //if seed is not long enough make it 256bit (MyMonero case)
+                    Keccak256 keccak256 = new Keccak256();
+                    keccak256.update(seed);
+                    seed = keccak256.digest().array();
+                }
+
+                byte[] b = Utils.sc_reduce32(seed); //just to be sure (seed should be already valid)
                 Keccak256 keccak256 = new Keccak256();
                 keccak256.update(seed);
-                seed = keccak256.digest().array();
-            }
+                byte[] a = Utils.sc_reduce32(keccak256.digest().array()); //calculate viewkey
 
-            byte[] b = Utils.sc_reduce32(seed); //just to be sure (seed should be already valid)
-            Keccak256 keccak256 = new Keccak256();
-            keccak256.update(seed);
-            byte[] a = Utils.sc_reduce32(keccak256.digest().array()); //calculate viewkey
-
-            PrivateKey secretA = null;
-            PublicKey publicA = null;
-            PrivateKey secretB = null;
-            PublicKey publicB = null;
-            try {
-                KeyFactory keyFactory = new KeyFactory();
-                secretA = keyFactory.decodePrivateKey(a);
-                publicA = keyFactory.generatePublicKey(secretA);
-                secretB = keyFactory.decodePrivateKey(b);
-                publicB = keyFactory.generatePublicKey(secretB);
-            } catch (InvalidKeyException e) {
-                e.printStackTrace();
+                PrivateKey secretA = null;
+                PublicKey publicA = null;
+                PrivateKey secretB = null;
+                PublicKey publicB = null;
+                try {
+                    KeyFactory keyFactory = new KeyFactory();
+                    secretA = keyFactory.decodePrivateKey(a);
+                    publicA = keyFactory.generatePublicKey(secretA);
+                    secretB = keyFactory.decodePrivateKey(b);
+                    publicB = keyFactory.generatePublicKey(secretB);
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                }
+                return new Account(seedMnemonicSeparatedBySpaces, seed, secretB, secretA, publicB, publicA);
             }
-            return new Account(seedMnemonicSeparatedBySpaces, seed, secretB, secretA, publicB, publicA);
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -146,8 +151,18 @@ public class WalletToolsXMR implements IClassificator{
         if (input.startsWith("4") && input.length()>=95) {
             //most likely address lets check it
             Address parse = Address.parse(input);
-            if (parse == null) {
+            if (parse != null) {
                 return new Classification(Classification.TYPE_ADDRESS, IClient.XMR,input);
+            }
+        }
+
+        StringTokenizer st = new StringTokenizer(input.trim(), " ");
+        int numberOfWords = st.countTokens();
+        if (numberOfWords == 25 || numberOfWords == 13) {
+            //maybe seed
+            Account account = getAccount(input.trim());
+            if (account != null) {
+                return new Classification(Classification.TYPE_SEED_MNEMONIC, IClient.XMR,input);
             }
         }
         return new Classification(Classification.TYPE_UNKNOWN);
