@@ -29,5 +29,5 @@ Build information
 =================
 Just run the following command:
 ```bash
-ant
+./gradlew build
 ```
