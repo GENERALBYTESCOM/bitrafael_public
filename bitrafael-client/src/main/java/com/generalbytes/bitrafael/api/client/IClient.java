@@ -28,8 +28,9 @@ public interface IClient {
     public static final BigDecimal FEE_HIGH = new BigDecimal("-3");
 
     public static final String BTC = "BTC";
-    public static final String LTC = "LTC";
     public static final String DASH = "DASH";
+    public static final String LTC = "LTC";
+    public static final String XMR = "XMR";
 
     long getCurrentBlockchainHeight();
 

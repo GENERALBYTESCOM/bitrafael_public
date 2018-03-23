@@ -21,7 +21,7 @@ package com.generalbytes.bitrafael.api.wallet;
 
 import java.util.Set;
 
-public interface IWalletTools {
+public interface IWalletTools extends IClassificator{
     public static final int PURPOSE_BIP44 = 44 ;
     public static final int COIN_TYPE_BITCOIN = 0;
     public static final int COIN_TYPE_LITECOIN = 2;
@@ -41,7 +41,5 @@ public interface IWalletTools {
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency);
     public ISignature sign(String privateKey, byte[] hashToSign, String cryptoCurrency);
     boolean isAddressValid(String address, String cryptoCurrency);
-    Classification classify(String input);
-    Classification classify(String input, String cryptoCurrencyHint);
     Set<String> supportedCryptoCurrencies();
 }

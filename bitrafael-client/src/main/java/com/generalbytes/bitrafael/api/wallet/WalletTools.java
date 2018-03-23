@@ -23,6 +23,7 @@ import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.btc.WalletToolsBTC;
 import com.generalbytes.bitrafael.api.wallet.dash.WalletToolsDASH;
 import com.generalbytes.bitrafael.api.wallet.ltc.WalletToolsLTC;
+import com.generalbytes.bitrafael.api.wallet.xmr.WalletToolsXMR;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,11 +32,16 @@ import java.util.Set;
 
 public class WalletTools implements IWalletTools{
     private Map<String,IWalletTools> tools = new HashMap<String,IWalletTools>();
+    private Map<String,IClassificator> classificators = new HashMap<String,IClassificator>();
 
     public WalletTools() {
         tools.put(IClient.BTC,new WalletToolsBTC());
+        classificators.put(IClient.BTC,new WalletToolsBTC());
         tools.put(IClient.LTC,new WalletToolsLTC());
+        classificators.put(IClient.LTC,new WalletToolsLTC());
         tools.put(IClient.DASH,new WalletToolsDASH());
+        classificators.put(IClient.DASH,new WalletToolsDASH());
+        classificators.put(IClient.XMR,new WalletToolsXMR());
     }
 
     private IWalletTools getDefaultWalletTools() {
@@ -106,11 +112,13 @@ public class WalletTools implements IWalletTools{
 
         Classification result = new Classification(Classification.TYPE_UNKNOWN);
         if (IClient.BTC.equalsIgnoreCase(cryptoCurrencyHint)) {
-            result = tools.get(IClient.BTC).classify(input);
+            result = classificators.get(IClient.BTC).classify(input);
         }else if (IClient.LTC.equalsIgnoreCase(cryptoCurrencyHint)) {
-            result = tools.get(IClient.LTC).classify(input);
+            result = classificators.get(IClient.LTC).classify(input);
         }else if (IClient.DASH.equalsIgnoreCase(cryptoCurrencyHint)) {
-            result = tools.get(IClient.DASH).classify(input);
+            result = classificators.get(IClient.DASH).classify(input);
+        }else if (IClient.XMR.equalsIgnoreCase(cryptoCurrencyHint)) {
+            result = classificators.get(IClient.XMR).classify(input);
         }
 
         return result;
@@ -123,25 +131,31 @@ public class WalletTools implements IWalletTools{
         }
         input = input.trim().replace("\n","");
         if (input.toLowerCase().startsWith("bitcoin")) {
-            return tools.get(IClient.BTC).classify(input);
+            return classificators.get(IClient.BTC).classify(input);
         }else if (input.toLowerCase().startsWith("litecoin")) {
-            return tools.get(IClient.LTC).classify(input);
+            return classificators.get(IClient.LTC).classify(input);
         }else if (input.toLowerCase().startsWith("dash")) {
-            return tools.get(IClient.DASH).classify(input);
+            return classificators.get(IClient.DASH).classify(input);
+        }else if (input.toLowerCase().startsWith("xmr") || input.toLowerCase().startsWith("monero")) {
+            return classificators.get(IClient.XMR).classify(input);
         }
 
         //not specified
         Classification result = new Classification(Classification.TYPE_UNKNOWN);
         if (input.startsWith("1") || input.startsWith("3") || input.startsWith("5") || (input.startsWith("K") && input.length() > 50) || (input.startsWith("L") && input.length() > 50) || input.startsWith("xpub")) {
-            result = tools.get(IClient.BTC).classify(input);
+            result = classificators.get(IClient.BTC).classify(input);
+        }
+
+        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("4") && input.length() >=95)) {
+            return classificators.get(IClient.XMR).classify(input);
         }
 
         if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("L") || input.startsWith("3") || input.startsWith("6") || input.startsWith("M") || input.startsWith("Ltub") || input.startsWith("T"))) {
-            return tools.get(IClient.LTC).classify(input);
+            return classificators.get(IClient.LTC).classify(input);
         }
 
         if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("X"))) {
-            return tools.get(IClient.DASH).classify(input);
+            return classificators.get(IClient.DASH).classify(input);
         }
 
         return result;
@@ -153,5 +167,6 @@ public class WalletTools implements IWalletTools{
         result.add(IClient.LTC);
         result.add(IClient.BTC);
         result.add(IClient.DASH);
+        result.add(IClient.XMR);
         return result;
     }}
