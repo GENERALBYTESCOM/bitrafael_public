@@ -25,6 +25,8 @@ public class Classification {
     public static final int TYPE_ADDRESS = 1;
     public static final int TYPE_PRIVATE_KEY_IN_WIF = 2;
     public static final int TYPE_XPUB = 3;
+    public static final int TYPE_SEED_MNEMONIC = 4;
+
 
     private int type;
     private String cryptoCurrency;
