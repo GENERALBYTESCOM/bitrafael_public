@@ -8,16 +8,16 @@ public class Account{
     private String seedInMnemonic;
     private byte[] seedInBytes;
     private PrivateKey privateSpendKey;
-    private PrivateKey privateVidewKey;
+    private PrivateKey privateViewKey;
     private PublicKey publicSpendKey;
     private PublicKey publicViewKey;
     private Address address;
 
-    public Account(String seedInMnemonic, byte[] seedInBytes, PrivateKey privateSpendKey, PrivateKey privateVidewKey, PublicKey publicSpendKey, PublicKey publicViewKey) {
+    public Account(String seedInMnemonic, byte[] seedInBytes, PrivateKey privateSpendKey, PrivateKey privateViewKey, PublicKey publicSpendKey, PublicKey publicViewKey) {
         this.seedInMnemonic = seedInMnemonic;
         this.seedInBytes = seedInBytes;
         this.privateSpendKey = privateSpendKey;
-        this.privateVidewKey = privateVidewKey;
+        this.privateViewKey = privateViewKey;
         this.publicSpendKey = publicSpendKey;
         this.publicViewKey = publicViewKey;
 
@@ -36,8 +36,8 @@ public class Account{
         return privateSpendKey;
     }
 
-    public PrivateKey getPrivateVidewKey() {
-        return privateVidewKey;
+    public PrivateKey getPrivateViewKey() {
+        return privateViewKey;
     }
 
     public PublicKey getPublicSpendKey() {
@@ -58,7 +58,7 @@ public class Account{
                 "seedInMnemonic='" + seedInMnemonic + '\'' +
                 ", seedInBytes=" + Utils.bytesToHex(seedInBytes)+
                 ", privateSpendKey=" + privateSpendKey +
-                ", privateVidewKey=" + privateVidewKey +
+                ", privateViewKey=" + privateViewKey +
                 ", publicSpendKey=" + publicSpendKey +
                 ", publicViewKey=" + publicViewKey +
                 ", address='" + address + '\'' +
