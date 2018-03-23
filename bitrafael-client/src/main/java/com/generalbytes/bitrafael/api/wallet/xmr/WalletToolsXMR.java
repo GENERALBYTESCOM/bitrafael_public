@@ -31,6 +31,7 @@ import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 public class WalletToolsXMR implements IClassificator{
 
@@ -43,6 +44,30 @@ public class WalletToolsXMR implements IClassificator{
             byte[] entropy = Utils.as256BitLe(val);
             String seedWords = XMRMnemonicUtility.toMnemonic(entropy);
             return seedWords;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String[] generateShortAndLongSeedMnemonicsSeparatedBySpaces() {
+        try {
+            SecureRandom prng = SecureRandom.getInstance("SHA1PRNG");
+            Keccak256 keccak256 = new Keccak256();
+            byte[] digest;
+            byte[] longSeed;
+            byte[] shortSeed = new byte[16];
+            do {
+                prng.nextBytes(shortSeed);
+                keccak256.reset();
+                keccak256.update(shortSeed);
+                digest = keccak256.digest().array();
+                longSeed = Utils.sc_reduce32(digest);
+            }while(!Arrays.equals(digest,longSeed)); //we need to bruteforce this
+
+            String shortMnemonic = XMRMnemonicUtility.toMnemonic(shortSeed);
+            String longMnemonic = XMRMnemonicUtility.toMnemonic(longSeed);
+            return new String[]{shortMnemonic,longMnemonic};
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }

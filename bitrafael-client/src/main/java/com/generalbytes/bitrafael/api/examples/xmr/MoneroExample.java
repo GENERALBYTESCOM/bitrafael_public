@@ -20,6 +20,7 @@ package com.generalbytes.bitrafael.api.examples.xmr;
 import com.generalbytes.bitrafael.api.wallet.xmr.Account;
 import com.generalbytes.bitrafael.api.wallet.xmr.Address;
 import com.generalbytes.bitrafael.api.wallet.xmr.WalletToolsXMR;
+import com.generalbytes.bitrafael.api.wallet.xmr.core.Utils;
 
 public class MoneroExample {
     public static void main(String[] args) {
@@ -38,5 +39,23 @@ public class MoneroExample {
         parsedAddr.setPaymentId(1337);
         System.out.println("parsedAddr with paymentId = " + parsedAddr);
 
+        //try double seeding (two seed formats with same result)
+        String[] seeds = wt.generateShortAndLongSeedMnemonicsSeparatedBySpaces();
+        String shortSeed = seeds[0];
+        String longSeed = seeds[1];
+
+        System.out.println("shortSeed = " + shortSeed);
+        System.out.println("longSeed = " + longSeed);
+        Account shortAccount = wt.getAccount(shortSeed);
+        Account longAccount = wt.getAccount(longSeed);
+        if (shortAccount.getPublicSpendKey().equals(longAccount.getPublicSpendKey())){
+            System.out.println("Seeds are equal!");
+            String shortViewKey = Utils.bytesToHex(shortAccount.getPrivateViewKey().getEncoded());
+            String longViewKey = Utils.bytesToHex(longAccount.getPrivateViewKey().getEncoded());
+            System.out.println("shortViewKey = " + shortViewKey);
+            System.out.println("longViewKey = " + longViewKey);
+        }else{
+            System.out.println("Something is wrong with the world!");
+        }
     }
 }
