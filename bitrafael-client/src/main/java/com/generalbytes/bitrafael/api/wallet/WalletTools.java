@@ -23,6 +23,7 @@ import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.btc.WalletToolsBTC;
 import com.generalbytes.bitrafael.api.wallet.dash.WalletToolsDASH;
 import com.generalbytes.bitrafael.api.wallet.ltc.WalletToolsLTC;
+import com.generalbytes.bitrafael.api.wallet.xmr.Account;
 import com.generalbytes.bitrafael.api.wallet.xmr.WalletToolsXMR;
 
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import java.util.Set;
 public class WalletTools implements IWalletTools{
     private Map<String,IWalletTools> tools = new HashMap<String,IWalletTools>();
     private Map<String,IClassificator> classificators = new HashMap<String,IClassificator>();
+    private WalletToolsXMR xmrwt = new WalletToolsXMR();
 
     public WalletTools() {
         tools.put(IClient.BTC,new WalletToolsBTC());
@@ -41,7 +43,7 @@ public class WalletTools implements IWalletTools{
         classificators.put(IClient.LTC,new WalletToolsLTC());
         tools.put(IClient.DASH,new WalletToolsDASH());
         classificators.put(IClient.DASH,new WalletToolsDASH());
-        classificators.put(IClient.XMR,new WalletToolsXMR());
+        classificators.put(IClient.XMR, xmrwt);
     }
 
     private IWalletTools getDefaultWalletTools() {
@@ -85,6 +87,13 @@ public class WalletTools implements IWalletTools{
 
     @Override
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency) {
+        if (IClient.XMR.equalsIgnoreCase(cryptoCurrency)) {
+            Account account = xmrwt.getAccount(privateKey);
+            if (account != null) {
+                return account.getAddress().toString();
+            }
+            return null;
+        }
         return tools.get(cryptoCurrency).getWalletAddressFromPrivateKey(privateKey, cryptoCurrency);
     }
 
