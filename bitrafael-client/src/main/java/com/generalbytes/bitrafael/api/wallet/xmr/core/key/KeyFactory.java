@@ -21,10 +21,14 @@ import com.generalbytes.bitrafael.api.wallet.xmr.core.Utils;
 import com.generalbytes.bitrafael.api.wallet.xmr.core.ed25519.Ed25519Constants;
 import com.generalbytes.bitrafael.api.wallet.xmr.core.ed25519.Ed25519Ops;
 import com.generalbytes.bitrafael.api.wallet.xmr.core.ed25519.ReferenceEd25519Ops;
+import com.generalbytes.bitrafael.api.wallet.xmr.core.ed25519.fast.ge_p3;
+import com.generalbytes.bitrafael.api.wallet.xmr.core.ed25519.fast.ge_scalarmult_base;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.SecureRandom;
+
+import static com.generalbytes.bitrafael.api.wallet.xmr.core.ed25519.fast.ge_p3_tobytes.ge_p3_tobytes;
 
 
 public class KeyFactory {
@@ -63,7 +67,12 @@ public class KeyFactory {
     public PublicKey generatePublicKey(PrivateKey privateKey)
     {
         byte[] encoded = privateKey.getEncoded();
-        byte[] bytes = this.ed25519Ops.scalarMultG(encoded);
+//        byte[] bytes = this.ed25519Ops.scalarMultG(encoded); (this method was replaced with faster implementation down bellow)
+        byte[] bytes = new byte[32];
+        ge_p3 ge_p3 = new ge_p3();
+        ge_scalarmult_base.ge_scalarmult_base(ge_p3,encoded);
+        ge_p3_tobytes(bytes,ge_p3);
+
         return new PublicKey(bytes);
     }
 
