@@ -78,6 +78,23 @@ public class WalletToolsXMR implements IClassificator{
 
     public Account getAccount(String seedMnemonicSeparatedBySpaces) {
         try {
+            //clean
+            seedMnemonicSeparatedBySpaces = seedMnemonicSeparatedBySpaces.trim().replace("\n","");
+            if (seedMnemonicSeparatedBySpaces.contains(":")) {
+                //remove leading protocol
+                seedMnemonicSeparatedBySpaces = seedMnemonicSeparatedBySpaces.substring(seedMnemonicSeparatedBySpaces.indexOf(":") + 1);
+            }
+
+            //remove leading slashes
+            if (seedMnemonicSeparatedBySpaces.startsWith("//")) {
+                seedMnemonicSeparatedBySpaces = seedMnemonicSeparatedBySpaces.substring("//".length());
+            }
+
+            //remove things after
+            if (seedMnemonicSeparatedBySpaces.contains("?")) {
+                seedMnemonicSeparatedBySpaces = seedMnemonicSeparatedBySpaces.substring(0,seedMnemonicSeparatedBySpaces.indexOf("?"));
+            }
+
             byte[] seed = XMRMnemonicUtility.toEntropy(seedMnemonicSeparatedBySpaces);
             if (seed != null) {
 
