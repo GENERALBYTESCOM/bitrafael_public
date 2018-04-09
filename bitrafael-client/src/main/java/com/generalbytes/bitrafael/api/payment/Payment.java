@@ -60,19 +60,58 @@ public class Payment {
         return cryptoAmountMiningFee;
     }
 
-    enum State {
-        NEW,
-        ARRIVING,
-        RECEIVED,
-        FAILED,
+    public enum State {
+        UNKNOWN(0),
+        NEW(1),
+        ARRIVING(2),
+        RECEIVED(3),
+        FAILED(4);
+
+        int id;
+        State(int id) {
+            this.id = id;
+        }
+
+        public static State getById(Long id) {
+            for(State e : values()) {
+                if(e.id == id) {
+                    return e;
+                }
+            }
+            return UNKNOWN;
+        }
+
+        public int getId() {
+            return id;
+        }
+
     }
 
-    enum Failure {
-        NONE,
-        SOMETHING_ARRIVED_AFTER_TIMEOUT,
-        NOTHING_ARRIVED_WITHIN_TIMEOUT,
-        NOTHING_RECEIVED_WITHIN_TIMEOUT, // time for amount to have enough confirmations
-        INVALID_AMOUNT_RECEIVED //customer sent invalid amount for some reason
+    public enum Failure {
+        NONE(0),
+        SOMETHING_ARRIVED_AFTER_TIMEOUT(1),
+        NOTHING_ARRIVED_WITHIN_TIMEOUT(2),
+        NOTHING_RECEIVED_WITHIN_TIMEOUT(3), // time for amount to have enough confirmations
+        INVALID_AMOUNT_RECEIVED(4); //customer sent invalid amount for some reason
+
+        int id;
+
+        Failure(int id) {
+            this.id = id;
+        }
+
+        public static Failure getById(Long id) {
+            for(Failure e : values()) {
+                if(e.id == id) {
+                    return e;
+                }
+            }
+            return NONE;
+        }
+
+        public int getId() {
+            return id;
+        }
     }
 
     public void setState(State state) {
