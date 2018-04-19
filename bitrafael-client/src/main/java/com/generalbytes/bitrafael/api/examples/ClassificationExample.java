@@ -43,6 +43,7 @@ public class ClassificationExample {
                 "T7oXc1BjCmaq3Hp6nnQhwKqZcPYZawBrgcMpucXCEzt7ByBqoZvx",
                 "xpub6CZZ5vfHsskmdyAiSjQfxBLNg5bwssoKe1dm2B3HGx1Efo2wCMsm6Wr17LEVMzJq3UbyFXg3RjC7EJ5qxz2pG9FkZuyzbsHd1aGwL2WF85A",
                 "XbmPwcZCdaRMa4m4JedspBPkUqY1FKRhsX", //dash address
+                "drkvjJe5sJgqomjLnD39LKGdme64zzL4d38fDEhkveYsjvqDZzEZSoq6VEE5znetSRvSB6pYAxhTViXJdZ5QygKogD4nsa31hQ8aVuW6psczteC", //dash prv
                 "49Fd89xZRHpbDxhMkpyMDWZNKUHG4GjtqDL1yYaQZwp7PEDiRDwk4rdJNDvAyBDRX7BaGfakBZLkEguPPjQLdAWKTJ5t2Pf", //monero address
                 "monero:pavements warped ability hexagon sabotage tether juicy unfit trying listen birth rarest birth", //monero short seed
                 "monero:pram flying gained wobbly dehydrate rarest evenings goggles buckets awesome slower boxes perfect puddle acumen vocal simplest woozy lectures jingle magically addicted glass governing evenings", //monero long seed

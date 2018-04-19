@@ -12,6 +12,7 @@ dependencies {
     compile(group: 'org.litecoinj', name: 'litecoinj-core', version: '0.15-SNAPSHOT')
     compile(group: 'org.dashj', name: 'dashj-core', version: '0.14.4.1.20180205')
     compile(group: 'com.github.mmazi', name: 'rescu', version: '1.9.1')
+    runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21')
 }
 
 dependencySubstitutions {
