@@ -121,7 +121,7 @@ public class PaymentMgr implements IPaymentMgr{
                         if (listener != null) {
                             listener.paymentFailed(payment);
                         }
-                        // else: method "unregisterPayment" isn't used -> if later payment arrives, we want to know it
+                        // method "unregisterPayment" isn't used -> if later payment arrives, we want to know it
                     }
                 }
             },payment.getRequest().getSpec().getValidityDurationInSeconds(), TimeUnit.SECONDS);
