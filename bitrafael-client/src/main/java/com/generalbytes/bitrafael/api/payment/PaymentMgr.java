@@ -50,8 +50,7 @@ public class PaymentMgr implements IPaymentMgr{
     private final Object PAYMENTS_LOCK = new Object();
     private List<Payment> watchedPayments = new ArrayList<Payment>();
     private BlockchainWatcher watcher;
-    private static final long EXPIRATION_FOR_REQUIRED_CONFIRMATIONS_IN_SECONDS = TimeUnit.HOURS.toSeconds(12);      // 12 hours
-    private static final long STOP_WATCH_EXPIRATION_SINCE_PAYMENT_REQUEST_CREATED = TimeUnit.HOURS.toSeconds(24);   // 24 hours
+    private static final long STOP_WATCH_EXPIRATION_SINCE_PAYMENT_REQUEST_CREATED = TimeUnit.HOURS.toSeconds(12);
 
     private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
@@ -88,6 +87,7 @@ public class PaymentMgr implements IPaymentMgr{
     }
 
     public PaymentRequest createPaymentRequest(PaymentRequestSpec spec, IPaymentListener listener) {
+
         String receivingAddress = getReceivingAddress(spec.getAccountXPUBForReceivingPayment(), IWalletTools.CHAIN_EXTERNAL, spec.getCryptoCurrency());
 
         final ArrayList<AmountsPair> amountsPairs = new ArrayList<AmountsPair>();
@@ -124,16 +124,25 @@ public class PaymentMgr implements IPaymentMgr{
                         // method "unregisterPayment" isn't used -> if later payment arrives, we want to know it
                     }
                 }
-            },payment.getRequest().getSpec().getValidityDurationInSeconds(), TimeUnit.SECONDS);
+            }, payment.getRequest().getSpec().getValidityDurationInSeconds(), TimeUnit.SECONDS);
 
             service.schedule(new Runnable() {
                 @Override
                 public void run() {
-                    payment.setFailure(Payment.Failure.NOTHING_RECEIVED_WITHIN_TIMEOUT);
-                    payment.setState(Payment.State.FAILED);
-                    final IPaymentListener listener = ((PaymentRequestInternal) payment.getRequest()).getListener();
-                    if (listener != null) {
-                        listener.paymentFailed(payment);
+                    if (payment.getState() == Payment.State.NEW || (payment.getState() == Payment.State.FAILED && payment.getFailure() == Payment.Failure.NOTHING_ARRIVED_WITHIN_TIMEOUT)) {
+                        payment.setFailure(Payment.Failure.NOTHING_RECEIVED_WITHIN_TIMEOUT);
+                        payment.setState(Payment.State.FAILED);
+                        final IPaymentListener listener = ((PaymentRequestInternal) payment.getRequest()).getListener();
+                        if (listener != null) {
+                            listener.paymentFailed(payment);
+                        }
+                    } else if (payment.getState() == Payment.State.ARRIVING) {
+                        payment.setFailure(Payment.Failure.SOMETHING_ARRIVED_AFTER_TIMEOUT);
+                        payment.setState(Payment.State.FAILED);
+                        final IPaymentListener listener = ((PaymentRequestInternal) payment.getRequest()).getListener();
+                        if (listener != null) {
+                            listener.paymentFailed(payment);
+                        }
                     }
                     unregisterPayment(payment);
                 }
@@ -142,9 +151,8 @@ public class PaymentMgr implements IPaymentMgr{
             watcher.addWallet(payment.getRequest().getCryptoAddress(), payment.getRequest().getCryptoCurrency(), new AbstractBlockchainWatcherWalletListener() {
                 @Override
                 public void walletContainsChanged(String __unused1, String __unused2, Object __unused3, final TxInfo tx) {
-                    boolean processed = false;
 
-                    if (payment.getState() == Payment.State.NEW) {
+                    if (payment.getState() == Payment.State.NEW || (payment.getState()== Payment.State.FAILED && payment.getFailure() == Payment.Failure.NOTHING_ARRIVED_WITHIN_TIMEOUT)) {
 
                         //check if the amountReceived is correct
                         BigDecimal amountReceived = getAmountForAddress(tx, payment.getRequest().getCryptoAddress());
@@ -166,99 +174,76 @@ public class PaymentMgr implements IPaymentMgr{
                             amountOk = true;
                         }
 
-                        if (!amountOk) {
+                        //check if the transaction didn't arrive late
+                        long now = System.currentTimeMillis();
+                        long timeDiffInSeconds = (now - payment.getCreated()) / 1000;
+                        if (timeDiffInSeconds > payment.getRequest().getSpec().getValidityDurationInSeconds()) {
+                            payment.setFailure(Payment.Failure.SOMETHING_ARRIVED_AFTER_TIMEOUT);
+                            payment.setState(Payment.State.FAILED);
+
+                        } else if (!amountOk) {
                             payment.setFailure(Payment.Failure.INVALID_AMOUNT_RECEIVED);
                             payment.setState(Payment.State.FAILED);
-                            processed = true;
                         }
 
-                        //check if the transaction didn't arrive late
-                        if (!processed) {
-                            long now = System.currentTimeMillis();
-                            long timeDiffInSeconds = (now - payment.getCreated()) / 1000;
-                            if (timeDiffInSeconds > payment.getCreated()) {
-                                payment.setFailure(Payment.Failure.SOMETHING_ARRIVED_AFTER_TIMEOUT);
-                                payment.setState(Payment.State.FAILED);
-                                processed = true;
-                            }
-                        }
-
-
-                        if (!processed) {
+                        if (payment.getState() != Payment.State.FAILED) {
                             if (tx.getConfirmations() < payment.getRequest().getSpec().getSafeNumberOfBlockConfirmations()) {
                                 //transaction is still unconfirmed
                                 payment.setState(Payment.State.ARRIVING);
-                                processed = true;
-                            } else if (tx.getConfirmations() >= payment.getRequest().getSpec().getSafeNumberOfBlockConfirmations()) {
+                            } else {
                                 payment.setState(Payment.State.RECEIVED);
-                                processed = true;
                             }
                         }
 
-                        if (processed) {
-                            payment.setCryptoAmountReceived(amountReceived);
-                            payment.setCryptoAmountMiningFee(Client.calculateMiningFee(tx));
-                            payment.setTxId(tx.getTxHash());
+                        payment.setCryptoAmountReceived(amountReceived);
+                        payment.setCryptoAmountMiningFee(Client.calculateMiningFee(tx));
+                        payment.setTxId(tx.getTxHash());
 
-                            if (payment.getRequest() instanceof PaymentRequestInternal) {
-                                final PaymentRequestInternal req = (PaymentRequestInternal) payment.getRequest();
-                                final IPaymentListener listener = req.getListener();
-                                if (listener != null) {
-                                    switch (payment.getState()) {
-                                        case FAILED:
-                                            listener.paymentFailed(payment);
-                                            unregisterPayment(payment);
-                                            break;
-                                        case ARRIVING:
-                                            listener.paymentArriving(payment);
-                                            //start listening for transaction confirmations
-                                            watcher.addTransaction(tx.getTxHash(), payment.getRequest().getCryptoCurrency(), new AbstractBlockchainWatcherTransactionListener() {
-                                                private int lastNumberOfConfirmations = 0;
+                        if (payment.getRequest() instanceof PaymentRequestInternal) {
+                            final PaymentRequestInternal req = (PaymentRequestInternal) payment.getRequest();
+                            final IPaymentListener listener = req.getListener();
+                            if (listener != null) {
+                                switch (payment.getState()) {
+                                    case FAILED:
+                                        listener.paymentFailed(payment);
+                                        // stop watching for it
+                                        unregisterPayment(payment);
+                                        watcher.removeTransaction(payment.getTxId(), payment.getRequest().getCryptoCurrency());
+                                        break;
 
-                                                @Override
-                                                public void numberOfConfirmationsChanged(String transactionHash, String cryptoCurrency, Object tag, int numberOfConfirmations){
-                                                    Payment p = (Payment) tag;
-                                                    if (numberOfConfirmations > lastNumberOfConfirmations) {
-                                                        if (payment.getState() == Payment.State.ARRIVING) {
-                                                            if (numberOfConfirmations >= payment.getRequest().getSpec().getSafeNumberOfBlockConfirmations()) {
-                                                                watcher.removeTransaction(transactionHash,payment.getRequest().getCryptoCurrency());
-                                                                payment.setState(Payment.State.RECEIVED);
-                                                                listener.paymentReceived(p);
-                                                                //payment was received stop watching for it
-                                                                unregisterPayment(p);
-                                                            }
+                                    case ARRIVING:
+                                        listener.paymentArriving(payment);
+                                        //start listening for transaction confirmations
+                                        watcher.addTransaction(tx.getTxHash(), payment.getRequest().getCryptoCurrency(), new AbstractBlockchainWatcherTransactionListener() {
+                                            private int lastNumberOfConfirmations = 0;
+
+                                            @Override
+                                            public void numberOfConfirmationsChanged(String transactionHash, String cryptoCurrency, Object tag, int numberOfConfirmations) {
+                                                Payment p = (Payment) tag;
+                                                if (numberOfConfirmations > lastNumberOfConfirmations) {
+                                                    if (payment.getState() == Payment.State.ARRIVING) {
+                                                        if (numberOfConfirmations >= payment.getRequest().getSpec().getSafeNumberOfBlockConfirmations()) {
+                                                            payment.setState(Payment.State.RECEIVED);
+                                                            listener.paymentReceived(p);
+                                                            // stop watching for it
+                                                            unregisterPayment(p);
+                                                            watcher.removeTransaction(payment.getTxId(), payment.getRequest().getCryptoCurrency());
                                                         }
                                                     }
-                                                    lastNumberOfConfirmations = numberOfConfirmations;
-
-                                                    if (payment.getState() == Payment.State.FAILED) {
-                                                        //stop listening if transaction already failed
-                                                        watcher.removeTransaction(transactionHash,payment.getRequest().getCryptoCurrency());
-                                                    }
                                                 }
-                                            }, payment);
-                                            break;
-                                        case RECEIVED:
-                                            listener.paymentReceived(payment);
-                                            //payment was received stop watching for it
-                                            unregisterPayment(payment);
-                                            break;
-                                    }
+                                                lastNumberOfConfirmations = numberOfConfirmations;
+                                            }
+                                        }, payment);
+                                        break;
+
+                                    case RECEIVED:
+                                        listener.paymentReceived(payment);
+                                        // stop watching for it
+                                        unregisterPayment(payment);
+                                        watcher.removeTransaction(payment.getTxId(), payment.getRequest().getCryptoCurrency());
+                                        break;
                                 }
                             }
-                            service.schedule(new Runnable() {
-                                @Override
-                                public void run() {
-                                    payment.setFailure(Payment.Failure.SOMETHING_ARRIVED_AFTER_TIMEOUT);
-                                    payment.setState(Payment.State.FAILED);
-                                    final IPaymentListener listener = ((PaymentRequestInternal) payment.getRequest()).getListener();
-                                    if (listener != null) {
-                                        listener.paymentFailed(payment);
-                                    }
-                                    unregisterPayment(payment);
-                                    watcher.removeTransaction(tx.getTxHash(),payment.getRequest().getCryptoCurrency());
-                                }
-                            }, EXPIRATION_FOR_REQUIRED_CONFIRMATIONS_IN_SECONDS, TimeUnit.SECONDS);
                         }
                     } else if (payment.getState() == Payment.State.ARRIVING) {
                         //there was a move on wallet after we already seen the transaction
@@ -277,12 +262,17 @@ public class PaymentMgr implements IPaymentMgr{
                                     listener.paymentFailed(payment);
                                 }
                             }
+                            // stop watching for it
                             unregisterPayment(payment);
-                        } else {
-                            //somebody probably moved coins from the address
+                            watcher.removeTransaction(payment.getTxId(), payment.getRequest().getCryptoCurrency());
                         }
-                    }
+                        // else: somebody probably moved coins from the address
 
+                    } else {
+                        // stop watching for it
+                        unregisterPayment(payment);
+                        watcher.removeTransaction(payment.getTxId(), payment.getRequest().getCryptoCurrency());
+                    }
                 }
             }, payment);
         }
@@ -339,6 +329,4 @@ public class PaymentMgr implements IPaymentMgr{
             return address;
         }
     }
-
-
 }
