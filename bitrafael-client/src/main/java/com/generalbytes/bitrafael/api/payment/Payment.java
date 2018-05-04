@@ -90,7 +90,7 @@ public class Payment {
     public enum Failure {
         NONE(0),
         SOMETHING_ARRIVED_AFTER_TIMEOUT(1),
-        NOTHING_ARRIVED_WITHIN_TIMEOUT(2),
+        NOTHING_ARRIVED_WITHIN_TIMEOUT(2), // after this failure comes second failure: SOMETHING_ARRIVED_AFTER_TIMEOUT (with transaction ID) or NOTHING_RECEIVED_WITHIN_TIMEOUT.
         NOTHING_RECEIVED_WITHIN_TIMEOUT(3), // time for amount to have enough confirmations
         INVALID_AMOUNT_RECEIVED(4); //customer sent invalid amount for some reason
 
