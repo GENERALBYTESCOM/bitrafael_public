@@ -137,6 +137,8 @@ public class WalletToolsBTC implements IWalletTools {
             return COIN_TYPE_BITCOIN;
         }else if (IClient.LTC.equalsIgnoreCase(cryptoCurrency)) {
             return COIN_TYPE_LITECOIN;
+        }else if (IClient.BCH.equalsIgnoreCase(cryptoCurrency)) {
+            return COIN_TYPE_BITCOIN_CASH;
         }
         return COIN_TYPE_BITCOIN;
     }
@@ -222,9 +224,11 @@ public class WalletToolsBTC implements IWalletTools {
             return new Classification(Classification.TYPE_UNKNOWN);
         }
         input = input.trim().replace("\n","");
+        boolean containsPrefix = false;
         if (input.contains(":")) {
             //remove leading protocol
             input = input.substring(input.indexOf(":") + 1);
+            containsPrefix = true;
         }
 
         //remove leading slashes
@@ -241,7 +245,7 @@ public class WalletToolsBTC implements IWalletTools {
             //most likely address lets check it
             try {
                 if (isAddressValidInternal(input)) {
-                    return new Classification(Classification.TYPE_ADDRESS,IClient.BTC,input);
+                    return new Classification(Classification.TYPE_ADDRESS,IClient.BTC,input, containsPrefix);
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
@@ -250,12 +254,12 @@ public class WalletToolsBTC implements IWalletTools {
             //most likely bitcoin private key
             try {
                 DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
-                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.BTC,input);
+                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.BTC,input, containsPrefix);
             } catch (AddressFormatException e) {
                 //e.printStackTrace();
             }
         }else if (input.startsWith("xpub")) {
-            return new Classification(Classification.TYPE_XPUB,IClient.BTC,input);
+            return new Classification(Classification.TYPE_XPUB,IClient.BTC,input,containsPrefix);
         }
 
         return new Classification(Classification.TYPE_UNKNOWN);

@@ -142,6 +142,8 @@ public class WalletToolsDASH implements IWalletTools {
             return COIN_TYPE_LITECOIN;
         }else if (IClient.DASH.equalsIgnoreCase(cryptoCurrency)) {
             return COIN_TYPE_DASH;
+        }else if (IClient.BCH.equalsIgnoreCase(cryptoCurrency)) {
+            return COIN_TYPE_BITCOIN_CASH;
         }
         return COIN_TYPE_DASH;
     }
@@ -227,9 +229,11 @@ public class WalletToolsDASH implements IWalletTools {
             return new Classification(Classification.TYPE_UNKNOWN);
         }
         input = input.trim().replace("\n","");
+        boolean containsPrefix = false;
         if (input.contains(":")) {
             //remove leading protocol
             input = input.substring(input.indexOf(":") + 1);
+            containsPrefix = true;
         }
 
         //remove leading slashes
@@ -246,7 +250,7 @@ public class WalletToolsDASH implements IWalletTools {
             //most likely address lets check it
             try {
                 if (isAddressValidInternal(input)) {
-                    return new Classification(Classification.TYPE_ADDRESS,IClient.DASH,input);
+                    return new Classification(Classification.TYPE_ADDRESS,IClient.DASH,input,containsPrefix);
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
@@ -254,12 +258,12 @@ public class WalletToolsDASH implements IWalletTools {
         }else if ((input.startsWith("7") || input.startsWith("X")) && input.length() >= 51) {
             try {
                 DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
-                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.DASH,input);
+                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.DASH,input,containsPrefix);
             } catch (AddressFormatException e) {
                 //e.printStackTrace();
             }
         }else if (input.startsWith("drkp")) {
-            return new Classification(Classification.TYPE_XPUB,IClient.DASH,input);
+            return new Classification(Classification.TYPE_XPUB,IClient.DASH,input,containsPrefix);
         }
 
         return new Classification(Classification.TYPE_UNKNOWN);

@@ -12,14 +12,23 @@ dependencies {
     compile(group: 'org.litecoinj', name: 'litecoinj-core', version: '0.15-SNAPSHOT')
     compile(group: 'org.dashj', name: 'dashj-core', version: '0.14.4.3.20180427')
     compile(group: 'com.github.mmazi', name: 'rescu', version: '1.9.1')
-    runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21')
+    compile(group: 'com.alexdupre', name: 'bitcoincash-lib_2.12', version: '0.9.17')
+    compile(group: 'cash.bitcoinj', name: 'bitcoinj-core', version: '0.14.5.2')
+    compile(group: 'cash.bitcoinj', name: 'bitcoinj-tools', version: '0.14.5.2')
+    compile(group: 'cash.bitcoinj', name: 'bitcoincashj-examples', version: '0.14.5.2')
+
+    testCompile (group: 'junit', name: 'junit', version: '4.10')
 }
 
 dependencySubstitutions {
     substitute from: 'com.madgag.spongycastle:core:1.51.0.0', toVersion: '1.52.0.0'
-    substitute from: 'org.slf4j:slf4j-api:1.7.20', toVersion: '1.7.21'
+    substitute from: 'org.slf4j:slf4j-api:1.7.20', toVersion: '1.7.25'
+    substitute from: 'org.slf4j:slf4j-api:1.7.21', toVersion: '1.7.25'
     substitute from: 'com.google.code.findbugs:jsr305:2.0.1', toVersion: '3.0.1'
     substitute from: 'com.squareup.okio:okio:1.6.0', toVersion: '1.11.0'
+    substitute from: 'com.madgag.spongycastle:core:1.51.0.0', toVersion: '1.58.0.0'
+    substitute from: 'com.madgag.spongycastle:core:1.52.0.0', toVersion: '1.58.0.0'
+    substitute from: 'com.google.protobuf:protobuf-java:2.5.0', toVersion: '2.6.1'
 }
 
 publishing {

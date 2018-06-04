@@ -150,9 +150,11 @@ public class WalletToolsXMR implements IClassificator{
             return new Classification(Classification.TYPE_UNKNOWN);
         }
         input = input.trim().replace("\n","");
+        boolean containsPrefix = false;
         if (input.contains(":")) {
             //remove leading protocol
             input = input.substring(input.indexOf(":") + 1);
+            containsPrefix = false;
         }
 
         //remove leading slashes
@@ -169,7 +171,7 @@ public class WalletToolsXMR implements IClassificator{
             //most likely address lets check it
             Address parse = Address.parse(input);
             if (parse != null) {
-                return new Classification(Classification.TYPE_ADDRESS, IClient.XMR,input);
+                return new Classification(Classification.TYPE_ADDRESS, IClient.XMR,input,containsPrefix);
             }
         }
 
@@ -179,7 +181,7 @@ public class WalletToolsXMR implements IClassificator{
             //maybe seed
             Account account = getAccount(input.trim());
             if (account != null) {
-                return new Classification(Classification.TYPE_SEED_MNEMONIC, IClient.XMR,input);
+                return new Classification(Classification.TYPE_SEED_MNEMONIC, IClient.XMR,input,containsPrefix);
             }
         }
         return new Classification(Classification.TYPE_UNKNOWN);

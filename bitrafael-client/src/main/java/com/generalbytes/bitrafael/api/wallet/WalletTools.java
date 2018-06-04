@@ -19,17 +19,18 @@
 package com.generalbytes.bitrafael.api.wallet;
 
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import com.generalbytes.bitrafael.api.client.IClient;
+import com.generalbytes.bitrafael.api.wallet.bch.WalletToolsBCH;
 import com.generalbytes.bitrafael.api.wallet.btc.WalletToolsBTC;
 import com.generalbytes.bitrafael.api.wallet.dash.WalletToolsDASH;
 import com.generalbytes.bitrafael.api.wallet.ltc.WalletToolsLTC;
 import com.generalbytes.bitrafael.api.wallet.xmr.Account;
 import com.generalbytes.bitrafael.api.wallet.xmr.WalletToolsXMR;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class WalletTools implements IWalletTools{
     private Map<String,IWalletTools> tools = new HashMap<String,IWalletTools>();
@@ -37,6 +38,8 @@ public class WalletTools implements IWalletTools{
     private WalletToolsXMR xmrwt = new WalletToolsXMR();
 
     public WalletTools() {
+    	tools.put(IClient.BCH,new WalletToolsBCH());
+        classificators.put(IClient.BCH,new WalletToolsBCH());
         tools.put(IClient.BTC,new WalletToolsBTC());
         classificators.put(IClient.BTC,new WalletToolsBTC());
         tools.put(IClient.LTC,new WalletToolsLTC());
@@ -120,7 +123,9 @@ public class WalletTools implements IWalletTools{
         }
 
         Classification result = new Classification(Classification.TYPE_UNKNOWN);
-        if (IClient.BTC.equalsIgnoreCase(cryptoCurrencyHint)) {
+        if (IClient.BCH.equalsIgnoreCase(cryptoCurrencyHint)) {
+            result = classificators.get(IClient.BCH).classify(input);
+        }else if (IClient.BTC.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.BTC).classify(input);
         }else if (IClient.LTC.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.LTC).classify(input);
@@ -139,7 +144,9 @@ public class WalletTools implements IWalletTools{
             return new Classification(Classification.TYPE_UNKNOWN);
         }
         input = input.trim().replace("\n","");
-        if (input.toLowerCase().startsWith("bitcoin")) {
+        if (input.toLowerCase().startsWith("bitcoincash")) {
+            return classificators.get(IClient.BCH).classify(input);
+        }else if (input.toLowerCase().startsWith("bitcoin")) {
             return classificators.get(IClient.BTC).classify(input);
         }else if (input.toLowerCase().startsWith("litecoin")) {
             return classificators.get(IClient.LTC).classify(input);
@@ -151,6 +158,10 @@ public class WalletTools implements IWalletTools{
 
         //not specified
         Classification result = new Classification(Classification.TYPE_UNKNOWN);
+        if ((input.startsWith("p") || input.startsWith("q")) && input.length() < 45 && input.length() > 35) {
+            result = classificators.get(IClient.BCH).classify(input);
+        }
+        
         if (input.startsWith("1") || input.startsWith("3") || input.startsWith("5") || (input.startsWith("K") && input.length() > 50) || (input.startsWith("L") && input.length() > 50) || input.startsWith("xpub")) {
             result = classificators.get(IClient.BTC).classify(input);
         }
@@ -177,5 +188,6 @@ public class WalletTools implements IWalletTools{
         result.add(IClient.BTC);
         result.add(IClient.DASH);
         result.add(IClient.XMR);
+        result.add(IClient.BCH);
         return result;
     }}

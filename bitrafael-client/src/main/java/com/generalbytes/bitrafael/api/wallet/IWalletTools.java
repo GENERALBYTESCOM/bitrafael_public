@@ -24,6 +24,7 @@ import java.util.Set;
 public interface IWalletTools extends IClassificator{
     public static final int PURPOSE_BIP44 = 44 ;
     public static final int COIN_TYPE_BITCOIN = 0;
+    public static final int COIN_TYPE_BITCOIN_CASH = 0;
     public static final int COIN_TYPE_LITECOIN = 2;
     public static final int COIN_TYPE_DASH = 5;
     public static final int CHAIN_EXTERNAL = 0;

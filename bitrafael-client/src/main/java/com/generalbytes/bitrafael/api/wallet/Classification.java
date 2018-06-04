@@ -31,15 +31,17 @@ public class Classification {
     private int type;
     private String cryptoCurrency;
     private String cleanData;
+    private boolean containsPrefix;
 
     public Classification(int type) {
         this.type = type;
     }
 
-    public Classification(int type, String cryptoCurrency, String cleanData) {
+    public Classification(int type, String cryptoCurrency, String cleanData, boolean containsPrefix) {
         this.type = type;
         this.cryptoCurrency = cryptoCurrency;
         this.cleanData = cleanData;
+        this.containsPrefix = false;
     }
 
     public int getType() {
@@ -54,12 +56,21 @@ public class Classification {
         return cleanData;
     }
 
+    public boolean isContainsPrefix() {
+        return containsPrefix;
+    }
+
+    public void setContainsPrefix(boolean containsPrefix) {
+        this.containsPrefix = containsPrefix;
+    }
+
     @Override
     public String toString() {
         return "Classification{" +
                 "type=" + type +
                 ", cryptoCurrency='" + cryptoCurrency + '\'' +
                 ", cleanData='" + cleanData + '\'' +
+                ", containsPrefix='" + containsPrefix + '\'' +
                 '}';
     }
 }

@@ -7,10 +7,11 @@ version = projectVersion
 dependencies {
     compile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1') //bitcoinj
     compile(group: 'com.caucho', name: 'hessian', version: '3.2.1') //hessian
-    compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
+    compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.58.0.0')
     compile(group: 'com.google.guava', name: 'guava', version: '18.0')
 }
 
 dependencySubstitutions {
-    substitute from: 'com.madgag.spongycastle:core:1.51.0.0', toVersion: '1.52.0.0'
+    substitute from: 'com.madgag.spongycastle:core:1.51.0.0', toVersion: '1.58.0.0'
+    substitute from: 'com.madgag.spongycastle:core:1.52.0.0', toVersion: '1.58.0.0'
 }
