@@ -41,7 +41,7 @@ public class Classification {
         this.type = type;
         this.cryptoCurrency = cryptoCurrency;
         this.cleanData = cleanData;
-        this.containsPrefix = false;
+        this.containsPrefix = containsPrefix;
     }
 
     public int getType() {
