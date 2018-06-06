@@ -225,11 +225,13 @@ public class WalletToolsLTC implements IWalletTools {
     @Override
     public Classification classify(String input) {
         if (input == null) {
-            return new Classification(Classification.TYPE_UNKNOWN);
+            return new Classification(Classification.TYPE_UNKNOWN, false, null);
         }
         input = input.trim().replace("\n","");
         boolean containsPrefix = false;
+        String prefix = null;
         if (input.contains(":")) {
+            prefix = input.substring(0, input.indexOf(":"));
             //remove leading protocol
             input = input.substring(input.indexOf(":") + 1);
             containsPrefix = true;
@@ -249,7 +251,7 @@ public class WalletToolsLTC implements IWalletTools {
             //most likely address lets check it
             try {
                 if (isAddressValidInternal(input)) {
-                    return new Classification(Classification.TYPE_ADDRESS,IClient.LTC,input,containsPrefix);
+                    return new Classification(Classification.TYPE_ADDRESS,IClient.LTC,input,containsPrefix,prefix);
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
@@ -258,15 +260,15 @@ public class WalletToolsLTC implements IWalletTools {
             //most likely private key
             try {
                 DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
-                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.LTC,input,containsPrefix);
+                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.LTC,input,containsPrefix,prefix);
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }
         }else if (input.startsWith("Ltub")) {
-            return new Classification(Classification.TYPE_XPUB,IClient.LTC,input,containsPrefix);
+            return new Classification(Classification.TYPE_XPUB,IClient.LTC,input,containsPrefix,prefix);
         }
 
-        return new Classification(Classification.TYPE_UNKNOWN);
+        return new Classification(Classification.TYPE_UNKNOWN,containsPrefix,prefix);
 
     }
 

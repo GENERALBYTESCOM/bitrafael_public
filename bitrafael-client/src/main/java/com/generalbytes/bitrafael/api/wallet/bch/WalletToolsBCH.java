@@ -47,14 +47,16 @@ public class WalletToolsBCH implements IWalletTools {
 	@Override
 	public Classification classify(String input) {
 		if (input == null) {
-			return new Classification(Classification.TYPE_UNKNOWN);
+            return new Classification(Classification.TYPE_UNKNOWN, false, null);
 		}
 		input = input.trim().replace("\n","");
 		boolean containsPrefix = false;
+		String prefix = null;
 		if (input.contains(":")) {
+            prefix = input.substring(0, input.indexOf(":"));
 			//remove leading protocol
 			input = input.substring(input.indexOf(":") + 1);
-            containsPrefix = true;
+			containsPrefix = true;
 		}
 
 		//remove leading slashes
@@ -76,14 +78,14 @@ public class WalletToolsBCH implements IWalletTools {
 				input.length() < 45) {
 			try {
 				if (isAddressValidInternal(input)) {
-                    Classification classification = new Classification(Classification.TYPE_ADDRESS, IClient.BCH, input, containsPrefix);
+                    Classification classification = new Classification(Classification.TYPE_ADDRESS, IClient.BCH, input, containsPrefix, prefix);
                     return classification;
 				}
 			} catch (AddressFormatException e) {
 				e.printStackTrace();
 			}
 		}
-		return null;
+		return new Classification(Classification.TYPE_UNKNOWN,containsPrefix,prefix);
 	}
 
 	@Override

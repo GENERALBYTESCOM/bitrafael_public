@@ -114,7 +114,7 @@ public class WalletTools implements IWalletTools{
     @Override
     public Classification classify(String input, String cryptoCurrencyHint) {
         if (input == null) {
-            return new Classification(Classification.TYPE_UNKNOWN);
+            return new Classification(Classification.TYPE_UNKNOWN, false, null);
         }
         input = input.trim().replace("\n","");
 
@@ -122,7 +122,7 @@ public class WalletTools implements IWalletTools{
             return classify(input);
         }
 
-        Classification result = new Classification(Classification.TYPE_UNKNOWN);
+        Classification result = new Classification(Classification.TYPE_UNKNOWN, false, null);
         if (IClient.BCH.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.BCH).classify(input);
         }else if (IClient.BTC.equalsIgnoreCase(cryptoCurrencyHint)) {
@@ -141,23 +141,23 @@ public class WalletTools implements IWalletTools{
     @Override
     public Classification classify(String input) {
         if (input == null) {
-            return new Classification(Classification.TYPE_UNKNOWN);
+            new Classification(Classification.TYPE_UNKNOWN, false, null);
         }
         input = input.trim().replace("\n","");
-        if (input.toLowerCase().startsWith("bitcoincash")) {
+        if (input.toLowerCase().startsWith("bitcoincash:")) {
             return classificators.get(IClient.BCH).classify(input);
-        }else if (input.toLowerCase().startsWith("bitcoin")) {
+        }else if (input.toLowerCase().startsWith("bitcoin:")) {
             return classificators.get(IClient.BTC).classify(input);
-        }else if (input.toLowerCase().startsWith("litecoin")) {
+        }else if (input.toLowerCase().startsWith("litecoin:")) {
             return classificators.get(IClient.LTC).classify(input);
-        }else if (input.toLowerCase().startsWith("dash")) {
+        }else if (input.toLowerCase().startsWith("dash:")) {
             return classificators.get(IClient.DASH).classify(input);
-        }else if (input.toLowerCase().startsWith("xmr") || input.toLowerCase().startsWith("monero")) {
+        }else if (input.toLowerCase().startsWith("xmr:") || input.toLowerCase().startsWith("monero:")) {
             return classificators.get(IClient.XMR).classify(input);
         }
 
         //not specified
-        Classification result = new Classification(Classification.TYPE_UNKNOWN);
+        Classification result = new Classification(Classification.TYPE_UNKNOWN, false, null);
         if ((input.startsWith("p") || input.startsWith("q")) && input.length() < 45 && input.length() > 35) {
             result = classificators.get(IClient.BCH).classify(input);
         }

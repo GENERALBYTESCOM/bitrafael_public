@@ -32,16 +32,20 @@ public class Classification {
     private String cryptoCurrency;
     private String cleanData;
     private boolean containsPrefix;
+    private String prefix;
 
-    public Classification(int type) {
+    public Classification(int type, boolean containsPrefix, String prefix) {
         this.type = type;
+        this.containsPrefix = containsPrefix;
+        this.prefix = prefix;
     }
 
-    public Classification(int type, String cryptoCurrency, String cleanData, boolean containsPrefix) {
+    public Classification(int type, String cryptoCurrency, String cleanData, boolean containsPrefix, String prefix) {
         this.type = type;
         this.cryptoCurrency = cryptoCurrency;
         this.cleanData = cleanData;
         this.containsPrefix = containsPrefix;
+        this.prefix = prefix;
     }
 
     public int getType() {
@@ -64,6 +68,14 @@ public class Classification {
         this.containsPrefix = containsPrefix;
     }
 
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
     @Override
     public String toString() {
         return "Classification{" +
@@ -71,6 +83,7 @@ public class Classification {
                 ", cryptoCurrency='" + cryptoCurrency + '\'' +
                 ", cleanData='" + cleanData + '\'' +
                 ", containsPrefix='" + containsPrefix + '\'' +
+                ", prefix='" + prefix + '\'' +
                 '}';
     }
 }
