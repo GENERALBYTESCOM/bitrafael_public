@@ -13,6 +13,7 @@ dependencies {
     compile(group: 'org.dashj', name: 'dashj-core', version: '0.14.4.7.20180927')
     compile(group: 'com.github.mmazi', name: 'rescu', version: '1.9.1')
     runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21')
+    runtime(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21')
 }
 
 dependencySubstitutions {
