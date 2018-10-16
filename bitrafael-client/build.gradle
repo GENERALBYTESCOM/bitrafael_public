@@ -10,9 +10,10 @@ dependencies {
     compile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1')
     compile(group: 'com.google.guava', name: 'guava', version: '18.0')
     compile(group: 'org.litecoinj', name: 'litecoinj-core', version: '0.15-SNAPSHOT')
-    compile(group: 'org.dashj', name: 'dashj-core', version: '0.14.4.3.20180427')
+    compile(group: 'org.dashj', name: 'dashj-core', version: '0.14.4.7.20180927')
     compile(group: 'com.github.mmazi', name: 'rescu', version: '1.9.1')
     runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21')
+    runtime(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21')
 }
 
 dependencySubstitutions {
