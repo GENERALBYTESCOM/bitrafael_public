@@ -28,12 +28,12 @@ public class MoneroExample {
 
         String seed = wt.generateSeedMnemonicSeparatedBySpaces();
         System.out.println("seed = " + seed);
-        Account account = wt.getAccount(seed);
+        Account account = wt.getAccount(seed,0);
         System.out.println("account = " + account);
         boolean addressValid = wt.isAddressValid(account.getAddress().toString());
         System.out.println("addressValid = " + addressValid);
 
-        Account addr = wt.getAccount(account.getSeedInMnemonic());
+        Account addr = wt.getAccount(account.getSeedInMnemonic(),0);
         Address parsedAddr = Address.parse(addr.getAddress().toString());
         System.out.println("parsedAddr = " + parsedAddr);
         parsedAddr.setPaymentId(1337);
@@ -46,8 +46,8 @@ public class MoneroExample {
 
         System.out.println("shortSeed = " + shortSeed);
         System.out.println("longSeed = " + longSeed);
-        Account shortAccount = wt.getAccount(shortSeed);
-        Account longAccount = wt.getAccount(longSeed);
+        Account shortAccount = wt.getAccount(shortSeed,0);
+        Account longAccount = wt.getAccount(longSeed,0);
         if (shortAccount.getPublicSpendKey().equals(longAccount.getPublicSpendKey())){
             System.out.println("Seeds are equal!");
             String shortViewKey = Utils.bytesToHex(shortAccount.getPrivateViewKey().getEncoded());
