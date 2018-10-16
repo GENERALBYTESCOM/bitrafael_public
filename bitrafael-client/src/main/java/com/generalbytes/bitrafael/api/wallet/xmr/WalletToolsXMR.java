@@ -76,7 +76,7 @@ public class WalletToolsXMR implements IClassificator{
     }
 
 
-    public Account getAccount(String seedMnemonicSeparatedBySpaces) {
+    public Account getAccount(String seedMnemonicSeparatedBySpaces, int index) {
         try {
             //clean
             seedMnemonicSeparatedBySpaces = seedMnemonicSeparatedBySpaces.trim().replace("\n","");
@@ -119,10 +119,16 @@ public class WalletToolsXMR implements IClassificator{
                     publicA = keyFactory.generatePublicKey(secretA);
                     secretB = keyFactory.decodePrivateKey(b);
                     publicB = keyFactory.generatePublicKey(secretB);
+
+                    if (index != 0) {
+                        //derive another account
+                        //TODO: I hope some day I will have time to implement this subaddress derivation.
+                    }
+
                 } catch (InvalidKeyException e) {
                     e.printStackTrace();
                 }
-                return new Account(seedMnemonicSeparatedBySpaces, seed, secretB, secretA, publicB, publicA);
+                return new Account(seedMnemonicSeparatedBySpaces, seed, secretB, secretA, publicB, publicA, index);
             }
         } catch (Throwable e) {
             e.printStackTrace();
@@ -165,7 +171,7 @@ public class WalletToolsXMR implements IClassificator{
             input = input.substring(0,input.indexOf("?"));
         }
 
-        if (input.startsWith("4") && input.length()>=95) {
+        if ((input.startsWith("4") || input.startsWith("8")) && input.length()>=95) {
             //most likely address lets check it
             Address parse = Address.parse(input);
             if (parse != null) {
@@ -177,7 +183,7 @@ public class WalletToolsXMR implements IClassificator{
         int numberOfWords = st.countTokens();
         if (numberOfWords == 25 || numberOfWords == 13) {
             //maybe seed
-            Account account = getAccount(input.trim());
+            Account account = getAccount(input.trim(), 0);
             if (account != null) {
                 return new Classification(Classification.TYPE_SEED_MNEMONIC, IClient.XMR,input);
             }

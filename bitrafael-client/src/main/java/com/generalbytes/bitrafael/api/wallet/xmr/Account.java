@@ -12,14 +12,16 @@ public class Account{
     private PublicKey publicSpendKey;
     private PublicKey publicViewKey;
     private Address address;
+    private int index;
 
-    public Account(String seedInMnemonic, byte[] seedInBytes, PrivateKey privateSpendKey, PrivateKey privateViewKey, PublicKey publicSpendKey, PublicKey publicViewKey) {
+    public Account(String seedInMnemonic, byte[] seedInBytes, PrivateKey privateSpendKey, PrivateKey privateViewKey, PublicKey publicSpendKey, PublicKey publicViewKey, int index) {
         this.seedInMnemonic = seedInMnemonic;
         this.seedInBytes = seedInBytes;
         this.privateSpendKey = privateSpendKey;
         this.privateViewKey = privateViewKey;
         this.publicSpendKey = publicSpendKey;
         this.publicViewKey = publicViewKey;
+        this.index = index;
 
         address = new Address(publicSpendKey,publicViewKey);
     }
@@ -61,6 +63,7 @@ public class Account{
                 ", privateViewKey=" + privateViewKey +
                 ", publicSpendKey=" + publicSpendKey +
                 ", publicViewKey=" + publicViewKey +
+                ", index=" + index +
                 ", address='" + address + '\'' +
                 '}';
     }

@@ -88,7 +88,7 @@ public class WalletTools implements IWalletTools{
     @Override
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency) {
         if (IClient.XMR.equalsIgnoreCase(cryptoCurrency)) {
-            Account account = xmrwt.getAccount(privateKey);
+            Account account = xmrwt.getAccount(privateKey,0);
             if (account != null) {
                 return account.getAddress().toString();
             }
@@ -155,7 +155,7 @@ public class WalletTools implements IWalletTools{
             result = classificators.get(IClient.BTC).classify(input);
         }
 
-        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("4") && input.length() >=95)) {
+        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("4") || input.startsWith("8")) && input.length() >=95) {
             return classificators.get(IClient.XMR).classify(input);
         }
 

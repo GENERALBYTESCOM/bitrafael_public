@@ -14,15 +14,29 @@ public class Address {
     private PublicKey publicSpendKey;
     private PublicKey publicViewKey;
     private byte[] paymentId;
+    private boolean isSubAddress;
 
     public Address(PublicKey publicSpendKey, PublicKey publicViewKey) {
         this.publicSpendKey = publicSpendKey;
         this.publicViewKey = publicViewKey;
     }
 
+    public Address(PublicKey publicSpendKey, PublicKey publicViewKey, boolean isSubAddress) {
+        this.publicSpendKey = publicSpendKey;
+        this.publicViewKey = publicViewKey;
+        this.isSubAddress = isSubAddress;
+    }
+
     public Address(PublicKey publicSpendKey, PublicKey publicViewKey, byte[] paymentId) {
         this(publicSpendKey,publicViewKey);
         this.paymentId = paymentId;
+    }
+
+    public Address(PublicKey publicSpendKey, PublicKey publicViewKey, byte[] paymentId, boolean isSubAddress) {
+        this.publicSpendKey = publicSpendKey;
+        this.publicViewKey = publicViewKey;
+        this.paymentId = paymentId;
+        this.isSubAddress = isSubAddress;
     }
 
     public Address(PublicKey publicSpendKey, PublicKey publicViewKey, long paymentId) {
@@ -42,6 +56,9 @@ public class Address {
 
     public String toString() {
         byte[] prefix = Varint.valueOf(0x12).toByteArray();
+        if (isSubAddress) {
+            prefix = Varint.valueOf(0x2A).toByteArray();
+        }
 
         if (isIntegratedAddress()) {
             prefix = Varint.valueOf(0x13).toByteArray();
@@ -65,13 +82,15 @@ public class Address {
             byte[] prefix = Arrays.copyOfRange(decoded, 0, 1);
             boolean isStandard = prefix[0] == 0x12;
             boolean isIntegrated = prefix[0] == 0x13;
+            boolean isSubAddress = prefix[0] == 0x2A;
+
             int prefixLen = 1;
             byte[] publicSpendKeyEncoded = null;
             byte[] publicViewKeyEncoded = null;
             byte[] checksum = null;
             byte[] paymentId = null;
 
-            if (isStandard) {
+            if (isStandard || isSubAddress) {
                 publicSpendKeyEncoded = Arrays.copyOfRange(decoded, prefixLen + 0, prefixLen + 32);
                 publicViewKeyEncoded = Arrays.copyOfRange(decoded, prefixLen + 32, prefixLen + 32 + 32);
                 checksum = Arrays.copyOfRange(decoded, prefixLen + 32 + 32, prefixLen + 32 + 32 + 4);
@@ -94,7 +113,7 @@ public class Address {
 
             try {
                 KeyFactory kf = new KeyFactory();
-                Address result = new Address(kf.decodePublicKey(publicSpendKeyEncoded), kf.decodePublicKey(publicViewKeyEncoded), paymentId);
+                Address result = new Address(kf.decodePublicKey(publicSpendKeyEncoded), kf.decodePublicKey(publicViewKeyEncoded), paymentId, isSubAddress);
                 return result;
             } catch (InvalidKeyException e) {
                 e.printStackTrace();
