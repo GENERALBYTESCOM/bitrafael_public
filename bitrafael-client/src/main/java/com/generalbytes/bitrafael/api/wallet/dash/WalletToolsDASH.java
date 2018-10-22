@@ -54,7 +54,7 @@ public class WalletToolsDASH implements IWalletTools {
         return null;
     }
 
-    public MasterPrivateKeyDASH getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency){
+    public MasterPrivateKeyDASH getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency, int standard){
         if (password == null) {
             password = "";
         }
@@ -62,19 +62,19 @@ public class WalletToolsDASH implements IWalletTools {
         DeterministicSeed seed = new DeterministicSeed(split,null,password, MnemonicCode.BIP39_STANDARDISATION_TIME_SECS);
         DeterministicKey masterKey = HDKeyDerivation.createMasterPrivateKey(seed.getSeedBytes());
         final String xprv = masterKey.serializePrivB58(MainNetParams.get());
-        return getMasterPrivateKey(xprv,cryptoCurrency);
+        return getMasterPrivateKey(xprv,cryptoCurrency, standard);
     }
 
     @Override
-    public MasterPrivateKeyDASH getMasterPrivateKey(String xprv, String cryptoCurrency) {
-        return new MasterPrivateKeyDASH(xprv);
+    public MasterPrivateKeyDASH getMasterPrivateKey(String prv, String cryptoCurrency, int standard) {
+        return new MasterPrivateKeyDASH(prv, standard);
     }
 
     @Override
-    public String getWalletAddress(IMasterPrivateKey master, String cryptoCurrency, int accountIndex, int chainIndex, int index) {        DeterministicKey masterKey = DeterministicKey.deserializeB58(master.getXPRV(), MainNetParams.get());
+    public String getWalletAddress(IMasterPrivateKey master, String cryptoCurrency, int accountIndex, int chainIndex, int index) {        DeterministicKey masterKey = DeterministicKey.deserializeB58(master.getPRV(), MainNetParams.get());
         masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
 
-        final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(PURPOSE_BIP44, true));
+        final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP44, true));
         final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(getCoinTypeByCryptoCurrency(cryptoCurrency), true));
         final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
         final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
@@ -84,20 +84,20 @@ public class WalletToolsDASH implements IWalletTools {
     }
 
     @Override
-    public String getWalletAddressFromAccountXPUB(String accountXPUB, String cryptoCurrency, int chainIndex, int index) {
-        if (!accountXPUB.startsWith("drkp")) {
+    public String getWalletAddressFromAccountPUB(String accountPUB, String cryptoCurrency, int chainIndex, int index) {
+        if (!accountPUB.startsWith("drkp")) {
             return null;
         }
-        byte[] serializedKey = Base58.decodeChecked(accountXPUB);
+        byte[] serializedKey = Base58.decodeChecked(accountPUB);
         ByteBuffer buffer = ByteBuffer.wrap(serializedKey);
         int header = buffer.getInt();
         if(header != MainNetParams.get().getBip32HeaderPriv() && header != MainNetParams.get().getBip32HeaderPub()) {
-            throw new IllegalArgumentException("Unknown header bytes in xpub: " + accountXPUB);
+            throw new IllegalArgumentException("Unknown header bytes in xpub: " + accountPUB);
         } else {
             boolean pub = header == MainNetParams.get().getBip32HeaderPub();
             if (pub) {
                 int depth = buffer.get() & 255;
-                DeterministicKey accountKey = DeterministicKey.deserializeB58(accountXPUB, MainNetParams.get());
+                DeterministicKey accountKey = DeterministicKey.deserializeB58(accountPUB, MainNetParams.get());
                 DeterministicKey walletKey = accountKey;
                 if (depth != 2) {
                     //bip44
@@ -113,10 +113,10 @@ public class WalletToolsDASH implements IWalletTools {
 
     @Override
     public String getWalletPrivateKey(IMasterPrivateKey master, String cryptoCurrency, int accountIndex, int chainIndex, int index) {
-        DeterministicKey masterKey = DeterministicKey.deserializeB58(master.getXPRV(), MainNetParams.get());
+        DeterministicKey masterKey = DeterministicKey.deserializeB58(master.getPRV(), MainNetParams.get());
         masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
 
-        final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(PURPOSE_BIP44, true));
+        final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP44, true));
         final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(getCoinTypeByCryptoCurrency(cryptoCurrency), true));
         final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
         final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
@@ -126,10 +126,10 @@ public class WalletToolsDASH implements IWalletTools {
     }
 
     @Override
-    public String getAccountXPUB(IMasterPrivateKey master, String cryptoCurrency, int accountIndex) {
-        DeterministicKey masterKey = DeterministicKey.deserializeB58(master.getXPRV(), MainNetParams.get());
+    public String getAccountPUB(IMasterPrivateKey master, String cryptoCurrency, int accountIndex) {
+        DeterministicKey masterKey = DeterministicKey.deserializeB58(master.getPRV(), MainNetParams.get());
         masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
-        final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(PURPOSE_BIP44, true));
+        final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP44, true));
         final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(getCoinTypeByCryptoCurrency(cryptoCurrency), true));
         final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
         return accountKey.serializePubB58(MainNetParams.get());
@@ -259,7 +259,7 @@ public class WalletToolsDASH implements IWalletTools {
                 //e.printStackTrace();
             }
         }else if (input.startsWith("drkp")) {
-            return new Classification(Classification.TYPE_XPUB,IClient.DASH,input);
+            return new Classification(Classification.TYPE_PUB,IClient.DASH,input);
         }
 
         return new Classification(Classification.TYPE_UNKNOWN);

@@ -1,5 +1,5 @@
 /*************************************************************************************
- * Copyright (C) 2016 GENERAL BYTES s.r.o. All rights reserved.
+ * Copyright (C) 2016-2018 GENERAL BYTES s.r.o. All rights reserved.
  *
  * This software may be distributed and modified under the terms of the GNU
  * General Public License version 2 (GPL2) as published by the Free Software
@@ -26,25 +26,24 @@ public class WalletToolsExample {
     public static void main(String[] args) {
         IWalletTools wt = new WalletTools();
         String cryptoCurrency = IClient.BTC;
-        final IMasterPrivateKey mKey = wt.getMasterPrivateKey("letter advice cage absurd amount doctor acoustic avoid letter advice cage above", "TREZOR", cryptoCurrency);
+        IMasterPrivateKey mKey = wt.getMasterPrivateKey("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "", cryptoCurrency, IWalletTools.STANDARD_BIP49);
         System.out.println("mKey = " + mKey);
-        final String xpub = mKey.getXPUB();
+        String xpub = mKey.getPUB();
         System.out.println("xpub = " + xpub);
-        final String xprv = mKey.getXPRV();
+        String xprv = mKey.getPRV();
         System.out.println("xprv = " + xprv);
         final String accountsaddress = wt.getWalletAddress(mKey,cryptoCurrency, 0, IWalletTools.CHAIN_EXTERNAL, 0);
         System.out.println("accountsaddress = " + accountsaddress);
         final String walletPrivateKey = wt.getWalletPrivateKey(mKey,cryptoCurrency, 0, IWalletTools.CHAIN_EXTERNAL, 0);
         System.out.println("walletPrivateKey = " + walletPrivateKey);
-        final String accountXPUB = wt.getAccountXPUB(mKey, cryptoCurrency,0);
+        final String accountXPUB = wt.getAccountPUB(mKey, cryptoCurrency,0);
         System.out.println("accountXPUB = " + accountXPUB);
-        final String walletAddressFromXPUB = wt.getWalletAddressFromAccountXPUB(accountXPUB, cryptoCurrency,IWalletTools.CHAIN_EXTERNAL, 0);
+        final String walletAddressFromXPUB = wt.getWalletAddressFromAccountPUB(accountXPUB, cryptoCurrency,IWalletTools.CHAIN_EXTERNAL, 0);
         System.out.println("walletAddressFromXPUB = " + walletAddressFromXPUB);
 
         //generate new master key
         final String menmonic = wt.generateSeedMnemonicSeparatedBySpaces();
         System.out.println("New generated menmonic = " + menmonic);
-
 
     }
 }

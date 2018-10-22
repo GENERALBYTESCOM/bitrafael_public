@@ -18,16 +18,106 @@
 
 package com.generalbytes.bitrafael.api.wallet.ltc;
 
+import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.IMasterPrivateKey;
+import org.litecoinj.core.*;
+import org.litecoinj.crypto.ChildNumber;
 import org.litecoinj.crypto.DeterministicKey;
+import org.litecoinj.crypto.HDKeyDerivation;
 import org.litecoinj.crypto.MnemonicCode;
-import org.litecoinj.params.MainNetParams;
+import org.litecoinj.store.BlockStore;
+import org.litecoinj.store.BlockStoreException;
+import org.litecoinj.utils.MonetaryFormat;
+
+import java.nio.ByteBuffer;
+
+import static com.generalbytes.bitrafael.api.wallet.IWalletTools.*;
+import static com.generalbytes.bitrafael.api.wallet.ltc.WalletToolsLTC.addChecksum;
+import static com.generalbytes.bitrafael.api.wallet.ltc.WalletToolsLTC.getCoinTypeByCryptoCurrency;
+import static com.google.common.base.Preconditions.checkState;
 
 public class MasterPrivateKeyLTC implements IMasterPrivateKey{
-    private DeterministicKey key;
+    public static final int XPUB = 0x019da462;//Ltub
+    public static final int XPRV = 0x019d9cfe;//Ltpv
+    public static final int YPUB = 0x01b26ef6;//Mtub
+    public static final int YPRV = 0x01b26792;//Mtpv
 
-    public MasterPrivateKeyLTC(String xprv) {
-        key = DeterministicKey.deserializeB58(xprv,MainNetParams.get());
+
+    private DeterministicKey key;
+    private int standard;
+
+    public MasterPrivateKeyLTC(String prv, int standard) {
+        key = getDeterministicKey(prv, standard);
+        this.standard = standard;
+    }
+
+    public static DeterministicKey getDeterministicKey(String prv, int standard) {
+        int header = 0;
+        switch (standard) {
+            case STANDARD_BIP44:
+                header = XPRV;//xprv
+                break;
+            case STANDARD_BIP49:
+                header = YPRV; //yprv
+                break;
+        }
+        final int finalHeader = header;
+        return DeterministicKey.deserializeB58(prv, new NetworkParameters() {
+            @Override
+            public int getBip32HeaderPub() {
+                return 0;
+            }
+
+            @Override
+            public int getBip32HeaderPriv() {
+                return finalHeader;
+            }
+
+            @Override
+            public String getPaymentProtocolId() {
+                return null;
+            }
+
+            @Override
+            public void checkDifficultyTransitions(StoredBlock storedPrev, Block next, BlockStore blockStore) throws VerificationException, BlockStoreException {
+
+            }
+
+            @Override
+            public Coin getMaxMoney() {
+                return null;
+            }
+
+            @Override
+            public Coin getMinNonDustOutput() {
+                return null;
+            }
+
+            @Override
+            public MonetaryFormat getMonetaryFormat() {
+                return null;
+            }
+
+            @Override
+            public String getUriScheme() {
+                return null;
+            }
+
+            @Override
+            public boolean hasMaxMoney() {
+                return false;
+            }
+
+            @Override
+            public BitcoinSerializer getSerializer(boolean parseRetain) {
+                return null;
+            }
+
+            @Override
+            public int getProtocolVersionNum(ProtocolVersion version) {
+                return 0;
+            }
+        });
     }
 
     public long getCreationTimeSeconds() {
@@ -36,17 +126,73 @@ public class MasterPrivateKeyLTC implements IMasterPrivateKey{
 
     @Override
     public String toString() {
-        return getXPUB();
+        return getPUB();
     }
 
-    public String getXPRV() {
-        return key.serializePrivB58(MainNetParams.get());
+    public String getPRV() {
+        return serializePRV(key,standard);
     }
-    public String getXPUB() {
-        return key.serializePubB58(MainNetParams.get());
+
+    public String getPUB() {
+        return serializePUB(key,standard,0, IClient.LTC);
     }
 
     public boolean hasPrv() {
         return key.hasPrivKey();
+    }
+
+    @Override
+    public int getStandard() {
+        return standard;
+    }
+
+    public static String serializePRV(DeterministicKey masterKey, int standard) {
+        int header = 0x0488ade4;
+
+        switch (standard) {
+            case STANDARD_BIP44:
+                header = XPRV;//Ltpv
+                break;
+            case STANDARD_BIP49:
+                header = YPRV; //Mtpv
+                break;
+        }
+        ByteBuffer ser = ByteBuffer.allocate(78);
+        ser.putInt(header);
+        ser.put((byte) masterKey.getDepth());
+        ser.putInt(masterKey.getParentFingerprint());
+        ser.putInt(masterKey.getChildNumber().i());
+        ser.put(masterKey.getChainCode());
+        ser.put(masterKey.getPrivKeyBytes33());
+        checkState(ser.position() == 78);
+        byte[] x = ser.array();
+        return Base58.encode(addChecksum(x));
+    }
+
+
+    public static String serializePUB(DeterministicKey masterKey, int standard, int accountIndex, String cryptoCurrency) {
+        final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(standard, true));
+        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(getCoinTypeByCryptoCurrency(cryptoCurrency), true));
+        final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
+
+        int header = 0x0488b21e;
+        switch (standard) {
+            case STANDARD_BIP44:
+                header= XPUB;//Ltub
+                break;
+            case STANDARD_BIP49:
+                header = YPUB; //Mtub
+                break;
+        }
+
+        ByteBuffer ser = ByteBuffer.allocate(78);
+        ser.putInt(header);
+        ser.put((byte) accountKey.getDepth());
+        ser.putInt(accountKey.getParentFingerprint());
+        ser.putInt(accountKey.getChildNumber().i());
+        ser.put(accountKey.getChainCode());
+        ser.put(accountKey.getPubKey());
+        checkState(ser.position() == 78);
+        return Base58.encode(addChecksum(ser.array()));
     }
 }

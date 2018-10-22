@@ -56,18 +56,18 @@ public class WalletTools implements IWalletTools{
     }
 
     @Override
-    public IMasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency) {
-        return tools.get(cryptoCurrency).getMasterPrivateKey(seedMnemonicSeparatedBySpaces,password, cryptoCurrency);
+    public IMasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency, int standard) {
+        return tools.get(cryptoCurrency).getMasterPrivateKey(seedMnemonicSeparatedBySpaces,password, cryptoCurrency, standard);
     }
 
     @Override
-    public IMasterPrivateKey getMasterPrivateKey(String xprv, String cryptoCurrency) {
-        return tools.get(cryptoCurrency).getMasterPrivateKey(xprv, cryptoCurrency);
+    public IMasterPrivateKey getMasterPrivateKey(String prv, String cryptoCurrency, int standard) {
+        return tools.get(cryptoCurrency).getMasterPrivateKey(prv, cryptoCurrency, standard);
     }
 
     @Override
-    public String getAccountXPUB(IMasterPrivateKey master, String cryptoCurrency, int accountIndex) {
-        return tools.get(cryptoCurrency).getAccountXPUB(master, cryptoCurrency, accountIndex);
+    public String getAccountPUB(IMasterPrivateKey master, String cryptoCurrency, int accountIndex) {
+        return tools.get(cryptoCurrency).getAccountPUB(master, cryptoCurrency, accountIndex);
     }
 
     @Override
@@ -81,8 +81,8 @@ public class WalletTools implements IWalletTools{
     }
 
     @Override
-    public String getWalletAddressFromAccountXPUB(String accountXPUB, String cryptoCurrency, int chainIndex, int index) {
-        return tools.get(cryptoCurrency).getWalletAddressFromAccountXPUB(accountXPUB, cryptoCurrency, chainIndex, index);
+    public String getWalletAddressFromAccountPUB(String accountPUB, String cryptoCurrency, int chainIndex, int index) {
+        return tools.get(cryptoCurrency).getWalletAddressFromAccountPUB(accountPUB, cryptoCurrency, chainIndex, index);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class WalletTools implements IWalletTools{
 
         //not specified
         Classification result = new Classification(Classification.TYPE_UNKNOWN);
-        if (input.startsWith("1") || input.startsWith("3") || input.startsWith("5") || (input.startsWith("K") && input.length() > 50) || (input.startsWith("L") && input.length() > 50) || input.startsWith("xpub")) {
+        if (input.startsWith("1") || input.startsWith("3") || input.startsWith("5") || (input.startsWith("K") && input.length() > 50) || (input.startsWith("L") && input.length() > 50) || input.startsWith("xpub") || input.startsWith("ypub") || input.startsWith("zpub")) {
             result = classificators.get(IClient.BTC).classify(input);
         }
 
@@ -159,7 +159,7 @@ public class WalletTools implements IWalletTools{
             return classificators.get(IClient.XMR).classify(input);
         }
 
-        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("L") || input.startsWith("3") || input.startsWith("6") || input.startsWith("M") || input.startsWith("Ltub") || input.startsWith("T"))) {
+        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("L") || input.startsWith("3") || input.startsWith("6") || input.startsWith("M") || input.startsWith("Ltub") || input.startsWith("Mtub") || input.startsWith("T"))) {
             return classificators.get(IClient.LTC).classify(input);
         }
 

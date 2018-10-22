@@ -19,6 +19,7 @@ package com.generalbytes.bitrafael.api.examples.dash;
 
 import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.IMasterPrivateKey;
+import com.generalbytes.bitrafael.api.wallet.IWalletTools;
 import com.generalbytes.bitrafael.api.wallet.WalletTools;
 
 public class ClientExample {
@@ -26,13 +27,13 @@ public class ClientExample {
         String cryptoCurrency = IClient.DASH;
         WalletTools wt = new WalletTools();
         String seeed = wt.generateSeedMnemonicSeparatedBySpaces();
-        IMasterPrivateKey m = wt.getMasterPrivateKey(seeed, "TREZOR", cryptoCurrency);
+        IMasterPrivateKey m = wt.getMasterPrivateKey(seeed, "TREZOR", cryptoCurrency, IWalletTools.STANDARD_BIP44);
         String walletPrivateKey = wt.getWalletPrivateKey(m, cryptoCurrency, 0, 0, 0);
         System.out.println("walletPrivateKey = " + walletPrivateKey);
         String walletAddressFromPrivateKey = wt.getWalletAddressFromPrivateKey(walletPrivateKey, cryptoCurrency);
         System.out.println("walletAddressFromPrivateKey = " + walletAddressFromPrivateKey);
 
-        String addr = wt.getWalletAddressFromAccountXPUB("drkpRyug7FHRmqscP7njUP2dhQzbsswWCospdXNy7knCKjQQ4uLnRZh99dgTACrXujDHo2ECNeEheW4KZeDCnqV9XL4ndr532gFGTwWR1jWAnBh", cryptoCurrency, 0, 0);
+        String addr = wt.getWalletAddressFromAccountPUB("drkpRyug7FHRmqscP7njUP2dhQzbsswWCospdXNy7knCKjQQ4uLnRZh99dgTACrXujDHo2ECNeEheW4KZeDCnqV9XL4ndr532gFGTwWR1jWAnBh", cryptoCurrency, 0, 0);
         System.out.println("addr = " + addr);//should be XrAwEffseCKgQPQhYqXuscBaoUnHqkKxQz
         /*
         IClient c = new Client("https://beta.coin.cz", cryptoCurrency);

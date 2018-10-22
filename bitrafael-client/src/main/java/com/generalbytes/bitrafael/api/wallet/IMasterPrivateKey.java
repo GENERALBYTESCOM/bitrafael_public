@@ -20,7 +20,8 @@ package com.generalbytes.bitrafael.api.wallet;
 
 public interface IMasterPrivateKey {
     long getCreationTimeSeconds();
-    String getXPRV();
-    String getXPUB();
+    int getStandard();
+    String getPRV();
+    String getPUB();
     boolean hasPrv();
 }

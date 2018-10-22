@@ -66,6 +66,6 @@ public class XPUBMgr implements IXPUBMgr{
             }
         }
 
-        return wt.getWalletAddressFromAccountXPUB(accountXPUB, cryptoCurrency, chainIndex, newIndex);
+        return wt.getWalletAddressFromAccountPUB(accountXPUB, cryptoCurrency, chainIndex, newIndex);
     }
 }

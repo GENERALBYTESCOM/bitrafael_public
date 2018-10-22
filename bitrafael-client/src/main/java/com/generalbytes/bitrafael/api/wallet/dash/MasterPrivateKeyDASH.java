@@ -25,9 +25,11 @@ import org.dashj.params.MainNetParams;
 
 public class MasterPrivateKeyDASH implements IMasterPrivateKey{
     private DeterministicKey key;
+    private int standard;
 
-    public MasterPrivateKeyDASH(String xprv) {
+    public MasterPrivateKeyDASH(String xprv, int standard) {
         key = DeterministicKey.deserializeB58(xprv,MainNetParams.get());
+        this.standard = standard;
     }
 
     public long getCreationTimeSeconds() {
@@ -36,17 +38,22 @@ public class MasterPrivateKeyDASH implements IMasterPrivateKey{
 
     @Override
     public String toString() {
-        return getXPUB();
+        return getPUB();
     }
 
-    public String getXPRV() {
+    public String getPRV() {
         return key.serializePrivB58(MainNetParams.get());
     }
-    public String getXPUB() {
+    public String getPUB() {
         return key.serializePubB58(MainNetParams.get());
     }
 
     public boolean hasPrv() {
         return key.hasPrivKey();
+    }
+
+    @Override
+    public int getStandard() {
+        return standard;
     }
 }

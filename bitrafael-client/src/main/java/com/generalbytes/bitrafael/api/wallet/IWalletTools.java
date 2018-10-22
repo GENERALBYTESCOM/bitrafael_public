@@ -22,22 +22,25 @@ package com.generalbytes.bitrafael.api.wallet;
 import java.util.Set;
 
 public interface IWalletTools extends IClassificator{
-    public static final int PURPOSE_BIP44 = 44 ;
-    public static final int COIN_TYPE_BITCOIN = 0;
-    public static final int COIN_TYPE_LITECOIN = 2;
-    public static final int COIN_TYPE_DASH = 5;
-    public static final int CHAIN_EXTERNAL = 0;
-    public static final int CHAIN_CHANGE = 1;
+    int STANDARD_BIP44 = 44 ;
+    int STANDARD_BIP49 = 49 ;
+    int STANDARD_BIP84 = 84 ;
+    int COIN_TYPE_BITCOIN = 0;
+    int COIN_TYPE_LITECOIN = 2;
+    int COIN_TYPE_DASH = 5;
+    int CHAIN_EXTERNAL = 0;
+    int CHAIN_CHANGE = 1;
 
-    public String generateSeedMnemonicSeparatedBySpaces();
-    public IMasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency);
-    public IMasterPrivateKey getMasterPrivateKey(String xprv, String cryptoCurrency);
-    public String getAccountXPUB(IMasterPrivateKey master, String cryptoCurrency, int accountIndex);
+    String generateSeedMnemonicSeparatedBySpaces();
+    IMasterPrivateKey getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency, int standard);
+    IMasterPrivateKey getMasterPrivateKey(String prv, String cryptoCurrency, int standard);
+    String getAccountPUB(IMasterPrivateKey master, String cryptoCurrency, int accountIndex);
 
 
     String getWalletAddress(IMasterPrivateKey master, String cryptoCurrency, int accountIndex, int chainIndex, int index);
     String getWalletPrivateKey(IMasterPrivateKey master, String cryptoCurrency, int accountIndex, int chainIndex, int index);
-    String getWalletAddressFromAccountXPUB(String accountXPUB, String cryptoCurrency, int chainIndex, int index);
+    String getWalletAddressFromAccountPUB(String accountPUB, String cryptoCurrency, int chainIndex, int index);
+
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency);
     public ISignature sign(String privateKey, byte[] hashToSign, String cryptoCurrency);
     boolean isAddressValid(String address, String cryptoCurrency);

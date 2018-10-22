@@ -318,7 +318,7 @@ public class PaymentMgr implements IPaymentMgr{
                 index++;
                 p.setProperty(chainKey,index +"");
 
-                address = wt.getWalletAddressFromAccountXPUB(xpubAccount, cryptoCurrency, chainIndex, index);
+                address = wt.getWalletAddressFromAccountPUB(xpubAccount, cryptoCurrency, chainIndex, index);
 
                 FileOutputStream fos = new FileOutputStream(xpubIndexesFile);
                 p.store(fos,"Bitrafael");
