@@ -237,7 +237,7 @@ public class WalletToolsETH implements IWalletTools {
         final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
         final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
 
-        return walletKey.getPrivateKeyAsWiF(MainNetParams.get());
+        return walletKey.getPrivateKeyAsHex();
     }
 
     @Override
