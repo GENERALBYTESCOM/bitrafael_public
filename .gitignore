@@ -1,0 +1,10 @@
+# Intellij IDEA (see https://intellij-support.jetbrains.com/entries/23393067)
+/out/
+/server/out/
+.idea/
+
+# File-based project format:
+*.iws
+*.iml
+*.ipr
+
