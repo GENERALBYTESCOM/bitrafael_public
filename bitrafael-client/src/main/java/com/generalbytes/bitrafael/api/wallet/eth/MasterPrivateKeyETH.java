@@ -16,7 +16,7 @@
  *
  ************************************************************************************/
 
-package com.generalbytes.bitrafael.api.wallet.btc;
+package com.generalbytes.bitrafael.api.wallet.eth;
 
 import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.IMasterPrivateKey;
@@ -33,21 +33,16 @@ import org.bitcoinj.utils.MonetaryFormat;
 import java.nio.ByteBuffer;
 
 import static com.generalbytes.bitrafael.api.wallet.IWalletTools.*;
-import static com.generalbytes.bitrafael.api.wallet.btc.WalletToolsBTC.addChecksum;
 import static com.google.common.base.Preconditions.checkState;
 
-public class MasterPrivateKeyBTC implements IMasterPrivateKey{
+public class MasterPrivateKeyETH implements IMasterPrivateKey{
     public static final int XPUB = 0x0488b21e;
     public static final int XPRV = 0x0488ade4;
-    public static final int YPUB = 0x049d7cb2;
-    public static final int YPRV = 0x049d7878;
-    public static final int ZPUB = 0x04b24746;
-    public static final int ZPRV = 0x04b2430c;
 
     private DeterministicKey key;
     private int standard;
 
-    public MasterPrivateKeyBTC(String prv, int standard) {
+    public MasterPrivateKeyETH(String prv, int standard) {
         key = getDeterministicKey(prv, standard);
         this.standard = standard;
     }
@@ -57,12 +52,6 @@ public class MasterPrivateKeyBTC implements IMasterPrivateKey{
         switch (standard) {
             case STANDARD_BIP44:
                 header = XPRV;//xprv
-                break;
-            case STANDARD_BIP49:
-                header = YPRV; //yprv
-                break;
-            case STANDARD_BIP84:
-                header = ZPRV; //zprv
                 break;
         }
         final int finalHeader = header;
@@ -138,7 +127,7 @@ public class MasterPrivateKeyBTC implements IMasterPrivateKey{
     }
 
     public String getPUB() {
-        return serializePUB(key,standard,0, IClient.BTC);
+        return serializePUB(key,standard,0, IClient.ETH);
     }
 
     public boolean hasPrv() {
@@ -156,12 +145,6 @@ public class MasterPrivateKeyBTC implements IMasterPrivateKey{
         switch (standard) {
             case STANDARD_BIP44:
                 header = XPRV;//xprv
-                break;
-            case STANDARD_BIP49:
-                header = YPRV; //yprv
-                break;
-            case STANDARD_BIP84:
-                header = ZPRV; //zprv
                 break;
         }
         ByteBuffer ser = ByteBuffer.allocate(78);
@@ -187,12 +170,6 @@ public class MasterPrivateKeyBTC implements IMasterPrivateKey{
             case STANDARD_BIP44:
                 header= XPUB;//xpub
                 break;
-            case STANDARD_BIP49:
-                header = YPUB; //ypub
-                break;
-            case STANDARD_BIP84:
-                header = ZPUB; //zpub
-                break;
         }
 
         ByteBuffer ser = ByteBuffer.allocate(78);
@@ -205,4 +182,14 @@ public class MasterPrivateKeyBTC implements IMasterPrivateKey{
         checkState(ser.position() == 78);
         return Base58.encode(addChecksum(ser.array()));
     }
+
+    public static byte[] addChecksum(byte[] input) {
+        int inputLength = input.length;
+        byte[] checksummed = new byte[inputLength + 4];
+        System.arraycopy(input, 0, checksummed, 0, inputLength);
+        byte[] checksum = Sha256Hash.hashTwice(input);
+        System.arraycopy(checksum, 0, checksummed, inputLength, 4);
+        return checksummed;
+    }
+
 }

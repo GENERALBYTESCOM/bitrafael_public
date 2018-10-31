@@ -16,10 +16,11 @@
  *
  ************************************************************************************/
 
-package com.generalbytes.bitrafael.api.wallet.btc;
+package com.generalbytes.bitrafael.api.wallet.eth;
 
 import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.*;
+import com.generalbytes.bitrafael.api.wallet.xmr.core.common.Keccak256;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -31,6 +32,9 @@ import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.bitcoinj.wallet.DeterministicSeed;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -39,14 +43,12 @@ import java.util.List;
 import java.util.Set;
 
 
-public class WalletToolsBTC implements IWalletTools {
+public class WalletToolsETH implements IWalletTools {
 
     public static final int XPUB = 0x0488b21e;
     public static final int XPRV = 0x0488ade4;
-    public static final int YPUB = 0x049d7cb2;
-    public static final int YPRV = 0x049d7878;
-    public static final int ZPUB = 0x04b24746;
-    public static final int ZPRV = 0x04b2430c;
+    private static final String HEX_CHARS = "0123456789abcdef";
+
 
     @Override
     public String generateSeedMnemonicSeparatedBySpaces() {
@@ -62,20 +64,20 @@ public class WalletToolsBTC implements IWalletTools {
         return null;
     }
 
-    public MasterPrivateKeyBTC getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency, int standard){
+    public MasterPrivateKeyETH getMasterPrivateKey(String seedMnemonicSeparatedBySpaces, String password, String cryptoCurrency, int standard){
         if (password == null) {
             password = "";
         }
         List<String> split = ImmutableList.copyOf(Splitter.on(" ").omitEmptyStrings().split(seedMnemonicSeparatedBySpaces));
         DeterministicSeed seed = new DeterministicSeed(split,null,password, MnemonicCode.BIP39_STANDARDISATION_TIME_SECS);
         DeterministicKey masterKey = HDKeyDerivation.createMasterPrivateKey(seed.getSeedBytes());
-        final String prv = MasterPrivateKeyBTC.serializePRV(masterKey,standard);
+        final String prv = MasterPrivateKeyETH.serializePRV(masterKey,standard);
         return getMasterPrivateKey(prv,cryptoCurrency,standard);
     }
 
     @Override
-    public MasterPrivateKeyBTC getMasterPrivateKey(String prv, String cryptoCurrency, int standard) {
-        return new MasterPrivateKeyBTC(prv,standard);
+    public MasterPrivateKeyETH getMasterPrivateKey(String prv, String cryptoCurrency, int standard) {
+        return new MasterPrivateKeyETH(prv,standard);
     }
 
     @Override
@@ -88,17 +90,11 @@ public class WalletToolsBTC implements IWalletTools {
             case XPRV:
                 standard = STANDARD_BIP44;//xprv
                 break;
-            case YPRV:
-                standard = STANDARD_BIP49; //yprv
-                break;
-            case ZPRV:
-                standard = STANDARD_BIP84; //zprv
-                break;
         }
         if (standard == -1) {
             return null;
         }
-        DeterministicKey masterKey = MasterPrivateKeyBTC.getDeterministicKey(master.getPRV(),standard);
+        DeterministicKey masterKey = MasterPrivateKeyETH.getDeterministicKey(master.getPRV(),standard);
         if (standard == STANDARD_BIP44) {
             final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP44, true));
             final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(WalletTools.getCoinTypeByCryptoCurrency(cryptoCurrency), true));
@@ -106,38 +102,23 @@ public class WalletToolsBTC implements IWalletTools {
             final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
             final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
 
-            return new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
-        } else if (standard == STANDARD_BIP49) {
-            final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP49, true));
-            final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(WalletTools.getCoinTypeByCryptoCurrency(cryptoCurrency), true));
-            final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
-            final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
-            final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
-
-            ByteBuffer bb = ByteBuffer.allocate(2+walletKey.getPubKeyHash().length);
-            bb.put(new byte[]{0x00,0x14});
-            bb.put(walletKey.getPubKeyHash());
-            byte[] scriptSig = bb.array();
-            byte[] addressBytes =  Utils.sha256hash160(scriptSig);
-            return new Address(MainNetParams.get(),5,addressBytes).toBase58();
-        } else if (standard == STANDARD_BIP84) {
-            final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP84, true));
-            final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(WalletTools.getCoinTypeByCryptoCurrency(cryptoCurrency), true));
-            final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
-            final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
-            final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
-
-            return "bechadress";
+            Keccak256 hash = new Keccak256();
+            hash.update(walletKey.getPubKeyPoint().getX().getEncoded());
+            hash.update(walletKey.getPubKeyPoint().getY().getEncoded());
+            byte[] result = hash.digestArray();
+            byte[] address = new byte[20];
+            System.arraycopy(result,result.length - address.length, address,0, address.length);
+            return encodeAddressToChecksummedAddress(address);
         }
         return null;
     }
 
     @Override
     public String getWalletAddressFromAccountPUB(String accountPUB, String cryptoCurrency, int chainIndex, int index) {
-        if (!accountPUB.startsWith("xpub") && !accountPUB.startsWith("ypub") && !accountPUB.startsWith("zpub")) {
+        if (!accountPUB.startsWith("xpub")) {
             return null;
         }
-        byte[] serializedKey = org.bitcoinj.core.Base58.decodeChecked(accountPUB);
+        byte[] serializedKey = Base58.decodeChecked(accountPUB);
         ByteBuffer buffer = ByteBuffer.wrap(serializedKey);
         int header = buffer.getInt();
         int standard = -1;
@@ -151,22 +132,6 @@ public class WalletToolsBTC implements IWalletTools {
                 break;
             case XPRV:
                 standard = STANDARD_BIP44;//xprv
-                isPub = false;
-                break;
-            case YPUB:
-                standard = STANDARD_BIP49; //ypub
-                isPub = true;
-                break;
-            case YPRV:
-                standard = STANDARD_BIP49; //yprv
-                isPub = false;
-                break;
-            case ZPUB:
-                standard = STANDARD_BIP84; //zpub
-                isPub = true;
-                break;
-            case ZPRV:
-                standard = STANDARD_BIP84; //zprv
                 isPub = false;
                 break;
         }
@@ -185,13 +150,6 @@ public class WalletToolsBTC implements IWalletTools {
                 }
                 if (standard == STANDARD_BIP44) {
                     return new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
-                } else if (standard == STANDARD_BIP49) {
-                    ByteBuffer bb = ByteBuffer.allocate(2+walletKey.getPubKeyHash().length);
-                    bb.put(new byte[]{0x00,0x14});
-                    bb.put(walletKey.getPubKeyHash());
-                    byte[] scriptSig = bb.array();
-                    byte[] addressBytes =  Utils.sha256hash160(scriptSig);
-                    return new Address(MainNetParams.get(),5,addressBytes).toBase58();
                 }else  if (standard == STANDARD_BIP84) {
                     return null; //TODO
                 }
@@ -207,12 +165,6 @@ public class WalletToolsBTC implements IWalletTools {
         switch (standard) {
             case STANDARD_BIP44:
                 header = XPUB;//xpub
-                break;
-            case STANDARD_BIP49:
-                header = YPUB; //ypub
-                break;
-            case STANDARD_BIP84:
-                header = ZPUB; //zpub
                 break;
         }
         final int finalHeader = header;
@@ -276,7 +228,7 @@ public class WalletToolsBTC implements IWalletTools {
 
     @Override
     public String getWalletPrivateKey(IMasterPrivateKey master, String cryptoCurrency, int accountIndex, int chainIndex, int index) {
-        DeterministicKey masterKey = MasterPrivateKeyBTC.getDeterministicKey(master.getPRV(),master.getStandard());
+        DeterministicKey masterKey = MasterPrivateKeyETH.getDeterministicKey(master.getPRV(),master.getStandard());
         masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
 
         final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(master.getStandard(), true));
@@ -290,15 +242,19 @@ public class WalletToolsBTC implements IWalletTools {
 
     @Override
     public String getAccountPUB(IMasterPrivateKey master, String cryptoCurrency, int accountIndex) {
-        DeterministicKey masterKey = MasterPrivateKeyBTC.getDeterministicKey(master.getPRV(),master.getStandard());
-        return MasterPrivateKeyBTC.serializePUB(masterKey,master.getStandard(), accountIndex, cryptoCurrency);
+        DeterministicKey masterKey = MasterPrivateKeyETH.getDeterministicKey(master.getPRV(),master.getStandard());
+        return MasterPrivateKeyETH.serializePUB(masterKey,master.getStandard(), accountIndex, cryptoCurrency);
     }
 
 
     @Override
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency) {
-        DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
-        return (new Address(MainNetParams.get(),dp.getKey().getPubKeyHash())) +"";
+        return null; //not supported yet
+    }
+
+    @Override
+    public ISignature sign(String privateKey, byte[] hashToSign, String cryptoCurrency) {
+        return null;//not supported yet
     }
 
 
@@ -306,46 +262,14 @@ public class WalletToolsBTC implements IWalletTools {
         if (address == null) {
             return false;
         }else{
-            if (!(address.startsWith("1") || address.startsWith("3"))){
+            if (!address.startsWith("0x")){
                 return false;
             }
         }
 
-        try {
-            Base58.decodeChecked(address);
-        } catch (AddressFormatException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
+        return isAddressValidInternal(address);
     }
 
-    @Override
-    public ISignature sign(String privateKey, byte[] hashToSign, String cryptoCurrency) {
-        DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
-        final ECKey key = dp.getKey();
-        return new Signature(key.getPubKey(),key.sign(Sha256Hash.wrap(hashToSign)).encodeToDER());
-    }
-
-    public class Signature implements ISignature {
-        private byte[] publicKey;
-        private byte[] signature;
-
-        public Signature(byte[] publicKey, byte[] signature) {
-            this.publicKey = publicKey;
-            this.signature = signature;
-        }
-
-        @Override
-        public byte[] getPublicKey() {
-            return publicKey;
-        }
-
-        @Override
-        public byte[] getSignature() {
-            return signature;
-        }
-    }
 
     @Override
     public Classification classify(String input, String cryptoCurrencyHint) {
@@ -373,29 +297,17 @@ public class WalletToolsBTC implements IWalletTools {
             input = input.substring(0,input.indexOf("?"));
         }
 
-        if ((input.startsWith("1") || input.startsWith("3")) &&  input.length() <= 34) {
+        if (input.startsWith("0x")) {
             //most likely address lets check it
             try {
                 if (isAddressValidInternal(input)) {
-                    return new Classification(Classification.TYPE_ADDRESS,IClient.BTC,input);
+                    return new Classification(Classification.TYPE_ADDRESS,IClient.ETH,input);
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }
-        }else if ((input.startsWith("5") || input.startsWith("L") || input.startsWith("K")) && input.length() >= 51) {
-            //most likely bitcoin private key
-            try {
-                DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
-                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.BTC,input);
-            } catch (AddressFormatException e) {
-                //e.printStackTrace();
-            }
         }else if (input.startsWith("xpub")) {
-            return new Classification(Classification.TYPE_PUB,IClient.BTC,input);
-        }else if (input.startsWith("ypub")) {
-            return new Classification(Classification.TYPE_PUB,IClient.BTC,input);
-        }else if (input.startsWith("zpub")) {
-            return new Classification(Classification.TYPE_PUB,IClient.BTC,input);
+            return new Classification(Classification.TYPE_PUB,IClient.ETH,input);
         }
 
         return new Classification(Classification.TYPE_UNKNOWN);
@@ -403,28 +315,130 @@ public class WalletToolsBTC implements IWalletTools {
     }
 
     private static boolean isAddressValidInternal(String address) {
-        try {
-            Base58.decodeChecked(address);
-        } catch (AddressFormatException e) {
-            e.printStackTrace();
+        if (address == null || address.isEmpty()) {
             return false;
         }
-        return true;
+        address = address.trim();
+
+        byte[] addrBytes = decodeAddressAsBytes(address);
+        if (addrBytes != null) {
+            if (address.equals(address.toLowerCase()) || address.equals(address.toUpperCase())) {
+                //address doesn't contain checksum
+                return true;
+            }else{
+                //if address contains checksum, we should check that too
+                final String encodedAddress = encodeAddressToChecksummedAddress(addrBytes);
+                if (address.equals(encodedAddress)){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
     public Set<String> supportedCryptoCurrencies() {
         final HashSet<String> result = new HashSet<String>();
-        result.add(IClient.BTC);
+        result.add(IClient.ETH);
+        result.add(IClient.ETC);
         return result;
     }
 
-    public static byte[] addChecksum(byte[] input) {
-        int inputLength = input.length;
-        byte[] checksummed = new byte[inputLength + 4];
-        System.arraycopy(input, 0, checksummed, 0, inputLength);
-        byte[] checksum = Sha256Hash.hashTwice(input);
-        System.arraycopy(checksum, 0, checksummed, inputLength, 4);
-        return checksummed;
+
+    public static byte[] decodeAddressAsBytes(String address) {
+        if (address == null) {
+            return null;
+        }
+        address = address.trim();
+
+        if (address.toLowerCase().startsWith("0x")) {
+            address = address.substring(2);
+        }
+
+        if (address.length() == 42) {
+            //probably this format 0xf8b483DbA2c3B7176a3Da549ad41A48BB3121069
+            if (address.toLowerCase().startsWith("0x")) {
+                address = address.substring(2);
+            }
+        }
+
+        if (address.length() == 40) {
+            //probably this format f8b483DbA2c3B7176a3Da549ad41A48BB3121069
+            if (isAllLowerCaseHex(address.toLowerCase())) {
+                return hexStringToByteArray(address);
+            }
+        }
+        return null;
     }
+
+    public static String encodeAddressToChecksummedAddress(byte[] addrBytes) {
+        String address = bytesToHexString(addrBytes);
+        return encodeAddressToChecksummedAddress(address);
+    }
+
+    public static String encodeAddressToChecksummedAddress(String address) {
+        if (address == null) {
+            return null;
+        }
+        address = address.trim();
+        if (address.isEmpty()) {
+            return null;
+        }
+        Keccak256 sha3 = new Keccak256();
+        sha3.update(address.toLowerCase().getBytes());
+        final String addressHash = bytesToHexString(sha3.digest().array());
+
+        String checksumAddress ="";
+
+        final char[] addrChars = address.toCharArray();
+        final char[] addrHashChars = addressHash.toCharArray();
+
+        for (int i = 0; i < addrChars.length; i++ ) {
+            // If ith character is 9 to f then make it uppercase
+            if (Integer.parseInt((addrHashChars[i]+""), 16) > 7) {
+                checksumAddress += (addrChars[i] +"").toUpperCase();
+            } else {
+                checksumAddress += (addrChars[i] +"").toLowerCase();
+            }
+        }
+        return "0x"+checksumAddress;
+    }
+
+    private static String bytesToHexString(byte[] bytes) {
+        // http://stackoverflow.com/questions/332079
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < bytes.length; i++) {
+            String hex = Integer.toHexString(0xFF & bytes[i]);
+            if (hex.length() == 1) {
+                sb.append('0');
+            }
+            sb.append(hex);
+        }
+        return sb.toString();
+    }
+
+    private static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len/2];
+
+        for(int i = 0; i < len; i+=2){
+            data[i/2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
+    }
+
+    private static boolean isAllLowerCaseHex(String string) {
+        final char[] chars = string.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            if (HEX_CHARS.indexOf(c) == -1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }

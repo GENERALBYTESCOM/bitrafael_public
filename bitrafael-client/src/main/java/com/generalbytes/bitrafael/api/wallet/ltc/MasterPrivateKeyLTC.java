@@ -20,6 +20,7 @@ package com.generalbytes.bitrafael.api.wallet.ltc;
 
 import com.generalbytes.bitrafael.api.client.IClient;
 import com.generalbytes.bitrafael.api.wallet.IMasterPrivateKey;
+import com.generalbytes.bitrafael.api.wallet.WalletTools;
 import org.litecoinj.core.*;
 import org.litecoinj.crypto.ChildNumber;
 import org.litecoinj.crypto.DeterministicKey;
@@ -33,7 +34,6 @@ import java.nio.ByteBuffer;
 
 import static com.generalbytes.bitrafael.api.wallet.IWalletTools.*;
 import static com.generalbytes.bitrafael.api.wallet.ltc.WalletToolsLTC.addChecksum;
-import static com.generalbytes.bitrafael.api.wallet.ltc.WalletToolsLTC.getCoinTypeByCryptoCurrency;
 import static com.google.common.base.Preconditions.checkState;
 
 public class MasterPrivateKeyLTC implements IMasterPrivateKey{
@@ -172,7 +172,7 @@ public class MasterPrivateKeyLTC implements IMasterPrivateKey{
 
     public static String serializePUB(DeterministicKey masterKey, int standard, int accountIndex, String cryptoCurrency) {
         final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(standard, true));
-        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(getCoinTypeByCryptoCurrency(cryptoCurrency), true));
+        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(WalletTools.getCoinTypeByCryptoCurrency(cryptoCurrency), true));
         final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
 
         int header = 0x0488b21e;

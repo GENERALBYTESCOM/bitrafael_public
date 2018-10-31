@@ -19,10 +19,7 @@
 package com.generalbytes.bitrafael.api.wallet.dash;
 
 import com.generalbytes.bitrafael.api.client.IClient;
-import com.generalbytes.bitrafael.api.wallet.Classification;
-import com.generalbytes.bitrafael.api.wallet.IMasterPrivateKey;
-import com.generalbytes.bitrafael.api.wallet.ISignature;
-import com.generalbytes.bitrafael.api.wallet.IWalletTools;
+import com.generalbytes.bitrafael.api.wallet.*;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -75,7 +72,7 @@ public class WalletToolsDASH implements IWalletTools {
         masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
 
         final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP44, true));
-        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(getCoinTypeByCryptoCurrency(cryptoCurrency), true));
+        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(WalletTools.getCoinTypeByCryptoCurrency(cryptoCurrency), true));
         final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
         final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
         final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
@@ -117,7 +114,7 @@ public class WalletToolsDASH implements IWalletTools {
         masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
 
         final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP44, true));
-        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(getCoinTypeByCryptoCurrency(cryptoCurrency), true));
+        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(WalletTools.getCoinTypeByCryptoCurrency(cryptoCurrency), true));
         final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
         final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
         final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
@@ -130,21 +127,11 @@ public class WalletToolsDASH implements IWalletTools {
         DeterministicKey masterKey = DeterministicKey.deserializeB58(master.getPRV(), MainNetParams.get());
         masterKey.setCreationTimeSeconds(master.getCreationTimeSeconds());
         final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP44, true));
-        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(getCoinTypeByCryptoCurrency(cryptoCurrency), true));
+        final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(WalletTools.getCoinTypeByCryptoCurrency(cryptoCurrency), true));
         final DeterministicKey accountKey = HDKeyDerivation.deriveChildKey(coinKey, new ChildNumber(accountIndex, true));
         return accountKey.serializePubB58(MainNetParams.get());
     }
 
-    private int getCoinTypeByCryptoCurrency(String cryptoCurrency) {
-        if (IClient.BTC.equalsIgnoreCase(cryptoCurrency)) {
-            return COIN_TYPE_BITCOIN;
-        }else if (IClient.LTC.equalsIgnoreCase(cryptoCurrency)) {
-            return COIN_TYPE_LITECOIN;
-        }else if (IClient.DASH.equalsIgnoreCase(cryptoCurrency)) {
-            return COIN_TYPE_DASH;
-        }
-        return COIN_TYPE_DASH;
-    }
 
     @Override
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency) {

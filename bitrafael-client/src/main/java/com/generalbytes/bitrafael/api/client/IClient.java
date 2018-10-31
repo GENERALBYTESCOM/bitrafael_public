@@ -23,14 +23,16 @@ import java.util.List;
 import java.util.Map;
 
 public interface IClient {
-    public static final BigDecimal FEE_LOW = new BigDecimal("-1");
-    public static final BigDecimal FEE_MEDIUM = new BigDecimal("-2");
-    public static final BigDecimal FEE_HIGH = new BigDecimal("-3");
+    BigDecimal FEE_LOW = new BigDecimal("-1");
+    BigDecimal FEE_MEDIUM = new BigDecimal("-2");
+    BigDecimal FEE_HIGH = new BigDecimal("-3");
 
-    public static final String BTC = "BTC";
-    public static final String DASH = "DASH";
-    public static final String LTC = "LTC";
-    public static final String XMR = "XMR";
+    String BTC = "BTC";
+    String DASH = "DASH";
+    String LTC = "LTC";
+    String XMR = "XMR";
+    String ETH = "ETH";
+    String ETC = "ETC";
 
     long getCurrentBlockchainHeight();
 

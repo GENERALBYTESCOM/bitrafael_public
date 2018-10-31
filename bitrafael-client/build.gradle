@@ -8,6 +8,7 @@ version = projectVersion
 dependencies {
     compile project(':bitrafael-common')
     compile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1')
+    compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
     compile(group: 'com.google.guava', name: 'guava', version: '18.0')
     compile(group: 'org.litecoinj', name: 'litecoinj-core', version: '0.15-SNAPSHOT')
     compile(group: 'org.dashj', name: 'dashj-core', version: '0.14.4.7.20180927')

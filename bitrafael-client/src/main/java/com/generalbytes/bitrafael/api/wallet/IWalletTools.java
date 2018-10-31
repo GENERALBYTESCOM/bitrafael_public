@@ -27,6 +27,8 @@ public interface IWalletTools extends IClassificator{
     int STANDARD_BIP84 = 84 ;
     int COIN_TYPE_BITCOIN = 0;
     int COIN_TYPE_LITECOIN = 2;
+    int COIN_TYPE_ETHEREUM = 60;
+    int COIN_TYPE_ETHEREUM_CLASSIC = 61;
     int COIN_TYPE_DASH = 5;
     int CHAIN_EXTERNAL = 0;
     int CHAIN_CHANGE = 1;
