@@ -72,11 +72,13 @@ dependencyVerifications {
  * $ ./gradlew currentVersion
  * 0.1.1-SNAPSHOT
  *
- * $ ./gradlew release
+ * $ ./gradlew createRelease
  *
  * $ git tag
  * project-0.1.0 project-0.1.1
  *
+ * $ git push
+ * 
  * $ ./gradlew currentVersion
  * 0.1.1
  *
