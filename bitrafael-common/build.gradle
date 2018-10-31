@@ -15,16 +15,6 @@ dependencyVerifications {
 }
 
 publishing {
-    repositories {
-        maven {
-            credentials {
-                username gbArtifactoryUser
-                password gbArtifactoryPassword
-            }
-            url gbArtifactoryUploadUrl
-        }
-    }
-
     publications {
         mavenJava(MavenPublication) {
             from components.java
