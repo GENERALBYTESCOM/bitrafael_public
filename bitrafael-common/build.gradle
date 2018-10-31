@@ -15,6 +15,20 @@ dependencyVerifications {
 }
 
 publishing {
+    if (hasProperty('gbArtifactoryUploadUrl')
+            && hasProperty('gbArtifactoryUser')
+            && hasProperty('gbArtifactoryPassword')) {
+        repositories {
+            maven {
+                credentials {
+                    username gbArtifactoryUser
+                    password gbArtifactoryPassword
+                }
+                url gbArtifactoryUploadUrl
+            }
+        }
+    }
+    
     publications {
         mavenJava(MavenPublication) {
             from components.java

@@ -10,12 +10,23 @@ buildscript {
     setRepositoriesFor(repositories)
 }
 
+plugins {
+    id 'com.generalbytes.gradle.main'
+    id 'pl.allegro.tech.build.axion-release' version '1.9.3'
+}
+
+scmVersion {
+    tag {
+        prefix = ''
+    }
+}
+
 allprojects {
     setRepositoriesFor(buildscript.repositories)
     setRepositoriesFor(repositories)
 
     group = projectGroup
-    version = projectVersion
+    version = scmVersion.version
 
     tasks.withType(JavaCompile) {
         project.sourceCompatibility = JavaVersion.VERSION_1_8
@@ -41,3 +52,39 @@ allprojects {
         }
     }
 }
+
+dependencyVerifications {
+    checksums batmDependencyChecksumsConfig
+    printUnusedAssertions false
+}
+
+/**
+ * Basic release versioning workflow:
+ *
+ * $ git tag
+ * project-0.1.0
+ *
+ * $ ./gradlew currentVersion
+ * 0.1.0
+ *
+ * $ git commit -m "Some commit."
+ *
+ * $ ./gradlew currentVersion
+ * 0.1.1-SNAPSHOT
+ *
+ * $ ./gradlew release
+ *
+ * $ git tag
+ * project-0.1.0 project-0.1.1
+ *
+ * $ ./gradlew currentVersion
+ * 0.1.1
+ *
+ * $ ./gradlew publish
+ * published project-0.1.1 release version
+ *
+ * $ ./gradlew markNextVersion -Prelease.version=1.0.0
+ *
+ * $ ./gradlew currentVersion
+ * 1.0.0-SNAPSHOT
+ */

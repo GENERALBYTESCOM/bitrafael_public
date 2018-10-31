@@ -1,6 +1,6 @@
 # Intellij IDEA (see https://intellij-support.jetbrains.com/entries/23393067)
 /out/
-/server/out/
+/*/out/
 .idea/
 
 # File-based project format:
@@ -8,3 +8,7 @@
 *.iml
 *.ipr
 
+# Gradle
+
+.gradle/
+build/
