@@ -1,4 +1,3 @@
 include 'bitrafael-common'
 include 'bitrafael-client'
-include 'bitrafael-shrink'
 include 'colorledger'
