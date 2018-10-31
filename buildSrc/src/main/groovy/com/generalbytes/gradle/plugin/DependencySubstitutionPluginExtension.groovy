@@ -1,18 +1,18 @@
-package com.generalbytes.batm.gradle
+package com.generalbytes.gradle.plugin
 
+import com.generalbytes.gradle.model.SimpleModuleVersionIdentifier
 import org.gradle.api.artifacts.Configuration
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class DependencySubstitutionPluginExtension {
-    List<Object> confinedConfigurations = new LinkedList<>()
+    List<String> skipConfigurations = new LinkedList<>()
     Map<SimpleModuleVersionIdentifier, String> substitutions = new HashMap<>()
-    boolean conflictFail = true
 
     void substitute(File file) {
-        final Pattern commentPattern = Pattern.compile('(?m)^\\p{Blank}*#.*$')
-        final Pattern substitutionPattern = Pattern.compile('(?m)^substitute\\p{Blank}*from\\p{Blank}*:\\p{Blank}*\\\'([^\\\']*)\\\'\\p{Blank}*,\\p{Blank}*toVersion\\p{Blank}*:\\p{Blank}*\\\'([^\\\']*)\\\'\\p{Blank}*$')
+        final Pattern commentPattern = Pattern.compile('(?m)^\\p{Blank}*((#|//).*)?$')
+        final Pattern substitutionPattern = Pattern.compile('(?m)^\\p{Blank}*substitute\\p{Blank}*from\\p{Blank}*:\\p{Blank}*\'([^\']*)\'\\p{Blank}*,\\p{Blank}*toVersion\\p{Blank}*:\\p{Blank}*\'([^\']*)\'\\p{Blank}*((#|//).*)?$')
         int lineNo = 0
         file.eachLine { line ->
             lineNo++
@@ -47,11 +47,11 @@ class DependencySubstitutionPluginExtension {
         substitute(from, toVersion)
     }
 
-    void confine(String cfgName) {
-        confinedConfigurations.add(cfgName)
+    void skipConfiguration(Configuration cfg) {
+        skipConfigurations.add(cfg.name)
     }
 
-    void confine(Configuration cfg) {
-        confinedConfigurations.add(cfg)
+    void skipConfiguration(String cfgName) {
+        skipConfigurations.add(cfgName)
     }
 }

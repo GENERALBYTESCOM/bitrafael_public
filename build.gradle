@@ -1,70 +1,43 @@
-allprojects {
-    buildscript {
-        repositories {
-//            jcenter()
-            maven {
-                credentials {
-                    username gbArtifactoryUser
-                    password gbArtifactoryPassword
-                }
-                url gbArtifactoryUrl
-            }
-        }
-    }
-    repositories {
-//        jcenter()
-        maven {
-            credentials {
-                username gbArtifactoryUser
-                password gbArtifactoryPassword
-            }
-            url gbArtifactoryUrl
-        }
-    }
-
-    //cross-compilation stuff for Java 7
-    assert (System.env.JDK_7_HOME != null): "Set environment property JDK_7_HOME"
-    project.ext.targetJavaHome = System.env.JDK_7_HOME
-    def javaExecutablesPath = new File(targetJavaHome, 'bin')
-    def javaExecutables = [:].withDefault { execName ->
-        def executable = new File(javaExecutablesPath, execName)
-        assert executable.exists(): "There is no ${execName} executable in ${javaExecutablesPath}"
-        executable
-    }
-    tasks.withType(JavaCompile) {
-        project.sourceCompatibility = '1.7'
-        options.with {
-            fork = true
-            forkOptions.javaHome = file(targetJavaHome)
-        }
-    }
-    tasks.withType(Javadoc) {
-        executable = javaExecutables.javadoc
-    }
-    tasks.withType(Test) {
-        executable = javaExecutables.java
-    }
-    tasks.withType(JavaExec) {
-        executable = javaExecutables.java
-    }
-}
-
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    repositories {
-        maven {
-            credentials {
-                username gbArtifactoryUser
-                password gbArtifactoryPassword
-            }
-            url gbArtifactoryUrl
+    ext.with {
+        setRepositoriesFor = { RepositoryHandler repositoryHandler ->
+            repositoryHandler.jcenter()
+            repositoryHandler.maven { url 'https://jitpack.io' }
         }
+        batmDependencySubstitutionConfig = file('dependencySubstitutions.txt')
+        batmDependencyChecksumsConfig = file('dependencyChecksums.txt')
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-    }
+    setRepositoriesFor(repositories)
 }
 
-ext.with {
-    BatmDependencySubstitutionConfig = file('dependencySubstitutions.txt')
+allprojects {
+    setRepositoriesFor(buildscript.repositories)
+    setRepositoriesFor(repositories)
+
+    group = projectGroup
+    version = projectVersion
+
+    tasks.withType(JavaCompile) {
+        project.sourceCompatibility = JavaVersion.VERSION_1_8
+        project.targetCompatibility = JavaVersion.VERSION_1_8
+        options.encoding = 'UTF-8'
+        options.incremental = true
+    }
+
+    afterEvaluate {
+        if (pluginManager.hasPlugin('com.generalbytes.gradle.dependency.verification')) {
+            dependencyChecksums {
+                global = true
+            }
+            dependencyVerifications {
+//                setConfigurations([]) // effectively turns off all checksum verifications
+//                failOnChecksumError = false // turns off failure on checksum problem (only warnings are printed)
+            }
+        }
+        if (pluginManager.hasPlugin('com.generalbytes.gradle.dependency.strict')) {
+            strictDependencies {
+//                conflictFail false // turns off failure on version conflict
+            }
+        }
+    }
 }

@@ -1,17 +1,18 @@
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'gb-gradle'
-
-group = projectGroup
-version = projectVersion
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.generalbytes.gradle.main'
+}
 
 dependencies {
     compile project(':bitrafael-common')
     compile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1')
     compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
     compile(group: 'com.google.guava', name: 'guava', version: '18.0')
-    compile(group: 'org.litecoinj', name: 'litecoinj-core', version: '0.15-SNAPSHOT')
-    compile(group: 'org.dashj', name: 'dashj-core', version: '0.14.4.7.20180927')
+//    compile(group: 'org.litecoinj', name: 'litecoinj-core', version: '0.15-SNAPSHOT')
+    compile(group: 'com.github.GENERALBYTESCOM.litecoinj', name: 'litecoinj-core', version: '28e4ede77c9b3e5aa885aa52b2faf373f998a65b')
+//    compile(group: 'org.dashj', name: 'dashj-core', version: '0.14.4.7.20180927')
+    compile(group: 'com.github.GENERALBYTESCOM.dashj', name: 'dashj-core', version: 'f8d247f59e51c07c8d5a9a0e463fdc5aa6dee5b4')
     compile(group: 'com.github.mmazi', name: 'rescu', version: '1.9.1')
     runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21')
     runtime(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21')
@@ -22,6 +23,11 @@ dependencySubstitutions {
     substitute from: 'org.slf4j:slf4j-api:1.7.20', toVersion: '1.7.21'
     substitute from: 'com.google.code.findbugs:jsr305:2.0.1', toVersion: '3.0.1'
     substitute from: 'com.squareup.okio:okio:1.6.0', toVersion: '1.11.0'
+}
+
+dependencyVerifications {
+    checksums batmDependencyChecksumsConfig
+    printUnusedAssertions false
 }
 
 publishing {
