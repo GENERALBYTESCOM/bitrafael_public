@@ -15,9 +15,7 @@ dependencyVerifications {
 }
 
 publishing {
-    if (hasProperty('gbArtifactoryUploadUrl')
-            && hasProperty('gbArtifactoryUser')
-            && hasProperty('gbArtifactoryPassword')) {
+    if (hasGbUploadArtifactory) {
         repositories {
             maven {
                 credentials {

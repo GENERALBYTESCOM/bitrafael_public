@@ -9,10 +9,17 @@ dependencies {
     compile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1')
     compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
     compile(group: 'com.google.guava', name: 'guava', version: '18.0')
-//    compile(group: 'org.litecoinj', name: 'litecoinj-core', version: '0.15-SNAPSHOT')
-    compile(group: 'com.github.GENERALBYTESCOM.litecoinj', name: 'litecoinj-core', version: '28e4ede77c9b3e5aa885aa52b2faf373f998a65b')
-//    compile(group: 'org.dashj', name: 'dashj-core', version: '0.14.4.7.20180927')
-    compile(group: 'com.github.GENERALBYTESCOM.dashj', name: 'dashj-core', version: 'f8d247f59e51c07c8d5a9a0e463fdc5aa6dee5b4')
+    
+    final String  dashjVersion = '0.14.4.7.20180927'
+    final String litecoinjVersion = '0.15.20181101'
+    if (hasGbArtifactory) {
+        compile(group: 'org.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
+        compile(group: 'org.dashj', name: 'dashj-core', version: dashjVersion)
+    } else {
+        compile(group: 'com.github.GENERALBYTESCOM.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
+        compile(group: 'com.github.GENERALBYTESCOM.dashj', name: 'dashj-core', version: dashjVersion)
+    }
+    
     compile(group: 'com.github.mmazi', name: 'rescu', version: '1.9.1')
     runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21')
     runtime(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21')
@@ -31,9 +38,7 @@ dependencyVerifications {
 }
 
 publishing {
-    if (hasProperty('gbArtifactoryUploadUrl')
-            && hasProperty('gbArtifactoryUser')
-            && hasProperty('gbArtifactoryPassword')) {
+    if (hasGbUploadArtifactory) {
         repositories {
             maven {
                 credentials {
