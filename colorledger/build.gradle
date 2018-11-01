@@ -1,5 +1,7 @@
-apply plugin: 'java'
-apply plugin: 'gb-gradle'
+plugins {
+    id 'java'
+    id 'com.generalbytes.gradle.main'
+}
 
 group = projectGroup
 version = projectVersion
@@ -13,4 +15,9 @@ dependencies {
 
 dependencySubstitutions {
     substitute from: 'com.madgag.spongycastle:core:1.51.0.0', toVersion: '1.52.0.0'
+}
+
+dependencyVerifications {
+    checksums batmDependencyChecksumsConfig
+    printUnusedAssertions false
 }

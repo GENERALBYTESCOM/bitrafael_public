@@ -1,17 +1,25 @@
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'gb-gradle'
-
-group = projectGroup
-version = projectVersion
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.generalbytes.gradle.main'
+}
 
 dependencies {
     compile project(':bitrafael-common')
     compile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1')
     compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
     compile(group: 'com.google.guava', name: 'guava', version: '18.0')
-    compile(group: 'org.litecoinj', name: 'litecoinj-core', version: '0.15-SNAPSHOT')
-    compile(group: 'org.dashj', name: 'dashj-core', version: '0.14.4.7.20180927')
+    
+    final String  dashjVersion = '0.14.4.7.20180927'
+    final String litecoinjVersion = '0.15.20181101'
+    if (hasGbArtifactory) {
+        compile(group: 'org.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
+        compile(group: 'org.dashj', name: 'dashj-core', version: dashjVersion)
+    } else {
+        compile(group: 'com.github.GENERALBYTESCOM.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
+        compile(group: 'com.github.GENERALBYTESCOM.dashj', name: 'dashj-core', version: dashjVersion)
+    }
+    
     compile(group: 'com.github.mmazi', name: 'rescu', version: '1.9.1')
     runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21')
     runtime(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21')
@@ -24,17 +32,24 @@ dependencySubstitutions {
     substitute from: 'com.squareup.okio:okio:1.6.0', toVersion: '1.11.0'
 }
 
+dependencyVerifications {
+    checksums batmDependencyChecksumsConfig
+    printUnusedAssertions false
+}
+
 publishing {
-    repositories {
-        maven {
-            credentials {
-                username gbArtifactoryUser
-                password gbArtifactoryPassword
+    if (hasGbUploadArtifactory) {
+        repositories {
+            maven {
+                credentials {
+                    username gbArtifactoryUser
+                    password gbArtifactoryPassword
+                }
+                url gbArtifactoryUploadUrl
             }
-            url gbArtifactoryUploadUrl
         }
     }
-
+    
     publications {
         mavenJava(MavenPublication) {
             from components.java
