@@ -364,8 +364,8 @@ public class WalletToolsLTC implements IWalletTools {
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }
-        }else if ((input.startsWith("5") || input.startsWith("L") || input.startsWith("K")) && input.length() >= 51) {
-            //most likely bitcoin private key
+        }else if (((input.startsWith("6")) && input.length() >= 51) || ((input.startsWith("T")) && input.length() >= 51))  {
+            //most likely private key
             try {
                 DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
                 return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.LTC,input);
@@ -395,7 +395,7 @@ public class WalletToolsLTC implements IWalletTools {
     @Override
     public Set<String> supportedCryptoCurrencies() {
         final HashSet<String> result = new HashSet<String>();
-        result.add(IClient.BTC);
+        result.add(IClient.LTC);
         return result;
     }
 
