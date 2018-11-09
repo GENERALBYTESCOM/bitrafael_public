@@ -247,6 +247,8 @@ public class WalletToolsDASH implements IWalletTools {
             }
         }else if (input.startsWith("drkp")) {
             return new Classification(Classification.TYPE_PUB,IClient.DASH,input);
+        }else if (input.startsWith("drkv")) {
+            return new Classification(Classification.TYPE_PRV,IClient.DASH,input);
         }
 
         return new Classification(Classification.TYPE_UNKNOWN);

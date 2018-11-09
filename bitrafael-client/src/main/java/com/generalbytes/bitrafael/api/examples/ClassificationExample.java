@@ -66,6 +66,8 @@ public class ClassificationExample {
                     org.litecoinj.core.DumpedPrivateKey dp = new org.litecoinj.core.DumpedPrivateKey(org.litecoinj.params.MainNetParams.get(),classify.getCleanData());
                     note = " >>> " + new org.litecoinj.core.Address(org.litecoinj.params.MainNetParams.get(),dp.getKey().getPubKeyHash());
                 }
+            }else if (classify.getType() == Classification.TYPE_UNKNOWN){
+                System.err.println("Error parsing " + testString);
             }
             System.out.println("               " + testString + "  = " + classify + " "+ note);
         }

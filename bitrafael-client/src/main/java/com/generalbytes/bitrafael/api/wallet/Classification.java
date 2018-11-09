@@ -26,6 +26,8 @@ public class Classification {
     public static final int TYPE_PRIVATE_KEY_IN_WIF = 2;
     public static final int TYPE_PUB = 3;
     public static final int TYPE_SEED_MNEMONIC = 4;
+    public static final int TYPE_PRV = 5;
+
 
 
     private int type;

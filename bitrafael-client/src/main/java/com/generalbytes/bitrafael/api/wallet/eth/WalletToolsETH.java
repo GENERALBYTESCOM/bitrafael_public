@@ -31,6 +31,7 @@ import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.bitcoinj.wallet.DeterministicSeed;
+import org.spongycastle.crypto.digests.SHA3Digest;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -262,7 +263,7 @@ public class WalletToolsETH implements IWalletTools {
         if (address == null) {
             return false;
         }else{
-            if (!address.startsWith("0x")){
+            if (!address.startsWith("0x") && !address.startsWith("XE")){
                 return false;
             }
         }
@@ -299,6 +300,14 @@ public class WalletToolsETH implements IWalletTools {
 
         if (input.startsWith("0x")) {
             //most likely address lets check it
+            try {
+                if (isAddressValidInternal(input)) {
+                    return new Classification(Classification.TYPE_ADDRESS,IClient.ETH,input);
+                }
+            } catch (AddressFormatException e) {
+                e.printStackTrace();
+            }
+        }else if (input.startsWith("XE")) {
             try {
                 if (isAddressValidInternal(input)) {
                     return new Classification(Classification.TYPE_ADDRESS,IClient.ETH,input);
@@ -353,6 +362,13 @@ public class WalletToolsETH implements IWalletTools {
         }
         address = address.trim();
 
+        if (address.startsWith("XE") || address.toLowerCase().startsWith("iban:")) {
+            address = decodeAddressFromIBAN(address);
+            if (address == null) {
+                return null;
+            }
+        }
+
         if (address.toLowerCase().startsWith("0x")) {
             address = address.substring(2);
         }
@@ -371,6 +387,126 @@ public class WalletToolsETH implements IWalletTools {
             }
         }
         return null;
+    }
+
+    public static byte[] sha3(byte[] message) {
+        SHA3Digest digest = new SHA3Digest(256);
+
+        byte[] hash = new byte[digest.getDigestSize()];
+        if (message.length != 0) {
+            digest.update(message, 0, message.length);
+        }
+
+        digest.doFinal(hash, 0);
+        return hash;
+    }
+
+    public static String encodeAddressToChecksumedAddress(String address) {
+        if (address == null) {
+            return null;
+        }
+        address = address.trim();
+        if (address.isEmpty()) {
+            return null;
+        }
+
+        final String addressHash = bytesToHexString(sha3(address.toLowerCase().getBytes()));
+
+        String checksumAddress ="";
+
+        final char[] addrChars = address.toCharArray();
+        final char[] addrHashChars = addressHash.toCharArray();
+
+        for (int i = 0; i < addrChars.length; i++ ) {
+            // If ith character is 9 to f then make it uppercase
+            if (Integer.parseInt((addrHashChars[i]+""), 16) > 7) {
+                checksumAddress += (addrChars[i] +"").toUpperCase();
+            } else {
+                checksumAddress += (addrChars[i] +"").toLowerCase();
+            }
+        }
+        return "0x"+checksumAddress;
+    }
+
+    public static String encodeAddressToIBAN(byte[] addrBytes) {
+        BigInteger asBn = new BigInteger(1,addrBytes);
+        String base36 = asBn.toString(36);
+        String padded = padLeft(base36, 15);
+
+        return fromBBan(padded.toUpperCase());
+    }
+
+    public static String decodeAddressFromIBAN(String iban) {
+        if (iban == null || iban.isEmpty()) {
+            return null;
+        }
+        if (iban.toLowerCase().startsWith("iban:")) {
+            iban = iban.substring("iban:".length());
+        }
+        if ((iban.length() == 34 || iban.length() == 35) && iban.startsWith("XE")) {
+            String base36 = iban.substring(4);
+            BigInteger asBn = new BigInteger(base36, 36);
+            return encodeAddressToChecksumedAddress(padLeft(asBn.toString(16), 20));
+        }else{
+            return null;
+        }
+    }
+
+    static class CheckDigitException extends Exception {
+        public CheckDigitException(String s) {
+            super(s);
+        }
+    }
+
+    private static String fromBBan(String bban) {
+        String countryCode = "XE";
+        try {
+            final String checkDigit = calculate(countryCode + "00" + bban);
+            return countryCode + checkDigit + bban;
+        } catch (CheckDigitException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static String calculate(String code) throws CheckDigitException {
+        if (code != null && code.length() >= 5) {
+            code = code.substring(0, 2) + "00" + code.substring(4);
+            int modulusResult = calculateModulus(code);
+            int charValue = 98 - modulusResult;
+            String checkDigit = Integer.toString(charValue);
+            return charValue > 9 ? checkDigit : "0" + checkDigit;
+        } else {
+            throw new CheckDigitException("Invalid Code length=" + (code == null ? 0 : code.length()));
+        }
+    }
+
+    private static int calculateModulus(String code) throws CheckDigitException {
+        String reformattedCode = code.substring(4) + code.substring(0, 4);
+        long total = 0L;
+
+        for(int i = 0; i < reformattedCode.length(); ++i) {
+            int charValue = Character.getNumericValue(reformattedCode.charAt(i));
+            if (charValue < 0 || charValue > 35) {
+                throw new CheckDigitException("Invalid Character[" + i + "] = '" + charValue + "'");
+            }
+
+            total = (charValue > 9 ? total * 100L : total * 10L) + (long)charValue;
+            if (total > 999999999L) {
+                total %= 97L;
+            }
+        }
+
+        return (int)(total % 97L);
+    }
+
+
+    private static String padLeft(String number, int bytes) {
+        String result = number;
+        while (result.length() < bytes * 2) {
+            result = "00" + result;
+        }
+        return result;
     }
 
     public static String encodeAddressToChecksummedAddress(byte[] addrBytes) {

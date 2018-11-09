@@ -376,6 +376,10 @@ public class WalletToolsLTC implements IWalletTools {
             return new Classification(Classification.TYPE_PUB,IClient.LTC,input);
         }else if (input.startsWith("Mtub")) {
             return new Classification(Classification.TYPE_PUB,IClient.LTC,input);
+        }else if (input.startsWith("Ltpv")) {
+            return new Classification(Classification.TYPE_PRV,IClient.LTC,input);
+        }else if (input.startsWith("Mtpv")) {
+            return new Classification(Classification.TYPE_PRV,IClient.LTC,input);
         }
 
         return new Classification(Classification.TYPE_UNKNOWN);

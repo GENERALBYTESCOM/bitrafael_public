@@ -396,6 +396,12 @@ public class WalletToolsBTC implements IWalletTools {
             return new Classification(Classification.TYPE_PUB,IClient.BTC,input);
         }else if (input.startsWith("zpub")) {
             return new Classification(Classification.TYPE_PUB,IClient.BTC,input);
+        }else if (input.startsWith("xprv")) {
+            return new Classification(Classification.TYPE_PRV,IClient.BTC,input);
+        }else if (input.startsWith("yprv")) {
+            return new Classification(Classification.TYPE_PRV,IClient.BTC,input);
+        }else if (input.startsWith("zprv")) {
+            return new Classification(Classification.TYPE_PRV,IClient.BTC,input);
         }
 
         return new Classification(Classification.TYPE_UNKNOWN);

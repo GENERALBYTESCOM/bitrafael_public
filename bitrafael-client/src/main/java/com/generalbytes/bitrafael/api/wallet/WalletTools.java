@@ -160,13 +160,13 @@ public class WalletTools implements IWalletTools{
             return classificators.get(IClient.DASH).classify(input);
         }else if (input.toLowerCase().startsWith("xmr") || input.toLowerCase().startsWith("monero")) {
             return classificators.get(IClient.XMR).classify(input);
-        }else if (input.toLowerCase().startsWith("ethereum")) {
+        }else if (input.toLowerCase().startsWith("ethereum") || input.toLowerCase().startsWith("iban")) {
             return classificators.get(IClient.ETH).classify(input);
         }
 
         //not specified
         Classification result = new Classification(Classification.TYPE_UNKNOWN);
-        if (input.startsWith("1") || input.startsWith("3") || input.startsWith("5") || (input.startsWith("K") && input.length() > 50) || (input.startsWith("L") && input.length() > 50) || input.startsWith("xpub") || input.startsWith("ypub") || input.startsWith("zpub")) {
+        if (input.startsWith("1") || input.startsWith("3") || input.startsWith("5") || (input.startsWith("K") && input.length() > 50) || (input.startsWith("L") && input.length() > 50) || input.startsWith("xpub") || input.startsWith("ypub") || input.startsWith("zpub") || input.startsWith("xprv") || input.startsWith("yprv") || input.startsWith("zprv")) {
             result = classificators.get(IClient.BTC).classify(input);
         }
 
@@ -174,20 +174,32 @@ public class WalletTools implements IWalletTools{
             return classificators.get(IClient.XMR).classify(input);
         }
 
-        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("L") || input.startsWith("3") || input.startsWith("6") || input.startsWith("M") || input.startsWith("Ltub") || input.startsWith("Mtub") || input.startsWith("T"))) {
+        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("L") || input.startsWith("3") || input.startsWith("6") || input.startsWith("M") || input.startsWith("Ltub") || input.startsWith("Mtub") || input.startsWith("T") || input.startsWith("Ltpv") || input.startsWith("Mtpv"))) {
             return classificators.get(IClient.LTC).classify(input);
-        }
-
-        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("X"))) {
-            return classificators.get(IClient.DASH).classify(input);
         }
 
         if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("0x"))) {
             return classificators.get(IClient.ETH).classify(input);
         }
 
+        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("XE"))) {
+            //try first ethereum then dash
+            Classification c = classificators.get(IClient.ETH).classify(input);
+            if (c.getType() == Classification.TYPE_UNKNOWN) {
+                return classificators.get(IClient.DASH).classify(input);
+            }
+        }
+
+        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("X") || input.startsWith("drk"))) {
+            return classificators.get(IClient.DASH).classify(input);
+        }
+
+
         return result;
     }
+
+
+
 
     @Override
     public Set<String> supportedCryptoCurrencies() {
