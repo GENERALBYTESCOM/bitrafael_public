@@ -18,10 +18,7 @@
 
 package com.generalbytes.bitrafael.api.dto;
 
-import javax.xml.bind.annotation.XmlElement;
-
 public class TxTemplateInput {
-    @XmlElement(name="total_confirmed")
     private String address;
     private long amount;
     private String previousOutputTx;
