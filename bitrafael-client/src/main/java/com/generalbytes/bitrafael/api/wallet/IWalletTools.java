@@ -43,8 +43,10 @@ public interface IWalletTools extends IClassificator{
     String getWalletPrivateKey(IMasterPrivateKey master, String cryptoCurrency, int accountIndex, int chainIndex, int index);
     String getWalletAddressFromAccountPUB(String accountPUB, String cryptoCurrency, int chainIndex, int index);
 
-    public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency);
-    public ISignature sign(String privateKey, byte[] hashToSign, String cryptoCurrency);
+    String generateWalletPrivateKeyWithPrefix(String prefix, String cryptoCurrency);
+    String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency);
+
+    ISignature sign(String privateKey, byte[] hashToSign, String cryptoCurrency);
     boolean isAddressValid(String address, String cryptoCurrency);
     Set<String> supportedCryptoCurrencies();
 }

@@ -95,6 +95,11 @@ public class WalletTools implements IWalletTools{
     }
 
     @Override
+    public String generateWalletPrivateKeyWithPrefix(String prefix, String cryptoCurrency) {
+        return tools.get(cryptoCurrency).generateWalletPrivateKeyWithPrefix(prefix, cryptoCurrency);
+    }
+
+    @Override
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency) {
         if (IClient.XMR.equalsIgnoreCase(cryptoCurrency)) {
             Account account = xmrwt.getAccount(privateKey,0);

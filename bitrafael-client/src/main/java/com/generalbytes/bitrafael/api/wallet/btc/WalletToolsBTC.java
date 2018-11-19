@@ -433,4 +433,20 @@ public class WalletToolsBTC implements IWalletTools {
         System.arraycopy(checksum, 0, checksummed, inputLength, 4);
         return checksummed;
     }
+
+
+    public String generateWalletPrivateKeyWithPrefix(String prefix, String cryptoCurrency) {
+        String result = null;
+        NetworkParameters params = MainNetParams.get();
+        do {
+            ECKey key = new ECKey();
+            Address address = new Address(params, key.getPubKeyHash());
+            if (prefix == null || prefix.isEmpty() || address.toString().startsWith(prefix)) {
+                DumpedPrivateKey privateKeyEncoded = key.getPrivateKeyEncoded(params);
+                result = privateKeyEncoded.toString();
+            }
+        }while (result == null);
+        return result;
+    }
+
 }

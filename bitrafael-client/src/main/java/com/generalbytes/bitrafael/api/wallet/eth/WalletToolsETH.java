@@ -33,9 +33,7 @@ import org.bitcoinj.utils.MonetaryFormat;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.spongycastle.crypto.digests.SHA3Digest;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -356,7 +354,7 @@ public class WalletToolsETH implements IWalletTools {
     }
 
 
-    public static byte[] decodeAddressAsBytes(String address) {
+    private static byte[] decodeAddressAsBytes(String address) {
         if (address == null) {
             return null;
         }
@@ -401,33 +399,6 @@ public class WalletToolsETH implements IWalletTools {
         return hash;
     }
 
-    public static String encodeAddressToChecksumedAddress(String address) {
-        if (address == null) {
-            return null;
-        }
-        address = address.trim();
-        if (address.isEmpty()) {
-            return null;
-        }
-
-        final String addressHash = bytesToHexString(sha3(address.toLowerCase().getBytes()));
-
-        String checksumAddress ="";
-
-        final char[] addrChars = address.toCharArray();
-        final char[] addrHashChars = addressHash.toCharArray();
-
-        for (int i = 0; i < addrChars.length; i++ ) {
-            // If ith character is 9 to f then make it uppercase
-            if (Integer.parseInt((addrHashChars[i]+""), 16) > 7) {
-                checksumAddress += (addrChars[i] +"").toUpperCase();
-            } else {
-                checksumAddress += (addrChars[i] +"").toLowerCase();
-            }
-        }
-        return "0x"+checksumAddress;
-    }
-
     public static String encodeAddressToIBAN(byte[] addrBytes) {
         BigInteger asBn = new BigInteger(1,addrBytes);
         String base36 = asBn.toString(36);
@@ -436,7 +407,7 @@ public class WalletToolsETH implements IWalletTools {
         return fromBBan(padded.toUpperCase());
     }
 
-    public static String decodeAddressFromIBAN(String iban) {
+    private static String decodeAddressFromIBAN(String iban) {
         if (iban == null || iban.isEmpty()) {
             return null;
         }
@@ -446,7 +417,7 @@ public class WalletToolsETH implements IWalletTools {
         if ((iban.length() == 34 || iban.length() == 35) && iban.startsWith("XE")) {
             String base36 = iban.substring(4);
             BigInteger asBn = new BigInteger(base36, 36);
-            return encodeAddressToChecksumedAddress(padLeft(asBn.toString(16), 20));
+            return encodeAddressToChecksummedAddress(padLeft(asBn.toString(16), 20));
         }else{
             return null;
         }
@@ -509,12 +480,12 @@ public class WalletToolsETH implements IWalletTools {
         return result;
     }
 
-    public static String encodeAddressToChecksummedAddress(byte[] addrBytes) {
+    private static String encodeAddressToChecksummedAddress(byte[] addrBytes) {
         String address = bytesToHexString(addrBytes);
         return encodeAddressToChecksummedAddress(address);
     }
 
-    public static String encodeAddressToChecksummedAddress(String address) {
+    private static String encodeAddressToChecksummedAddress(String address) {
         if (address == null) {
             return null;
         }
@@ -576,5 +547,30 @@ public class WalletToolsETH implements IWalletTools {
         return true;
     }
 
+    public String generateWalletPrivateKeyWithPrefix(String prefix, String cryptoCurrency) {
+        if (prefix == null) {
+            prefix = "0x";
+        }
+
+        prefix = prefix.toLowerCase();
+
+        ECKey ecKey = null;
+        String testAddress = null;
+        do {
+            ecKey = new ECKey();
+            testAddress = "0x" + getAddress(ecKey);
+        }while (testAddress.indexOf(prefix) != 0);
+        return bytesToHexString(ecKey.getPrivKeyBytes());
+    }
+
+    private String getAddress(ECKey ecKey) {
+        Keccak256 hash = new Keccak256();
+        hash.update(ecKey.getPubKeyPoint().getX().getEncoded());
+        hash.update(ecKey.getPubKeyPoint().getY().getEncoded());
+        byte[] result = hash.digestArray();
+        byte[] address = new byte[20];
+        System.arraycopy(result,result.length - address.length, address,0, address.length);
+        return bytesToHexString(address);
+    }
 
 }
