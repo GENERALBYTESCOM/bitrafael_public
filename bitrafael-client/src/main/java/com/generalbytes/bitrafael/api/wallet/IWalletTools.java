@@ -30,6 +30,11 @@ public interface IWalletTools extends IClassificator{
     int COIN_TYPE_ETHEREUM = 60;
     int COIN_TYPE_ETHEREUM_CLASSIC = 61;
     int COIN_TYPE_DASH = 5;
+    int COIN_TYPE_BCH = 145;
+    // For more coin types @see https://github.com/libbitcoin/libbitcoin/wiki/Altcoin-Version-Mappings
+    //   and
+    // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+
     int CHAIN_EXTERNAL = 0;
     int CHAIN_CHANGE = 1;
 

@@ -33,7 +33,6 @@ import org.litecoinj.utils.MonetaryFormat;
 import java.nio.ByteBuffer;
 
 import static com.generalbytes.bitrafael.api.wallet.IWalletTools.*;
-import static com.generalbytes.bitrafael.api.wallet.ltc.WalletToolsLTC.addChecksum;
 import static com.google.common.base.Preconditions.checkState;
 
 public class MasterPrivateKeyLTC implements IMasterPrivateKey{
@@ -195,4 +194,14 @@ public class MasterPrivateKeyLTC implements IMasterPrivateKey{
         checkState(ser.position() == 78);
         return Base58.encode(addChecksum(ser.array()));
     }
+
+    public static byte[] addChecksum(byte[] input) {
+        int inputLength = input.length;
+        byte[] checksummed = new byte[inputLength + 4];
+        System.arraycopy(input, 0, checksummed, 0, inputLength);
+        byte[] checksum = Sha256Hash.hashTwice(input);
+        System.arraycopy(checksum, 0, checksummed, inputLength, 4);
+        return checksummed;
+    }
+
 }

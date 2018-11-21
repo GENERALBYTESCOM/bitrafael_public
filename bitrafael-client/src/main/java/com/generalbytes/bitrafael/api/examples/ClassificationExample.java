@@ -49,6 +49,7 @@ public class ClassificationExample {
                 "monero:pram flying gained wobbly dehydrate rarest evenings goggles buckets awesome slower boxes perfect puddle acumen vocal simplest woozy lectures jingle magically addicted glass governing evenings", //monero long seed
                 "82uq8wckyDheRACjnFxbAxfRBD7pRMvF2EEsfNv7A1n3V86eD8KPuGwfmGmXKk6jXQBnpfUG5bGCg1XbFqUipGT28iW6vNL", //monero sub address
                 "0x8912358D977e123b51EcAd1fFA0cC4A7e32FF774", //ethereum
+                "qz2zt4yt687zgm6qzpwne26sgf6ez2lfru2kx4ptkr", //bitcoincash
 
 
 

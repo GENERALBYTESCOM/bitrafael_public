@@ -425,16 +425,6 @@ public class WalletToolsBTC implements IWalletTools {
         return result;
     }
 
-    public static byte[] addChecksum(byte[] input) {
-        int inputLength = input.length;
-        byte[] checksummed = new byte[inputLength + 4];
-        System.arraycopy(input, 0, checksummed, 0, inputLength);
-        byte[] checksum = Sha256Hash.hashTwice(input);
-        System.arraycopy(checksum, 0, checksummed, inputLength, 4);
-        return checksummed;
-    }
-
-
     public String generateWalletPrivateKeyWithPrefix(String prefix, String cryptoCurrency) {
         String result = null;
         NetworkParameters params = MainNetParams.get();

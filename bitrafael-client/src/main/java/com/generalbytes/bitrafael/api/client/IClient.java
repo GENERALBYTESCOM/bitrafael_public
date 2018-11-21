@@ -33,6 +33,7 @@ public interface IClient {
     String XMR = "XMR";
     String ETH = "ETH";
     String ETC = "ETC";
+    String BCH = "BCH";
 
     long getCurrentBlockchainHeight();
 
