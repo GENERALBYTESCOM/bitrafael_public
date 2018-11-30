@@ -358,9 +358,16 @@ public class WalletToolsBTC implements IWalletTools {
             return new Classification(Classification.TYPE_UNKNOWN);
         }
         input = input.trim().replace("\n","");
+
+
         if (input.contains(":")) {
-            //remove leading protocol
-            input = input.substring(input.indexOf(":") + 1);
+            if (!input.toLowerCase().startsWith("bitcoin:")) {
+                //remove leading protocol
+                return new Classification(Classification.TYPE_UNKNOWN);
+            } else {
+                //remove leading protocol
+                input = input.substring(input.indexOf(":") + 1);
+            }
         }
 
         //remove leading slashes
