@@ -362,7 +362,6 @@ public class WalletToolsBTC implements IWalletTools {
 
         if (input.contains(":")) {
             if (!input.toLowerCase().startsWith("bitcoin:")) {
-                //remove leading protocol
                 return new Classification(Classification.TYPE_UNKNOWN);
             } else {
                 //remove leading protocol
