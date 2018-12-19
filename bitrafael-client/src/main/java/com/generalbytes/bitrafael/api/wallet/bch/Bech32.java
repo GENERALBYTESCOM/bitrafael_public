@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Bech32 {
-	public static final String SEPARATOR = ":";
-	public static final String MAIN_NET_PREFIX = "bitcoincash";
+    public static final String SEPARATOR = ":";
+    public static final String MAIN_NET_PREFIX = "bitcoincash";
     public static final String CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 
     private static final BigInteger[] POLYMOD_GENERATORS = new BigInteger[] {
