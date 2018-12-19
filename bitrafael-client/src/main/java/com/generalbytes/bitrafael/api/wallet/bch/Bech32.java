@@ -20,12 +20,14 @@ package com.generalbytes.bitrafael.api.wallet.bch;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class Bech32 {
-
+    public static final String SEPARATOR = ":";
+    public static final String MAIN_NET_PREFIX = "bitcoincash";
     public static final String CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 
     private static final BigInteger[] POLYMOD_GENERATORS = new BigInteger[] {
@@ -121,6 +123,59 @@ public class Bech32 {
         byte[] checksum = calculateChecksumBytesPolymod(checksumData);
         payloadData = concatenateByteArrays(payloadData, convertBits(checksum,8,5,true));
         return encodeToCharset(payloadData);
+    }
+
+
+    public static byte[] decodeCashAddress(String bitcoinCashAddress) {
+        if (!isValidCashAddress(bitcoinCashAddress)) {
+            throw new RuntimeException("Address wasn't valid: " + bitcoinCashAddress);
+        }
+
+        String[] addressParts = bitcoinCashAddress.split(SEPARATOR);
+        int datapos = 0;
+        if (addressParts.length == 2) {
+            String prefix = addressParts[0];
+            datapos++;
+        }
+
+        byte[] addressData = Bech32.decodeFromCharset(addressParts[datapos]);
+        addressData = Arrays.copyOfRange(addressData, 0, addressData.length - 8);
+        addressData = convertBits(addressData, 5, 8, true);
+        byte versionByte = addressData[0];
+        return Arrays.copyOfRange(addressData, 1, addressData.length);
+    }
+
+    public static boolean isValidCashAddress(String bitcoinCashAddress) {
+        try {
+            if (bitcoinCashAddress == null || bitcoinCashAddress.length() == 0) {
+                return false;
+            }
+            String prefix;
+            if (bitcoinCashAddress.contains(SEPARATOR)) {
+                String[] split = bitcoinCashAddress.split(SEPARATOR);
+                if (split.length != 2) {
+                    return false;
+                }
+                prefix = split[0];
+                bitcoinCashAddress = split[1];
+            } else {
+                prefix = MAIN_NET_PREFIX;
+            }
+            if (!isSingleCase(bitcoinCashAddress))
+                return false;
+            bitcoinCashAddress = bitcoinCashAddress.toLowerCase();
+            byte[] checksumData = concatenateByteArrays(
+                    concatenateByteArrays(encodePrefixToUInt5(prefix), new byte[]{0x00}),
+                    Bech32.decodeFromCharset(bitcoinCashAddress));
+            byte[] calculateChecksumBytesPolymod = calculateChecksumBytesPolymod(checksumData);
+            return new BigInteger(calculateChecksumBytesPolymod).compareTo(BigInteger.ZERO) == 0;
+        } catch (RuntimeException re) {
+            return false;
+        }
+    }
+
+    private static boolean isSingleCase(String s) {
+        return s.equals(s.toLowerCase()) || s.equals(s.toUpperCase());
     }
 
     private static byte[] convertBits(byte[] bytes8Bits, int from, int to, boolean strictMode) {
