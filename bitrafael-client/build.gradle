@@ -5,11 +5,6 @@ plugins {
 }
 
 configurations {
-    artifactOnly
-    runtimeNoArtifact {
-        extendsFrom compile
-    }
-
     // handle Github (e.g. community) vs GENERAL BYTES dichotomy
     generalBytesCompile
     githubCompile
