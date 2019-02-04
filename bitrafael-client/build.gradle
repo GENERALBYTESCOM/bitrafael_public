@@ -10,14 +10,23 @@ dependencies {
     compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
     compile(group: 'com.google.guava', name: 'guava', version: '18.0')
     
-    final String  dashjVersion = '0.14.4.7.20180927'
+    final String  dashjVersion = '0.15.20190204'
     final String litecoinjVersion = '0.15.20181101'
     if (hasGbArtifactory) {
         compile(group: 'org.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
         compile(group: 'org.dashj', name: 'dashj-core', version: dashjVersion)
     } else {
         compile(group: 'com.github.GENERALBYTESCOM.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
-        compile(group: 'com.github.GENERALBYTESCOM.dashj', name: 'dashj-core', version: dashjVersion)
+        // compile(group: 'com.github.GENERALBYTESCOM.dashj', name: 'dashj-core', version: dashjVersion)
+        
+        // compile dashj (run build-bls-signatures.sh before that) 
+        // https://github.com/GENERALBYTESCOM/dashj/tree/dash-0.13
+        // and use the following dependency:
+        // compile(group: 'org.dashj', name: 'dashj-core', version: dashjVersion)
+        // Use maven local to use the locally installed dashj version:
+        // repositories {
+        //   mavenLocal()
+        //}
     }
     
     compile(group: 'com.github.mmazi', name: 'rescu', version: '1.9.1')
