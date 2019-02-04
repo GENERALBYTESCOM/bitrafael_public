@@ -23,6 +23,10 @@ dependencies {
         // https://github.com/GENERALBYTESCOM/dashj/tree/dash-0.13
         // and use the following dependency:
         // compile(group: 'org.dashj', name: 'dashj-core', version: dashjVersion)
+        // Use maven local to use the locally installed dashj version:
+        // repositories {
+        //   mavenLocal()
+        //}
     }
     
     compile(group: 'com.github.mmazi', name: 'rescu', version: '1.9.1')
