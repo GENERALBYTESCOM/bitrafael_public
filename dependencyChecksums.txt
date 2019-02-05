@@ -4,6 +4,8 @@ verifyModule 'com.fasterxml.jackson.core:jackson-annotations:2.8.0:e61b7343aceeb
 verifyModule 'com.fasterxml.jackson.core:jackson-core:2.8.2:4efd0e05ec7c4688769f612dcdd9264e5695c93b88295cded6bc94d0b9526c3f'
 verifyModule 'com.fasterxml.jackson.core:jackson-databind:2.8.2:a2a90499657d7f67c17933869def7745f0155944460073d2f1b5590804859576'
 verifyModule 'com.github.GENERALBYTESCOM.litecoinj:litecoinj-core:0.15.20181101:f36a145d1ed7e6e8521fc035a57f61a23b27db3450d0f861a77e608f9b9473cf'
+verifyModule 'com.github.GENERALBYTESCOM.dashj:dashj-bls:0.15.20190204:9322f454e5c9a54425ce72f3081fb24bd7df05b4b1132cbb75582f49fe28f19f'
+verifyModule 'com.github.GENERALBYTESCOM.dashj:dashj-core:0.15.20190204:1a43b6303a7589ef2371a28ccb99fba8d240f5a8d484c7320593e6c8a769d04b'
 verifyModule 'com.github.mmazi:rescu:1.9.1:dd92579f522a5ac60761a4370ca078d11f80563922141439ccc597b65ea80374'
 verifyModule 'com.github.zafarkhaja:java-semver:0.9.0:2218c73b40f9af98b570d084420c1b4a81332297bd7fc27ddd552e903be8e93c'
 verifyModule 'com.google.code.findbugs:jsr305:2.0.1:1e7f53fa5b8b5c807e986ba335665da03f18d660802d8bf061823089d1bee468'
