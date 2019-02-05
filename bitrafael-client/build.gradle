@@ -29,17 +29,7 @@ dependencies {
     generalBytesCompile(group: 'org.dashj', name: 'dashj-core', version: dashjVersion)
 
     githubCompile(group: 'com.github.GENERALBYTESCOM.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
-    // githubCompile(group: 'com.github.GENERALBYTESCOM.dashj', name: 'dashj-core', version: dashjVersion)
-
-    // compile dashj (run build-bls-signatures.sh before that) 
-    // https://github.com/GENERALBYTESCOM/dashj/tree/dash-0.13
-    // and use the following dependency:
-    // githubCompile(group: 'org.dashj', name: 'dashj-core', version: dashjVersion)
-    // Use maven local to use the locally installed dashj version:
-    // repositories {
-    //   mavenLocal()
-    // }
-    
+    githubCompile(group: 'com.github.GENERALBYTESCOM.dashj', name: 'dashj-core', version: dashjVersion)
     
     compile(group: 'com.github.mmazi', name: 'rescu', version: '1.9.1')
     runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21')
