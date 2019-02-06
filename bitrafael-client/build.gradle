@@ -22,7 +22,7 @@ dependencies {
     compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
     compile(group: 'com.google.guava', name: 'guava', version: '18.0')
     
-    final String  dashjVersion = '0.15.20190204'
+    final String  dashjVersion = '0.15.20190206'
     final String litecoinjVersion = '0.15.20181101'
 
     generalBytesCompile(group: 'org.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
