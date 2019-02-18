@@ -36,7 +36,7 @@ import java.util.zip.CRC32;
 
 public final class XMRMnemonicUtility {
     private static Dictionary dictionary = null;
-    private static final Splitter WORD_SPLITTER = Splitter.on(CharMatcher.WHITESPACE).trimResults().omitEmptyStrings();
+    private static final Splitter WORD_SPLITTER = Splitter.on(CharMatcher.whitespace()).trimResults().omitEmptyStrings();
     public XMRMnemonicUtility() {
     }
 
