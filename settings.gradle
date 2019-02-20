@@ -1,3 +1,2 @@
 include 'bitrafael-common'
 include 'bitrafael-client'
-include 'colorledger'
