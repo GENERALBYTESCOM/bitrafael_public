@@ -3,6 +3,7 @@ verifyModule 'com.caucho:hessian:4.0.51:2a634aa70951af9d6d0dc89db0ebf8d2e8a11239
 verifyModule 'com.fasterxml.jackson.core:jackson-annotations:2.9.1:029834aefc1649b08d32ab0fdc333142075001e842260beed40f0e5f4714c5e8'
 verifyModule 'com.fasterxml.jackson.core:jackson-core:2.9.1:782e7efa27452f76f7e1191c166613bfbec785ac73ffb5504d323f07f3b1700e'
 verifyModule 'com.fasterxml.jackson.core:jackson-databind:2.9.1:17b28ec21ae487bb9a0570b6c0ec66b2277d47546d4089c3a5a2b3e60054134c'
+verifyModule 'com.github.GENERALBYTESCOM.bitcoinj:bitcoinj-core:0.14.1.20190220:a153d5a3562220f9b82b77774b04a54281fe6de239d8724df09233546cf0ea75'
 verifyModule 'com.github.GENERALBYTESCOM.dashj:dashj-bls:0.15.20190218:c7e1610501b09b9bffc6fbd491be818a24b745718fe8734eea883c2e5341a7e5'
 verifyModule 'com.github.GENERALBYTESCOM.dashj:dashj-core:0.15.20190218:8a37b1e4215674100ae11e21e8c41062c510693af31678b98bda62ba0cbb6242'
 verifyModule 'com.github.GENERALBYTESCOM.litecoinj:litecoinj-core:0.15.20190219:8a1f69244c7dbfa82252845835c516c2de3004afe4a1e3e8f93728eb26935c4b'
