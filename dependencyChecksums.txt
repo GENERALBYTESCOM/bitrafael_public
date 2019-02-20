@@ -32,7 +32,7 @@ verifyModule 'net.jcip:jcip-annotations:1.0:be5805392060c71474bf6c9a67a099471274
 verifyModule 'oauth.signpost:signpost-core:1.2.1.2:a1d69c5346ebf086b0f63c382b4500ceb29304d8fe95157b060aa4cd3861f230'
 verifyModule 'org.apache.httpcomponents:httpclient:4.5.2:0dffc621400d6c632f55787d996b8aeca36b30746a716e079a985f24d8074057'
 verifyModule 'org.apache.httpcomponents:httpcore:4.4.4:f7bc09dc8a7003822d109634ffd3845d579d12e725ae54673e323a7ce7f5e325'
-verifyModule 'org.bitcoinj:bitcoinj-core:0.14.1:4a22064208be18f882764eaf8f1a5d057300d48bc1f5923aa458301a0fa98eed'
+verifyModule 'org.bitcoinj:bitcoinj-core:0.14.1.20190220:e18a0f80c35592dd3afe59fcf343749984358e564b17e4899bb2a059c69dd543'
 verifyModule 'org.bitcoinj:orchid:1.2.1:f836325cfa0466a011cb755c9b0fee6368487a2352eb45f4306ad9e4c18de080'
 verifyModule 'org.checkerframework:checker-compat-qual:2.5.2:d7291cebf5e158d169807ae49d4b16ff672986f0c6d803e5f207c40cb61ef982'
 verifyModule 'org.codehaus.mojo:animal-sniffer-annotations:1.17:92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53'
