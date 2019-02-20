@@ -18,16 +18,18 @@ configurations {
 
 dependencies {
     compile project(':bitrafael-common')
-    compile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1')
     compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
     compile(group: 'com.google.guava', name: 'guava', version: '27.0.1-android')
-    
+
     final String  dashjVersion = '0.15.20190218'
     final String litecoinjVersion = '0.15.20190219'
+    final String bitcoinjVersion = '0.14.1.20190220' // https://github.com/GENERALBYTESCOM/bitcoinj/tree/release-0.14.1
 
+    generalBytesCompile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: bitcoinjVersion)
     generalBytesCompile(group: 'org.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
     generalBytesCompile(group: 'org.dashj', name: 'dashj-core', version: dashjVersion)
 
+    githubCompile(group: 'com.github.GENERALBYTESCOM.bitcoinj', name: 'bitcoinj-core', version: bitcoinjVersion)
     githubCompile(group: 'com.github.GENERALBYTESCOM.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
     githubCompile(group: 'com.github.GENERALBYTESCOM.dashj', name: 'dashj-core', version: dashjVersion)
     
