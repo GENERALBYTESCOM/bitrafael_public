@@ -29,8 +29,8 @@ public class TxInfo {
 
     private long size;
 
-    private List<InputInfo> inputInfos;
-    private List<OutputInfo> outputInfos;
+    private List<InputInfo> inputInfos = new ArrayList<>();
+    private List<OutputInfo> outputInfos = new ArrayList<>();
     private long blockHeight;
     private long confirmations;
 
@@ -46,18 +46,11 @@ public class TxInfo {
     }
 
     public void addInputInfo(InputInfo ii) {
-        if (inputInfos == null) {
-            inputInfos = new ArrayList<InputInfo>();
-        }
         inputInfos.add(ii);
     }
 
     public void addOutputInfo(OutputInfo oi) {
-        if (outputInfos == null) {
-            outputInfos = new ArrayList<OutputInfo>();
-        }
         outputInfos.add(oi);
-
     }
 
     public String getTxHash() {
@@ -135,11 +128,4 @@ public class TxInfo {
         this.size = size;
     }
 
-    public void setInputInfos(List<InputInfo> inputInfos) {
-        this.inputInfos = inputInfos;
-    }
-
-    public void setOutputInfos(List<OutputInfo> outputInfos) {
-        this.outputInfos = outputInfos;
-    }
 }
