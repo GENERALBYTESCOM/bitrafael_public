@@ -21,7 +21,7 @@ dependencies {
     compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
     compile(group: 'com.google.guava', name: 'guava', version: '27.0.1-android')
 
-    final String  dashjVersion = '0.15.20190218'
+    final String dashjVersion = '0.15.20190305' // https://github.com/GENERALBYTESCOM/dashj/tree/dash-0.13
     final String litecoinjVersion = '0.15.20190219'
     final String bitcoinjVersion = '0.14.1.20190220' // https://github.com/GENERALBYTESCOM/bitcoinj/tree/release-0.14.1
 
