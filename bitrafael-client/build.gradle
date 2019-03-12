@@ -24,6 +24,7 @@ dependencies {
     final String dashjVersion = '0.15.20190305' // https://github.com/GENERALBYTESCOM/dashj/tree/dash-0.13
     final String litecoinjVersion = '0.15.20190219'
     final String bitcoinjVersion = '0.14.1.20190220' // https://github.com/GENERALBYTESCOM/bitcoinj/tree/release-0.14.1
+    final String smartcashjVersion = '0.16.0'
 
     generalBytesCompile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: bitcoinjVersion)
     generalBytesCompile(group: 'org.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
@@ -32,7 +33,9 @@ dependencies {
     githubCompile(group: 'com.github.GENERALBYTESCOM.bitcoinj', name: 'bitcoinj-core', version: bitcoinjVersion)
     githubCompile(group: 'com.github.GENERALBYTESCOM.litecoinj', name: 'litecoinj-core', version: litecoinjVersion)
     githubCompile(group: 'com.github.GENERALBYTESCOM.dashj', name: 'dashj-core', version: dashjVersion)
-    
+
+    implementation 'com.github.SmartCash.smartcashj:smartcashj-core:0.16.0'
+
     compile(group: 'com.github.mmazi', name: 'rescu', version: '2.0.2')
     runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25')
     runtime(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25')
@@ -47,6 +50,12 @@ dependencySubstitutions {
     substitute from: 'com.squareup.okio:okio:1.6.0', toVersion: '1.11.0'
     substitute from: 'com.google.guava:guava:18.0', toVersion: '27.0.1-android'
     substitute from: 'com.fasterxml.jackson.core:jackson-annotations:2.9.0', toVersion: '2.9.1'
+
+    substitute from: 'com.google.guava:guava:24.0-android', toVersion: '27.0.1-android'
+    substitute from: 'com.madgag.spongycastle:core:1.58.0.0', toVersion: '1.52.0.0'
+    substitute from: 'com.google.protobuf:protobuf-java:3.5.1', toVersion: '2.6.1'
+    substitute from: 'com.squareup.okhttp3:okhttp:3.9.1', toVersion: '3.6.0'
+    substitute from: 'com.squareup.okio:okio:1.13.0', toVersion: '1.11.0'
 }
 
 dependencyVerifications {

@@ -34,6 +34,7 @@ public interface IClient {
     String ETH = "ETH";
     String ETC = "ETC";
     String BCH = "BCH";
+    String SMART = "SMART";
 
     long getCurrentBlockchainHeight();
 

@@ -52,6 +52,10 @@ allprojects {
         options.incremental = true
     }
 
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+
     afterEvaluate {
         if (pluginManager.hasPlugin('com.generalbytes.gradle.dependency.verification')) {
             dependencyChecksums {
