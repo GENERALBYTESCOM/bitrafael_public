@@ -234,6 +234,19 @@ public class Client implements IClient {
     }
 
     @Override
+    public Map<String, Integer> getAddressesAudits(List<String> addresses) {
+        try {
+            final AddressesAuditResponse response = api.getAddressesAudits(addresses);
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public Map<String, AddressInfo> getAddressesInfo(List<String> addresses, int limit) {
         try {
             final AddressesInfoResponse response = api.getAddressesInfos(addresses, limit);
