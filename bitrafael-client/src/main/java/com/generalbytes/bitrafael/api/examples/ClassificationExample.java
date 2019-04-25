@@ -61,11 +61,11 @@ public class ClassificationExample {
             String note = "";
             if (classify != null && classify.getType() == Classification.TYPE_PRIVATE_KEY_IN_WIF) {
                 if (classify.getCryptoCurrency().equalsIgnoreCase(IClient.BTC)) {
-                    org.bitcoinj.core.DumpedPrivateKey dp = new org.bitcoinj.core.DumpedPrivateKey(org.bitcoinj.params.MainNetParams.get(),testString);
-                    note = " >>> " + new org.bitcoinj.core.Address(org.bitcoinj.params.MainNetParams.get(),dp.getKey().getPubKeyHash());
+                    org.bitcoinj.core.DumpedPrivateKey dp = org.bitcoinj.core.DumpedPrivateKey.fromBase58(org.bitcoinj.params.MainNetParams.get(),testString);
+                    note = " >>> " + org.bitcoinj.core.Address.fromKey(org.bitcoinj.params.MainNetParams.get(), dp.getKey(), org.bitcoinj.script.Script.ScriptType.P2PKH);
                 }else if (classify.getCryptoCurrency().equalsIgnoreCase(IClient.LTC)) {
-                    org.litecoinj.core.DumpedPrivateKey dp = new org.litecoinj.core.DumpedPrivateKey(org.litecoinj.params.MainNetParams.get(),classify.getCleanData());
-                    note = " >>> " + new org.litecoinj.core.Address(org.litecoinj.params.MainNetParams.get(),dp.getKey().getPubKeyHash());
+                    org.litecoinj.core.DumpedPrivateKey dp = org.litecoinj.core.DumpedPrivateKey.fromBase58(org.litecoinj.params.MainNetParams.get(),classify.getCleanData());
+                    note = " >>> " + org.litecoinj.core.Address.fromKey(org.litecoinj.params.MainNetParams.get(), dp.getKey(), org.litecoinj.script.Script.ScriptType.P2PKH);
                 }
             }else if (classify.getType() == Classification.TYPE_UNKNOWN){
                 System.err.println("Error parsing " + testString);

@@ -35,7 +35,7 @@ public class WalletToolsBCHTest {
 
     @Test
     public void classify() {
-      Assert.assertEquals("BCH",   walletToolsBCH.classify("qp8xmf4rpa40vzpvf282njskd50yfng72vkz0rwau3", "BCH").getCryptoCurrency());
-      Assert.assertEquals("qp8xmf4rpa40vzpvf282njskd50yfng72vkz0rwau3",   walletToolsBCH.classify("bitcoincash:qp8xmf4rpa40vzpvf282njskd50yfng72vkz0rwau3", "BCH").getCleanData());
+        Assert.assertEquals("BCH", walletToolsBCH.classify("qp8xmf4rpa40vzpvf282njskd50yfng72vkz0rwau3", "BCH").getCryptoCurrency());
+        Assert.assertEquals("qp8xmf4rpa40vzpvf282njskd50yfng72vkz0rwau3", walletToolsBCH.classify("bitcoincash:qp8xmf4rpa40vzpvf282njskd50yfng72vkz0rwau3", "BCH").getCleanData());
     }
 }

@@ -27,8 +27,8 @@ import com.google.common.collect.ImmutableList;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.*;
 import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.script.Script;
 import org.bitcoinj.store.BlockStore;
-import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.utils.MonetaryFormat;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.spongycastle.crypto.digests.SHA3Digest;
@@ -53,7 +53,7 @@ public class WalletToolsETH implements IWalletTools {
     public String generateSeedMnemonicSeparatedBySpaces() {
         try {
             SecureRandom prng = SecureRandom.getInstance("SHA1PRNG");
-            List<String> words = MnemonicCode.INSTANCE.toMnemonic(Sha256Hash.create(prng.generateSeed(32)).getBytes());
+            List<String> words = MnemonicCode.INSTANCE.toMnemonic(Sha256Hash.of(prng.generateSeed(32)).getBytes());
             return Joiner.on(" ").join(words);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -102,8 +102,8 @@ public class WalletToolsETH implements IWalletTools {
             final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
 
             Keccak256 hash = new Keccak256();
-            hash.update(walletKey.getPubKeyPoint().getX().getEncoded());
-            hash.update(walletKey.getPubKeyPoint().getY().getEncoded());
+            hash.update(walletKey.getPubKeyPoint().getAffineXCoord().getEncoded());
+            hash.update(walletKey.getPubKeyPoint().getAffineYCoord().getEncoded());
             byte[] result = hash.digestArray();
             byte[] address = new byte[20];
             System.arraycopy(result,result.length - address.length, address,0, address.length);
@@ -148,7 +148,7 @@ public class WalletToolsETH implements IWalletTools {
                     walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
                 }
                 if (standard == STANDARD_BIP44) {
-                    return new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
+                    return Address.fromKey(MainNetParams.get(), walletKey, Script.ScriptType.P2PKH).toString();
                 }else  if (standard == STANDARD_BIP84) {
                     return null; //TODO
                 }
@@ -169,12 +169,12 @@ public class WalletToolsETH implements IWalletTools {
         final int finalHeader = header;
         return DeterministicKey.deserializeB58(accountPUB, new NetworkParameters() {
             @Override
-            public int getBip32HeaderPub() {
+            public int getBip32HeaderP2PKHpub() {
                 return finalHeader;
             }
 
             @Override
-            public int getBip32HeaderPriv() {
+            public int getBip32HeaderP2PKHpriv() {
                 return -1;
             }
 
@@ -184,7 +184,7 @@ public class WalletToolsETH implements IWalletTools {
             }
 
             @Override
-            public void checkDifficultyTransitions(StoredBlock storedPrev, Block next, BlockStore blockStore) throws VerificationException, BlockStoreException {
+            public void checkDifficultyTransitions(StoredBlock storedPrev, Block next, BlockStore blockStore) throws VerificationException {
 
             }
 
@@ -565,8 +565,8 @@ public class WalletToolsETH implements IWalletTools {
 
     private String getAddress(ECKey ecKey) {
         Keccak256 hash = new Keccak256();
-        hash.update(ecKey.getPubKeyPoint().getX().getEncoded());
-        hash.update(ecKey.getPubKeyPoint().getY().getEncoded());
+        hash.update(ecKey.getPubKeyPoint().getAffineXCoord().getEncoded());
+        hash.update(ecKey.getPubKeyPoint().getAffineYCoord().getEncoded());
         byte[] result = hash.digestArray();
         byte[] address = new byte[20];
         System.arraycopy(result,result.length - address.length, address,0, address.length);

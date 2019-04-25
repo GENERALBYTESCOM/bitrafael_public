@@ -51,6 +51,6 @@ public class WalletToolsBTCTest {
     public void classify() {
         Assert.assertEquals("BTC", walletToolsBTC.classify("3CuvPRVeG3jWhm1dLSACKDN9PMPuY6FVXT", "BTC").getCryptoCurrency());
         Assert.assertEquals("BTC", walletToolsBTC.classify("112pN943KyuQY26epMwFFvcj85EVVc2fnJ", "BTC").getCryptoCurrency());
-//        Assert.assertEquals("BTC", walletToolsBTC.classify("bc1qlgp42vadfqkdjr0wdwvfnpqlvs5cg3xnl5zukw", "BTC").getCryptoCurrency());
+        Assert.assertEquals("BTC", walletToolsBTC.classify("bc1qlgp42vadfqkdjr0wdwvfnpqlvs5cg3xnl5zukw", "BTC").getCryptoCurrency());
     }
 }

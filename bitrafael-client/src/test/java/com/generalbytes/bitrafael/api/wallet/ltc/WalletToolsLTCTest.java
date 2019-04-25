@@ -35,8 +35,7 @@ public class WalletToolsLTCTest {
 
     @Test
     public void classify() {
-//      Assert.assertEquals("LTC",   walletToolsLTC.classify("ltc1q3cv28h4f33dj7msgm85va0epdw6298rxsparl7", "LTC").getCryptoCurrency());
-      Assert.assertEquals("LTC",   walletToolsLTC.classify("MV5sqqgY5qG3rxBciUQgz9dSYSKiyxN2n3", "LTC").getCryptoCurrency());
-      Assert.assertEquals("LTC",   walletToolsLTC.classify("LZpVz2zJ9Mq4tUx2UeSiFHRqKfN54BL6yr", "LTC").getCryptoCurrency());
+        Assert.assertEquals("LTC", walletToolsLTC.classify("MV5sqqgY5qG3rxBciUQgz9dSYSKiyxN2n3", "LTC").getCryptoCurrency());
+        Assert.assertEquals("LTC", walletToolsLTC.classify("LZpVz2zJ9Mq4tUx2UeSiFHRqKfN54BL6yr", "LTC").getCryptoCurrency());
     }
 }

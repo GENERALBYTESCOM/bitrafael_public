@@ -35,6 +35,6 @@ public class WalletToolsETHTest {
 
     @Test
     public void classify() {
-      Assert.assertEquals("ETH",   walletToolsETH.classify("0x184FCD3649D971e7f5d11989E5Dbc72C8a887507", "ETH").getCryptoCurrency());
+        Assert.assertEquals("ETH", walletToolsETH.classify("0x184FCD3649D971e7f5d11989E5Dbc72C8a887507", "ETH").getCryptoCurrency());
     }
 }
