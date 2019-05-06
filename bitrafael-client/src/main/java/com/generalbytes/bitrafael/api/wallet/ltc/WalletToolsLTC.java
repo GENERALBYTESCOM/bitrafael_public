@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableList;
 import org.litecoinj.core.*;
 import org.litecoinj.crypto.*;
 import org.litecoinj.params.MainNetParams;
+import org.litecoinj.script.Script;
 import org.litecoinj.store.BlockStore;
 import org.litecoinj.store.BlockStoreException;
 import org.litecoinj.utils.MonetaryFormat;
@@ -50,7 +51,7 @@ public class WalletToolsLTC implements IWalletTools {
     public String generateSeedMnemonicSeparatedBySpaces() {
         try {
             SecureRandom prng = SecureRandom.getInstance("SHA1PRNG");
-            List<String> words = MnemonicCode.INSTANCE.toMnemonic(Sha256Hash.create(prng.generateSeed(32)).getBytes());
+            List<String> words = MnemonicCode.INSTANCE.toMnemonic(Sha256Hash.of(prng.generateSeed(32)).getBytes());
             return Joiner.on(" ").join(words);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -101,7 +102,7 @@ public class WalletToolsLTC implements IWalletTools {
             final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
             final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
 
-            return new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
+            return Address.fromKey(MainNetParams.get(), walletKey, Script.ScriptType.P2PKH).toString();
         } else if (standard == STANDARD_BIP49) {
             final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP49, true));
             final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(WalletTools.getCoinTypeByCryptoCurrency(cryptoCurrency), true));
@@ -114,7 +115,7 @@ public class WalletToolsLTC implements IWalletTools {
             bb.put(walletKey.getPubKeyHash());
             byte[] scriptSig = bb.array();
             byte[] addressBytes =  Utils.sha256hash160(scriptSig);
-            return new Address(MainNetParams.get(),5,addressBytes).toBase58();
+            return LegacyAddress.fromScriptHash(MainNetParams.get(),addressBytes).toBase58();
         } else if (standard == STANDARD_BIP84) {
             final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP84, true));
             final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(WalletTools.getCoinTypeByCryptoCurrency(cryptoCurrency), true));
@@ -171,14 +172,14 @@ public class WalletToolsLTC implements IWalletTools {
                     walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
                 }
                 if (standard == STANDARD_BIP44) {
-                    return new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
+                    return Address.fromKey(MainNetParams.get(), walletKey, Script.ScriptType.P2PKH).toString();
                 } else if (standard == STANDARD_BIP49) {
                     ByteBuffer bb = ByteBuffer.allocate(2+walletKey.getPubKeyHash().length);
                     bb.put(new byte[]{0x00,0x14});
                     bb.put(walletKey.getPubKeyHash());
                     byte[] scriptSig = bb.array();
                     byte[] addressBytes =  Utils.sha256hash160(scriptSig);
-                    return new Address(MainNetParams.get(),5,addressBytes).toBase58();
+                    return LegacyAddress.fromScriptHash(MainNetParams.get(),addressBytes).toBase58();
                 }else  if (standard == STANDARD_BIP84) {
                     return null; //TODO
                 }
@@ -202,13 +203,8 @@ public class WalletToolsLTC implements IWalletTools {
         final int finalHeader = header;
         return DeterministicKey.deserializeB58(accountPUB, new NetworkParameters() {
             @Override
-            public int getBip32HeaderPub() {
+            public int getBip32HeaderP2PKHpub() {
                 return finalHeader;
-            }
-
-            @Override
-            public int getBip32HeaderPriv() {
-                return -1;
             }
 
             @Override
@@ -280,31 +276,31 @@ public class WalletToolsLTC implements IWalletTools {
 
     @Override
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency) {
-        DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
-        return (new Address(MainNetParams.get(),dp.getKey().getPubKeyHash())) +"";
+        DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(),privateKey);
+        return (Address.fromKey(MainNetParams.get(),dp.getKey(), Script.ScriptType.P2PKH)) +"";
     }
 
     public boolean isAddressValid(String address, String cryptoCurrency) {
         if (address == null) {
             return false;
-        }else{
-            if (!(address.startsWith("L") || address.startsWith("3") || address.startsWith("M"))){
-                return false;
-            }
+        }
+
+        if (address.startsWith("L") || address.startsWith("3") || address.startsWith("M")) {
+            return true;
         }
 
         try {
             Base58.decodeChecked(address);
+            return true;
         } catch (AddressFormatException e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
+        return false;
     }
 
     @Override
     public ISignature sign(String privateKey, byte[] hashToSign, String cryptoCurrency) {
-        DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
+        DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(),privateKey);
         final ECKey key = dp.getKey();
         return new Signature(key.getPubKey(),key.sign(Sha256Hash.wrap(hashToSign)).encodeToDER());
     }
@@ -409,7 +405,7 @@ public class WalletToolsLTC implements IWalletTools {
         NetworkParameters params = MainNetParams.get();
         do {
             ECKey key = new ECKey();
-            Address address = new Address(params, key.getPubKeyHash());
+            Address address = Address.fromKey(params, key, Script.ScriptType.P2PKH);
             if (prefix == null || prefix.isEmpty() || address.toString().startsWith(prefix)) {
                 DumpedPrivateKey privateKeyEncoded = key.getPrivateKeyEncoded(params);
                 result = privateKeyEncoded.toString();

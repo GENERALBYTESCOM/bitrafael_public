@@ -63,12 +63,12 @@ public class MasterPrivateKeyLTC implements IMasterPrivateKey{
         final int finalHeader = header;
         return DeterministicKey.deserializeB58(prv, new NetworkParameters() {
             @Override
-            public int getBip32HeaderPub() {
+            public int getBip32HeaderP2PKHpub() {
                 return 0;
             }
 
             @Override
-            public int getBip32HeaderPriv() {
+            public int getBip32HeaderP2PKHpriv() {
                 return finalHeader;
             }
 
