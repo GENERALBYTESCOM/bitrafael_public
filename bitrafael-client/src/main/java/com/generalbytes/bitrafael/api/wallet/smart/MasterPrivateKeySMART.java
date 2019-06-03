@@ -1,9 +1,9 @@
 package com.generalbytes.bitrafael.api.wallet.smart;
 
 import com.generalbytes.bitrafael.api.wallet.IMasterPrivateKey;
-import org.smartcashj.crypto.DeterministicKey;
-import org.smartcashj.crypto.MnemonicCode;
-import org.smartcashj.params.MainNetParams;
+import cc.smartcash.smartcashj.crypto.DeterministicKey;
+import cc.smartcash.smartcashj.crypto.MnemonicCode;
+import cc.smartcash.smartcashj.params.MainNetParams;
 
 
 public class MasterPrivateKeySMART implements IMasterPrivateKey {

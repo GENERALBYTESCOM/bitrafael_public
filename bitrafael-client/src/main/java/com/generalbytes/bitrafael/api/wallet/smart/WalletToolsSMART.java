@@ -5,10 +5,10 @@ import com.generalbytes.bitrafael.api.wallet.*;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
-import org.smartcashj.core.*;
-import org.smartcashj.crypto.*;
-import org.smartcashj.params.MainNetParams;
-import org.smartcashj.wallet.DeterministicSeed;
+import cc.smartcash.smartcashj.core.*;
+import cc.smartcash.smartcashj.crypto.*;
+import cc.smartcash.smartcashj.params.MainNetParams;
+import cc.smartcash.smartcashj.wallet.DeterministicSeed;
 
 
 import java.nio.ByteBuffer;
@@ -152,7 +152,7 @@ public class WalletToolsSMART implements IWalletTools {
         private byte[] publicKey;
         private byte[] signature;
 
-        public Signature(byte[] publicKey, byte[] signature) {
+        Signature(byte[] publicKey, byte[] signature) {
             this.publicKey = publicKey;
             this.signature = signature;
         }
