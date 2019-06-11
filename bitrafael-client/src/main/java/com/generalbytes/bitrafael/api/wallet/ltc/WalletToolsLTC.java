@@ -351,16 +351,24 @@ public class WalletToolsLTC implements IWalletTools {
             input = input.substring(0,input.indexOf("?"));
         }
 
-        if ((input.startsWith("L") || input.startsWith("3") || input.startsWith("M")) &&  input.length() <= 34) {
+        if ((input.startsWith("L") || input.startsWith("3") || input.startsWith("M")) && input.length() <= 34) {
             //most likely address lets check it
             try {
                 if (isAddressValidInternal(input)) {
-                    return new Classification(Classification.TYPE_ADDRESS,IClient.LTC,input);
+                    return new Classification(Classification.TYPE_ADDRESS, IClient.LTC, input);
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }
-        }else if (((input.startsWith("6")) && input.length() >= 51) || ((input.startsWith("T")) && input.length() >= 51))  {
+        } else if (input.startsWith("ltc1")) {
+            try {
+                if (isAddressValidBech32Internal(input)) {
+                    return new Classification(Classification.TYPE_ADDRESS, IClient.LTC, input);
+                }
+            } catch (AddressFormatException e) {
+                e.printStackTrace();
+            }
+        } else if (((input.startsWith("6")) && input.length() >= 51) || ((input.startsWith("T")) && input.length() >= 51))  {
             //most likely private key
             try {
                 DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
@@ -385,6 +393,16 @@ public class WalletToolsLTC implements IWalletTools {
     private static boolean isAddressValidInternal(String address) {
         try {
             Base58.decodeChecked(address);
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isAddressValidBech32Internal(String address) {
+        try {
+            Bech32.decode(address);
         } catch (AddressFormatException e) {
             e.printStackTrace();
             return false;
