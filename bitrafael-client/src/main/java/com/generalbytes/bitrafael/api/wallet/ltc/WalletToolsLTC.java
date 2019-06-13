@@ -363,7 +363,7 @@ public class WalletToolsLTC implements IWalletTools {
         } else if (input.toLowerCase().startsWith("ltc1")) {
             try {
                 if (isAddressValidBech32Internal(input)) {
-                    return new Classification(Classification.TYPE_ADDRESS, IClient.LTC, input);
+                    return new Classification(Classification.TYPE_ADDRESS, IClient.LTC, input.toLowerCase());
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
