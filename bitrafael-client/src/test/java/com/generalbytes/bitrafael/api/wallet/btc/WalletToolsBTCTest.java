@@ -52,8 +52,12 @@ public class WalletToolsBTCTest {
         Assert.assertEquals("BTC", walletToolsBTC.classify("3CuvPRVeG3jWhm1dLSACKDN9PMPuY6FVXT", "BTC").getCryptoCurrency());
         Assert.assertEquals("BTC", walletToolsBTC.classify("112pN943KyuQY26epMwFFvcj85EVVc2fnJ", "BTC").getCryptoCurrency());
         Assert.assertEquals("BTC", walletToolsBTC.classify("bc1qlgp42vadfqkdjr0wdwvfnpqlvs5cg3xnl5zukw", "BTC").getCryptoCurrency());
+        Assert.assertEquals("BTC", walletToolsBTC.classify("BC1QLGP42VADFQKDJR0WDWVFNPQLVS5CG3XNL5ZUKW", "BTC").getCryptoCurrency());
         Assert.assertEquals("BTC", walletToolsBTC.classify("bitcoin:3CuvPRVeG3jWhm1dLSACKDN9PMPuY6FVXT", "BTC").getCryptoCurrency());
         Assert.assertEquals("BTC", walletToolsBTC.classify("bitcoin:112pN943KyuQY26epMwFFvcj85EVVc2fnJ", "BTC").getCryptoCurrency());
         Assert.assertEquals("BTC", walletToolsBTC.classify("bitcoin:bc1qlgp42vadfqkdjr0wdwvfnpqlvs5cg3xnl5zukw", "BTC").getCryptoCurrency());
+        Assert.assertEquals("BTC", walletToolsBTC.classify("bitcoin:BC1QLGP42VADFQKDJR0WDWVFNPQLVS5CG3XNL5ZUKW", "BTC").getCryptoCurrency());
+
+        Assert.assertNull(walletToolsBTC.classify("bitcoin:bc1QLGP42VADFQKDJR0WDWVFNPQLVS5CG3XNL5ZUKW", "BTC").getCryptoCurrency());
     }
 }

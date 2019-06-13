@@ -389,10 +389,10 @@ public class WalletToolsBTC implements IWalletTools {
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }
-        } else if (input.startsWith("bc1")) {
+        } else if (input.toLowerCase().startsWith("bc1")) {
             try {
                 if (isAddressValidBech32Internal(input)) {
-                    return new Classification(Classification.TYPE_ADDRESS, IClient.BTC, input);
+                    return new Classification(Classification.TYPE_ADDRESS, IClient.BTC, input.toLowerCase());
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
