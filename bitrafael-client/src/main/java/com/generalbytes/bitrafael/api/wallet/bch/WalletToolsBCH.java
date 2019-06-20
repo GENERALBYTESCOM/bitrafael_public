@@ -26,9 +26,6 @@ import com.google.common.collect.ImmutableList;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.*;
 import org.bitcoinj.params.MainNetParams;
-import org.bitcoinj.store.BlockStore;
-import org.bitcoinj.store.BlockStoreException;
-import org.bitcoinj.utils.MonetaryFormat;
 import org.bitcoinj.wallet.DeterministicSeed;
 
 import java.nio.ByteBuffer;
@@ -49,7 +46,7 @@ public class WalletToolsBCH implements IWalletTools {
     public String generateSeedMnemonicSeparatedBySpaces() {
         try {
             SecureRandom prng = SecureRandom.getInstance("SHA1PRNG");
-            List<String> words = MnemonicCode.INSTANCE.toMnemonic(Sha256Hash.create(prng.generateSeed(32)).getBytes());
+            List<String> words = MnemonicCode.INSTANCE.toMnemonic(Sha256Hash.of(prng.generateSeed(32)).getBytes());
             return Joiner.on(" ").join(words);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -110,107 +107,30 @@ public class WalletToolsBCH implements IWalletTools {
         byte[] serializedKey = Base58.decodeChecked(accountPUB);
         ByteBuffer buffer = ByteBuffer.wrap(serializedKey);
         int header = buffer.getInt();
-        int standard = -1;
 
-        boolean isPub = true;
-
-        switch (header) {
-            case XPUB:
-                standard = STANDARD_BIP44;//xpub
-                isPub = true;
-                break;
-            case XPRV:
-                standard = STANDARD_BIP44;//xprv
-                isPub = false;
-                break;
-        }
-
-        if(standard == -1) {
-            throw new IllegalArgumentException("Unknown header bytes in pub: " + accountPUB);
-        } else {
-            if (isPub) {
-                int depth = buffer.get() & 255;
-                DeterministicKey accountKey = deserializePub(accountPUB, standard);
-                DeterministicKey walletKey = accountKey;
-                if (depth != 2) {
-                    //bip44
-                    final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
-                    walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
-                }
-                if (standard == STANDARD_BIP44) {
-                    return getAddress(walletKey);
-                }
-            }else {
-                return null;
+        if (isPub(accountPUB, header)) {
+            int depth = buffer.get() & 255;
+            DeterministicKey accountKey = DeterministicKey.deserializeB58(accountPUB, MainNetParams.get());
+            DeterministicKey walletKey = accountKey;
+            if (depth != 2) {
+                //bip44
+                final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
+                walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
             }
+            return getAddress(walletKey);
         }
         return null;
     }
 
-    private DeterministicKey deserializePub(String accountPUB, int standard) {
-        int header = 0;
-        switch (standard) {
-            case STANDARD_BIP44:
-                header = XPUB;//xpub
-                break;
-        }
-        final int finalHeader = header;
-        return DeterministicKey.deserializeB58(accountPUB, new NetworkParameters() {
-            @Override
-            public int getBip32HeaderPub() {
-                return finalHeader;
-            }
-
-            @Override
-            public int getBip32HeaderPriv() {
-                return -1;
-            }
-
-            @Override
-            public String getPaymentProtocolId() {
-                return null;
-            }
-
-            @Override
-            public void checkDifficultyTransitions(StoredBlock storedPrev, Block next, BlockStore blockStore) throws VerificationException, BlockStoreException {
-
-            }
-
-            @Override
-            public Coin getMaxMoney() {
-                return null;
-            }
-
-            @Override
-            public Coin getMinNonDustOutput() {
-                return null;
-            }
-
-            @Override
-            public MonetaryFormat getMonetaryFormat() {
-                return null;
-            }
-
-            @Override
-            public String getUriScheme() {
-                return null;
-            }
-
-            @Override
-            public boolean hasMaxMoney() {
+    private boolean isPub(String accountPUB, int header) {
+        switch (header) {
+            case XPUB:
+                return true;
+            case XPRV:
                 return false;
-            }
-
-            @Override
-            public BitcoinSerializer getSerializer(boolean parseRetain) {
-                return null;
-            }
-
-            @Override
-            public int getProtocolVersionNum(ProtocolVersion version) {
-                return 0;
-            }
-        });
+            default:
+                throw new IllegalArgumentException("Unknown header bytes in pub: " + accountPUB);
+        }
     }
 
     @Override
@@ -236,7 +156,7 @@ public class WalletToolsBCH implements IWalletTools {
 
     @Override
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency) {
-        DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
+        DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(),privateKey);
         return getAddress(dp.getKey());
     }
 
@@ -254,7 +174,7 @@ public class WalletToolsBCH implements IWalletTools {
 
     @Override
     public ISignature sign(String privateKey, byte[] hashToSign, String cryptoCurrency) {
-        DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
+        DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(),privateKey);
         final ECKey key = dp.getKey();
         return new Signature(key.getPubKey(),key.sign(Sha256Hash.wrap(hashToSign)).encodeToDER());
     }
