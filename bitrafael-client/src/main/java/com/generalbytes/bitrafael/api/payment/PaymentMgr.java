@@ -48,14 +48,14 @@ public class PaymentMgr implements IPaymentMgr{
     private final Object INDEXES_LOCK = new Object();
 
     private final Object PAYMENTS_LOCK = new Object();
-    private List<Payment> watchedPayments = new ArrayList<Payment>();
+    private List<Payment> watchedPayments = new ArrayList<>();
     private BlockchainWatcher watcher;
-    private static final long STOP_WATCH_EXPIRATION_SINCE_PAYMENT_REQUEST_CREATED = TimeUnit.HOURS.toSeconds(12);
+    private static final long STOP_WATCH_EXPIRATION_SINCE_PAYMENT_REQUEST_CREATED = TimeUnit.DAYS.toSeconds(2);
 
     private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
     private PaymentMgr() {
-        clients = new HashMap<String,IClient>();
+        clients = new HashMap<>();
         clients.put(IClient.BTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.BTC));
         clients.put(IClient.LTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.LTC));
 
@@ -90,18 +90,18 @@ public class PaymentMgr implements IPaymentMgr{
 
         String receivingAddress = getReceivingAddress(spec.getAccountXPUBForReceivingPayment(), IWalletTools.CHAIN_EXTERNAL, spec.getCryptoCurrency());
 
-        final ArrayList<AmountsPair> amountsPairs = new ArrayList<AmountsPair>();
-        amountsPairs.add(new AmountsPair(spec.getFiatAmount(),spec.getFiatCurrency(),null, spec.getCryptoCurrency()));
-        amountsPairs.add(new AmountsPair(spec.getFiatToleranceAmount(),spec.getFiatCurrency(),null, spec.getCryptoCurrency()));
+        final ArrayList<AmountsPair> amountsPairs = new ArrayList<>();
+        amountsPairs.add(new AmountsPair(spec.getFiatAmount(),          spec.getFiatCurrency(),null, spec.getCryptoCurrency()));
+        amountsPairs.add(new AmountsPair(spec.getFiatToleranceAmount(), spec.getFiatCurrency(),null, spec.getCryptoCurrency()));
 
         final List<AmountsPair> results = clients.get(spec.getCryptoCurrency()).convertAmounts(amountsPairs);
 
         if (results != null && results.size() == 2) {
             BigDecimal cryptoAmount = results.get(0).getToAmount();
             BigDecimal cryptoToleranceAmount = results.get(1).getToAmount();
-            final PaymentRequestInternal paymentRequest = new PaymentRequestInternal(spec, cryptoAmount, cryptoToleranceAmount, spec.getCryptoCurrency(), receivingAddress,listener);
+            final PaymentRequestInternal paymentRequest = new PaymentRequestInternal(spec, cryptoAmount, cryptoToleranceAmount, spec.getCryptoCurrency(), receivingAddress, listener);
             //register and start watch following payment request
-            final Payment payment = new Payment(System.currentTimeMillis(),paymentRequest, Payment.State.NEW);
+            final Payment payment = new Payment(System.currentTimeMillis(), paymentRequest, Payment.State.NEW);
             registerPayment(payment);
             return paymentRequest;
         }
@@ -111,171 +111,193 @@ public class PaymentMgr implements IPaymentMgr{
     private void registerPayment(final Payment payment) {
         synchronized (PAYMENTS_LOCK) {
             watchedPayments.add(payment);
-            service.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    if (payment.getState() == Payment.State.NEW) {
-                        payment.setFailure(Payment.Failure.NOTHING_ARRIVED_WITHIN_TIMEOUT);
-                        payment.setState(Payment.State.FAILED);
-                        final IPaymentListener listener = ((PaymentRequestInternal) payment.getRequest()).getListener();
-                        if (listener != null) {
-                            listener.paymentFailed(payment);
-                        }
-                        // method "unregisterPayment" isn't used -> if later payment arrives, we want to know it
-                    }
-                }
-            }, payment.getRequest().getSpec().getValidityDurationInSeconds(), TimeUnit.SECONDS);
+            installPaymentNotSeenInTimeoutHandler(payment);
+            installPaymentNeverActuallyReceivedHandler(payment);
+            startWatchingForPaymentChange(payment); //Start watching for amount changes on address
+        }
+    }
 
-            service.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    if (payment.getState() == Payment.State.NEW || (payment.getState() == Payment.State.FAILED && payment.getFailure() == Payment.Failure.NOTHING_ARRIVED_WITHIN_TIMEOUT)) {
-                        payment.setFailure(Payment.Failure.NOTHING_RECEIVED_WITHIN_TIMEOUT);
-                        payment.setState(Payment.State.FAILED);
-                        final IPaymentListener listener = ((PaymentRequestInternal) payment.getRequest()).getListener();
-                        if (listener != null) {
-                            listener.paymentFailed(payment);
-                        }
-                    } else if (payment.getState() == Payment.State.ARRIVING) {
+    private void startWatchingForPaymentChange(Payment payment) {
+        watcher.addWallet(payment.getRequest().getCryptoAddress(), payment.getRequest().getCryptoCurrency(), new AbstractBlockchainWatcherWalletListener() {
+            @Override
+            public void walletContainsChanged(String walletAddress, String cryptoCurrency, Object tag, TxInfo tx) {
+
+                if (payment.getState() == Payment.State.NEW || (payment.getState() == Payment.State.FAILED && payment.getFailure() == Payment.Failure.NOTHING_ARRIVED_WITHIN_TIMEOUT)) {
+
+                    //check if the amountReceived is correct
+                    BigDecimal amountReceived = getAmountForAddress(tx, payment.getRequest().getCryptoAddress());
+                    boolean amountOk = isReceivedAmountSufficient(amountReceived, payment);
+
+                    //check if the transaction didn't arrive late
+                    long now = System.currentTimeMillis();
+                    long timeDiffInSeconds = (now - payment.getCreated()) / 1000;
+
+                    if (timeDiffInSeconds > payment.getRequest().getSpec().getValidityDurationInSeconds()) {
                         payment.setFailure(Payment.Failure.SOMETHING_ARRIVED_AFTER_TIMEOUT);
                         payment.setState(Payment.State.FAILED);
-                        final IPaymentListener listener = ((PaymentRequestInternal) payment.getRequest()).getListener();
-                        if (listener != null) {
-                            listener.paymentFailed(payment);
+
+                    } else if (!amountOk) {
+                        payment.setFailure(Payment.Failure.INVALID_AMOUNT_RECEIVED);
+                        payment.setState(Payment.State.FAILED);
+                    }
+
+                    if (payment.getState() != Payment.State.FAILED) {
+                        if (tx.getConfirmations() < payment.getRequest().getSpec().getSafeNumberOfBlockConfirmations()) {
+                            //transaction is still unconfirmed
+                            payment.setState(Payment.State.ARRIVING);
+                        } else {
+                            //transaction reached required number of confirmations and can be marked as received.
+                            payment.setState(Payment.State.RECEIVED);
                         }
                     }
-                    unregisterPayment(payment);
-                }
-            }, STOP_WATCH_EXPIRATION_SINCE_PAYMENT_REQUEST_CREATED, TimeUnit.SECONDS);
 
-            watcher.addWallet(payment.getRequest().getCryptoAddress(), payment.getRequest().getCryptoCurrency(), new AbstractBlockchainWatcherWalletListener() {
-                @Override
-                public void walletContainsChanged(String __unused1, String __unused2, Object __unused3, final TxInfo tx) {
+                    payment.setCryptoAmountReceived(amountReceived);
+                    payment.setCryptoAmountMiningFee(Client.calculateMiningFee(tx));
+                    payment.setTxId(tx.getTxHash());
 
-                    if (payment.getState() == Payment.State.NEW || (payment.getState()== Payment.State.FAILED && payment.getFailure() == Payment.Failure.NOTHING_ARRIVED_WITHIN_TIMEOUT)) {
+                    if (payment.getRequest() instanceof PaymentRequestInternal) {
+                        final PaymentRequestInternal req = (PaymentRequestInternal) payment.getRequest();
+                        final IPaymentListener listener = req.getListener();
+                        if (listener != null) {
+                            switch (payment.getState()) {
+                                case FAILED:
+                                    listener.paymentFailed(payment);
+                                    // stop watching for it
+                                    unregisterPayment(payment);
+                                    watcher.removeTransaction(tx.getTxHash(), payment.getRequest().getCryptoCurrency());
+                                    break;
 
-                        //check if the amountReceived is correct
-                        BigDecimal amountReceived = getAmountForAddress(tx, payment.getRequest().getCryptoAddress());
-                        boolean amountOk = false;
-                        if (amountReceived.compareTo(payment.getRequest().getCryptoAmount()) == 0) {
-                            //exact match
-                            amountOk = true;
-                        } else if (
-                                amountReceived.compareTo(payment.getRequest().getCryptoAmount()) > 0 &&
-                                        amountReceived.compareTo(payment.getRequest().getCryptoAmount().add(payment.getRequest().getCryptoToleranceAmount())) <= 0
-                                ) {
-                            //amountReceived is higher than expected but within a tolerance
-                            amountOk = true;
-                        } else if (
-                                amountReceived.compareTo(payment.getRequest().getCryptoAmount()) < 0 &&
-                                        amountReceived.compareTo(payment.getRequest().getCryptoAmount().subtract(payment.getRequest().getCryptoToleranceAmount())) >= 0
-                                ) {
-                            //amountReceived low higher than expected but within a tolerance
-                            amountOk = true;
-                        }
+                                case ARRIVING:
+                                    listener.paymentArriving(payment);
+                                    //start listening for transaction confirmations
+                                    startWatchingForTransactionChanges(tx.getTxHash(), listener);
+                                    break;
 
-                        //check if the transaction didn't arrive late
-                        long now = System.currentTimeMillis();
-                        long timeDiffInSeconds = (now - payment.getCreated()) / 1000;
-                        if (timeDiffInSeconds > payment.getRequest().getSpec().getValidityDurationInSeconds()) {
-                            payment.setFailure(Payment.Failure.SOMETHING_ARRIVED_AFTER_TIMEOUT);
-                            payment.setState(Payment.State.FAILED);
-
-                        } else if (!amountOk) {
-                            payment.setFailure(Payment.Failure.INVALID_AMOUNT_RECEIVED);
-                            payment.setState(Payment.State.FAILED);
-                        }
-
-                        if (payment.getState() != Payment.State.FAILED) {
-                            if (tx.getConfirmations() < payment.getRequest().getSpec().getSafeNumberOfBlockConfirmations()) {
-                                //transaction is still unconfirmed
-                                payment.setState(Payment.State.ARRIVING);
-                            } else {
-                                payment.setState(Payment.State.RECEIVED);
+                                case RECEIVED:
+                                    listener.paymentReceived(payment);
+                                    // stop watching for it
+                                    unregisterPayment(payment);
+                                    watcher.removeTransaction(tx.getTxHash(), payment.getRequest().getCryptoCurrency());
+                                    break;
                             }
                         }
-
+                    }
+                } else if (payment.getState() == Payment.State.ARRIVING) {
+                    //there was a move on wallet after we already seen the transaction
+                    BigDecimal amountReceived = getAmountForAddress(tx, payment.getRequest().getCryptoAddress());
+                    if (BigDecimal.ZERO.compareTo(amountReceived) < 0) {
+                        //customer probably sent coins to address again
+                        payment.setFailure(Payment.Failure.INVALID_AMOUNT_RECEIVED);
+                        payment.setState(Payment.State.FAILED);
                         payment.setCryptoAmountReceived(amountReceived);
                         payment.setCryptoAmountMiningFee(Client.calculateMiningFee(tx));
                         payment.setTxId(tx.getTxHash());
-
                         if (payment.getRequest() instanceof PaymentRequestInternal) {
                             final PaymentRequestInternal req = (PaymentRequestInternal) payment.getRequest();
                             final IPaymentListener listener = req.getListener();
                             if (listener != null) {
-                                switch (payment.getState()) {
-                                    case FAILED:
-                                        listener.paymentFailed(payment);
-                                        // stop watching for it
-                                        unregisterPayment(payment);
-                                        watcher.removeTransaction(payment.getTxId(), payment.getRequest().getCryptoCurrency());
-                                        break;
-
-                                    case ARRIVING:
-                                        listener.paymentArriving(payment);
-                                        //start listening for transaction confirmations
-                                        watcher.addTransaction(tx.getTxHash(), payment.getRequest().getCryptoCurrency(), new AbstractBlockchainWatcherTransactionListener() {
-                                            private int lastNumberOfConfirmations = 0;
-
-                                            @Override
-                                            public void numberOfConfirmationsChanged(String transactionHash, String cryptoCurrency, Object tag, int numberOfConfirmations) {
-                                                Payment p = (Payment) tag;
-                                                if (numberOfConfirmations > lastNumberOfConfirmations) {
-                                                    if (payment.getState() == Payment.State.ARRIVING) {
-                                                        if (numberOfConfirmations >= payment.getRequest().getSpec().getSafeNumberOfBlockConfirmations()) {
-                                                            payment.setState(Payment.State.RECEIVED);
-                                                            listener.paymentReceived(p);
-                                                            // stop watching for it
-                                                            unregisterPayment(p);
-                                                            watcher.removeTransaction(payment.getTxId(), payment.getRequest().getCryptoCurrency());
-                                                        }
-                                                    }
-                                                }
-                                                lastNumberOfConfirmations = numberOfConfirmations;
-                                            }
-                                        }, payment);
-                                        break;
-
-                                    case RECEIVED:
-                                        listener.paymentReceived(payment);
-                                        // stop watching for it
-                                        unregisterPayment(payment);
-                                        watcher.removeTransaction(payment.getTxId(), payment.getRequest().getCryptoCurrency());
-                                        break;
-                                }
+                                listener.paymentFailed(payment);
                             }
                         }
-                    } else if (payment.getState() == Payment.State.ARRIVING) {
-                        //there was a move on wallet after we already seen the transaction
-                        BigDecimal amountReceived = getAmountForAddress(tx, payment.getRequest().getCryptoAddress());
-                        if (BigDecimal.ZERO.compareTo(amountReceived) < 0) {
-                            //customer probably sent coins to address again
-                            payment.setFailure(Payment.Failure.INVALID_AMOUNT_RECEIVED);
-                            payment.setState(Payment.State.FAILED);
-                            payment.setCryptoAmountReceived(amountReceived);
-                            payment.setCryptoAmountMiningFee(Client.calculateMiningFee(tx));
-                            payment.setTxId(tx.getTxHash());
-                            if (payment.getRequest() instanceof PaymentRequestInternal) {
-                                final PaymentRequestInternal req = (PaymentRequestInternal) payment.getRequest();
-                                final IPaymentListener listener = req.getListener();
-                                if (listener != null) {
-                                    listener.paymentFailed(payment);
-                                }
-                            }
-                            // stop watching for it
-                            unregisterPayment(payment);
-                            watcher.removeTransaction(payment.getTxId(), payment.getRequest().getCryptoCurrency());
-                        }
-                        // else: somebody probably moved coins from the address
-
-                    } else {
                         // stop watching for it
                         unregisterPayment(payment);
                         watcher.removeTransaction(payment.getTxId(), payment.getRequest().getCryptoCurrency());
+                    }else {
+                        // else: somebody probably moved coins from the address - lets not handle this behaviour
+                    }
+
+                } else {
+                    // stop watching for it - I don't think this code will actually get called, but lets have it here
+                    unregisterPayment(payment);
+                    watcher.removeTransaction(payment.getTxId(), payment.getRequest().getCryptoCurrency());
+                }
+            }
+
+            private void startWatchingForTransactionChanges(String txHash, IPaymentListener listener) {
+                watcher.addTransaction(txHash, payment.getRequest().getCryptoCurrency(), new AbstractBlockchainWatcherTransactionListener() {
+                    private int lastNumberOfConfirmations = 0;
+
+                    @Override
+                    public void numberOfConfirmationsChanged(String transactionHash, String cryptoCurrency, Object tag, int numberOfConfirmations) {
+                        Payment p = (Payment) tag;
+                        if (numberOfConfirmations > lastNumberOfConfirmations) {
+                            if (payment.getState() == Payment.State.ARRIVING) {
+                                if (numberOfConfirmations >= payment.getRequest().getSpec().getSafeNumberOfBlockConfirmations()) {
+                                    payment.setState(Payment.State.RECEIVED);
+                                    listener.paymentReceived(p);
+                                    // stop watching for it
+                                    unregisterPayment(p);
+                                    watcher.removeTransaction(transactionHash, payment.getRequest().getCryptoCurrency());
+                                }
+                            }
+                        }
+                        lastNumberOfConfirmations = numberOfConfirmations;
+                    }
+                }, payment);
+            }
+        }, payment);
+    }
+
+    private boolean isReceivedAmountSufficient(BigDecimal amountReceived, Payment payment) {
+        boolean result = false;
+        if (amountReceived.compareTo(payment.getRequest().getCryptoAmount()) == 0) {
+            //exact match
+            result = true;
+        } else if (
+                amountReceived.compareTo(payment.getRequest().getCryptoAmount()) > 0 &&
+                        amountReceived.compareTo(payment.getRequest().getCryptoAmount().add(payment.getRequest().getCryptoToleranceAmount())) <= 0
+                ) {
+            //amountReceived is higher than expected but within a tolerance
+            result = true;
+        } else if (
+                amountReceived.compareTo(payment.getRequest().getCryptoAmount()) < 0 &&
+                        amountReceived.compareTo(payment.getRequest().getCryptoAmount().subtract(payment.getRequest().getCryptoToleranceAmount())) >= 0
+                ) {
+            //amountReceived low higher than expected but within a tolerance
+            result = true;
+        }
+        return result;
+    }
+
+    private void installPaymentNeverActuallyReceivedHandler(Payment payment) {
+        service.schedule(new Runnable() {
+            @Override
+            public void run() {
+                if (payment.getState() == Payment.State.NEW || (payment.getState() == Payment.State.FAILED && payment.getFailure() == Payment.Failure.NOTHING_ARRIVED_WITHIN_TIMEOUT)) {
+                    payment.setFailure(Payment.Failure.NOTHING_RECEIVED_WITHIN_TIMEOUT);
+                    payment.setState(Payment.State.FAILED);
+                    final IPaymentListener listener = ((PaymentRequestInternal) payment.getRequest()).getListener();
+                    if (listener != null) {
+                        listener.paymentFailed(payment);
+                    }
+                } else if (payment.getState() == Payment.State.ARRIVING) {
+                    payment.setFailure(Payment.Failure.SOMETHING_ARRIVED_AFTER_TIMEOUT);
+                    payment.setState(Payment.State.FAILED);
+                    final IPaymentListener listener = ((PaymentRequestInternal) payment.getRequest()).getListener();
+                    if (listener != null) {
+                        listener.paymentFailed(payment);
                     }
                 }
-            }, payment);
-        }
+                unregisterPayment(payment);
+            }
+        }, STOP_WATCH_EXPIRATION_SINCE_PAYMENT_REQUEST_CREATED, TimeUnit.SECONDS);
+    }
+
+    private void installPaymentNotSeenInTimeoutHandler(Payment payment) {
+        service.schedule(new Runnable() {
+            @Override
+            public void run() {
+                if (payment.getState() == Payment.State.NEW) {
+                    payment.setFailure(Payment.Failure.NOTHING_ARRIVED_WITHIN_TIMEOUT);
+                    payment.setState(Payment.State.FAILED);
+                    final IPaymentListener listener = ((PaymentRequestInternal) payment.getRequest()).getListener();
+                    if (listener != null) {
+                        listener.paymentFailed(payment);
+                    }
+                    // method "unregisterPayment" isn't used -> if later payment arrives, we want to know it
+                }
+            }
+        }, payment.getRequest().getSpec().getValidityDurationInSeconds(), TimeUnit.SECONDS);
     }
 
     private static BigDecimal getAmountForAddress(TxInfo tx, String walletAddress) {
@@ -316,7 +338,7 @@ public class PaymentMgr implements IPaymentMgr{
                 int index = Integer.parseInt(p.getProperty(chainKey,"-1"));
                 WalletTools wt = new WalletTools();
                 index++;
-                p.setProperty(chainKey,index +"");
+                p.setProperty(chainKey, index +"");
 
                 address = wt.getWalletAddressFromAccountPUB(xpubAccount, cryptoCurrency, chainIndex, index);
 

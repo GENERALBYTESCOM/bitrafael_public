@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableList;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.*;
 import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.script.Script;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.utils.MonetaryFormat;
@@ -52,7 +53,7 @@ public class WalletToolsBTC implements IWalletTools {
     public String generateSeedMnemonicSeparatedBySpaces() {
         try {
             SecureRandom prng = SecureRandom.getInstance("SHA1PRNG");
-            List<String> words = MnemonicCode.INSTANCE.toMnemonic(Sha256Hash.create(prng.generateSeed(32)).getBytes());
+            List<String> words = MnemonicCode.INSTANCE.toMnemonic(Sha256Hash.of(prng.generateSeed(32)).getBytes());
             return Joiner.on(" ").join(words);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -106,7 +107,7 @@ public class WalletToolsBTC implements IWalletTools {
             final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
             final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
 
-            return new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
+            return Address.fromKey(MainNetParams.get(), walletKey, Script.ScriptType.P2PKH).toString();
         } else if (standard == STANDARD_BIP49) {
             final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP49, true));
             final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(WalletTools.getCoinTypeByCryptoCurrency(cryptoCurrency), true));
@@ -119,7 +120,7 @@ public class WalletToolsBTC implements IWalletTools {
             bb.put(walletKey.getPubKeyHash());
             byte[] scriptSig = bb.array();
             byte[] addressBytes =  Utils.sha256hash160(scriptSig);
-            return new Address(MainNetParams.get(),5,addressBytes).toBase58();
+            return LegacyAddress.fromScriptHash(MainNetParams.get(),addressBytes).toString();
         } else if (standard == STANDARD_BIP84) {
             final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(STANDARD_BIP84, true));
             final DeterministicKey coinKey = HDKeyDerivation.deriveChildKey(purposeKey, new ChildNumber(WalletTools.getCoinTypeByCryptoCurrency(cryptoCurrency), true));
@@ -184,14 +185,14 @@ public class WalletToolsBTC implements IWalletTools {
                     walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
                 }
                 if (standard == STANDARD_BIP44) {
-                    return new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
+                    return Address.fromKey(MainNetParams.get(), walletKey, Script.ScriptType.P2PKH).toString();
                 } else if (standard == STANDARD_BIP49) {
                     ByteBuffer bb = ByteBuffer.allocate(2+walletKey.getPubKeyHash().length);
                     bb.put(new byte[]{0x00,0x14});
                     bb.put(walletKey.getPubKeyHash());
                     byte[] scriptSig = bb.array();
                     byte[] addressBytes =  Utils.sha256hash160(scriptSig);
-                    return new Address(MainNetParams.get(),5,addressBytes).toBase58();
+                    return LegacyAddress.fromScriptHash(MainNetParams.get(),addressBytes).toString();
                 }else  if (standard == STANDARD_BIP84) {
                     return null; //TODO
                 }
@@ -218,12 +219,12 @@ public class WalletToolsBTC implements IWalletTools {
         final int finalHeader = header;
         return DeterministicKey.deserializeB58(accountPUB, new NetworkParameters() {
             @Override
-            public int getBip32HeaderPub() {
+            public int getBip32HeaderP2PKHpub() {
                 return finalHeader;
             }
 
             @Override
-            public int getBip32HeaderPriv() {
+            public int getBip32HeaderP2PKHpriv() {
                 return -1;
             }
 
@@ -297,8 +298,8 @@ public class WalletToolsBTC implements IWalletTools {
 
     @Override
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency) {
-        DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
-        return (new Address(MainNetParams.get(),dp.getKey().getPubKeyHash())) +"";
+        DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(),privateKey);
+        return Address.fromKey(MainNetParams.get(),dp.getKey(), Script.ScriptType.P2PKH).toString();
     }
 
 
@@ -322,7 +323,7 @@ public class WalletToolsBTC implements IWalletTools {
 
     @Override
     public ISignature sign(String privateKey, byte[] hashToSign, String cryptoCurrency) {
-        DumpedPrivateKey dp = new DumpedPrivateKey(MainNetParams.get(),privateKey);
+        DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(),privateKey);
         final ECKey key = dp.getKey();
         return new Signature(key.getPubKey(),key.sign(Sha256Hash.wrap(hashToSign)).encodeToDER());
     }
@@ -379,35 +380,43 @@ public class WalletToolsBTC implements IWalletTools {
             input = input.substring(0,input.indexOf("?"));
         }
 
-        if ((input.startsWith("1") || input.startsWith("3")) &&  input.length() <= 34) {
+        if ((input.startsWith("1") || input.startsWith("3")) && input.length() <= 34) {
             //most likely address lets check it
             try {
                 if (isAddressValidInternal(input)) {
-                    return new Classification(Classification.TYPE_ADDRESS,IClient.BTC,input);
+                    return new Classification(Classification.TYPE_ADDRESS, IClient.BTC, input);
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }
-        }else if ((input.startsWith("5") || input.startsWith("L") || input.startsWith("K")) && input.length() >= 51) {
+        } else if (input.toLowerCase().startsWith("bc1")) {
+            try {
+                if (isAddressValidBech32Internal(input)) {
+                    return new Classification(Classification.TYPE_ADDRESS, IClient.BTC, input.toLowerCase());
+                }
+            } catch (AddressFormatException e) {
+                e.printStackTrace();
+            }
+        } else if ((input.startsWith("5") || input.startsWith("L") || input.startsWith("K")) && input.length() >= 51) {
             //most likely bitcoin private key
             try {
                 DumpedPrivateKey dp = DumpedPrivateKey.fromBase58(MainNetParams.get(), input);
-                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF,IClient.BTC,input);
+                return new Classification(Classification.TYPE_PRIVATE_KEY_IN_WIF, IClient.BTC, input);
             } catch (AddressFormatException e) {
                 //e.printStackTrace();
             }
-        }else if (input.startsWith("xpub")) {
-            return new Classification(Classification.TYPE_PUB,IClient.BTC,input);
-        }else if (input.startsWith("ypub")) {
-            return new Classification(Classification.TYPE_PUB,IClient.BTC,input);
-        }else if (input.startsWith("zpub")) {
-            return new Classification(Classification.TYPE_PUB,IClient.BTC,input);
-        }else if (input.startsWith("xprv")) {
-            return new Classification(Classification.TYPE_PRV,IClient.BTC,input);
-        }else if (input.startsWith("yprv")) {
-            return new Classification(Classification.TYPE_PRV,IClient.BTC,input);
-        }else if (input.startsWith("zprv")) {
-            return new Classification(Classification.TYPE_PRV,IClient.BTC,input);
+        } else if (input.startsWith("xpub")) {
+            return new Classification(Classification.TYPE_PUB, IClient.BTC, input);
+        } else if (input.startsWith("ypub")) {
+            return new Classification(Classification.TYPE_PUB, IClient.BTC, input);
+        } else if (input.startsWith("zpub")) {
+            return new Classification(Classification.TYPE_PUB, IClient.BTC, input);
+        } else if (input.startsWith("xprv")) {
+            return new Classification(Classification.TYPE_PRV, IClient.BTC, input);
+        } else if (input.startsWith("yprv")) {
+            return new Classification(Classification.TYPE_PRV, IClient.BTC, input);
+        } else if (input.startsWith("zprv")) {
+            return new Classification(Classification.TYPE_PRV, IClient.BTC, input);
         }
 
         return new Classification(Classification.TYPE_UNKNOWN);
@@ -417,6 +426,15 @@ public class WalletToolsBTC implements IWalletTools {
     private static boolean isAddressValidInternal(String address) {
         try {
             Base58.decodeChecked(address);
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    private static boolean isAddressValidBech32Internal(String address) {
+        try {
+            Bech32.decode(address);
         } catch (AddressFormatException e) {
             e.printStackTrace();
             return false;
@@ -436,7 +454,7 @@ public class WalletToolsBTC implements IWalletTools {
         NetworkParameters params = MainNetParams.get();
         do {
             ECKey key = new ECKey();
-            Address address = new Address(params, key.getPubKeyHash());
+            Address address = Address.fromKey(params, key, Script.ScriptType.P2PKH);
             if (prefix == null || prefix.isEmpty() || address.toString().startsWith(prefix)) {
                 DumpedPrivateKey privateKeyEncoded = key.getPrivateKeyEncoded(params);
                 result = privateKeyEncoded.toString();

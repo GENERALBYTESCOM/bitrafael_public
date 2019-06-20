@@ -22,6 +22,7 @@ import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.crypto.*;
 import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.script.Script;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -39,7 +40,7 @@ public class VanitySeeder {
                     try {
                         byte[] entropy = new byte[32];
                         prng.nextBytes(entropy);
-                        List<String> words = MnemonicCode.INSTANCE.toMnemonic(Sha256Hash.create(entropy).getBytes());
+                        List<String> words = MnemonicCode.INSTANCE.toMnemonic(Sha256Hash.of(entropy).getBytes());
                         byte[] seedBytes = MnemonicCode.toSeed(words, "TREZOR");
                         final DeterministicKey masterKey = HDKeyDerivation.createMasterPrivateKey(seedBytes);
                         final DeterministicKey purposeKey = HDKeyDerivation.deriveChildKey(masterKey, new ChildNumber(44, true));
@@ -48,7 +49,7 @@ public class VanitySeeder {
                         final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(0, false));
                         final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(0, false));
 
-                        String address = new Address(MainNetParams.get(), walletKey.getPubKeyHash()).toBase58();
+                        String address = Address.fromKey(MainNetParams.get(), walletKey, Script.ScriptType.P2PKH).toString();
                         if (address.startsWith(PREFIX)) {
                             System.out.println("Wallet address of account 0 = " + address + " seed: " + Joiner.on(" ").join(words));
                             System.exit(0);

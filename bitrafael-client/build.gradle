@@ -36,6 +36,7 @@ dependencies {
 
     implementation 'cc.smartcash.smartcashj:smartcashj-core:0.17.2'
 
+
     compile(group: 'com.github.mmazi', name: 'rescu', version: '2.0.2')
     runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25')
     runtime(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25')
@@ -56,6 +57,8 @@ dependencySubstitutions {
     substitute from: 'com.google.protobuf:protobuf-java:3.5.1', toVersion: '2.6.1'
     substitute from: 'com.squareup.okhttp3:okhttp:3.9.1', toVersion: '3.6.0'
     substitute from: 'com.squareup.okio:okio:1.13.0', toVersion: '1.11.0'
+
+    substitute file(batmDependencySubstitutionConfig)
 }
 
 dependencyVerifications {

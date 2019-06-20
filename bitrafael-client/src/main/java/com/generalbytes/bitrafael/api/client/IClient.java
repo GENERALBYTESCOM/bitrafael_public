@@ -36,6 +36,9 @@ public interface IClient {
     String BCH = "BCH";
     String SMART = "SMART";
 
+    int AUDIT_RESULT_OK                     = 0;
+    int AUDIT_RESULT_FRAUD_ATTEMPT_DETECTED = 1;
+
     long getCurrentBlockchainHeight();
 
     BigDecimal getAddressBalance(String address);
@@ -46,6 +49,7 @@ public interface IClient {
     AddressInfo getAddressInfo(String address, int limit);
     Map<String,TxInfo> getAddressesLastTransactionInfos(List<String> addresses);
     Map<String,AddressInfo> getAddressesInfo(List<String> addresses, int limit);
+    Map<String, Integer> getAddressesAudits(List<String> addresses);
 
     long getTransactionHeight(String txHash);
     long getTransactionConfirmations(String txHash);
