@@ -36,7 +36,6 @@ dependencies {
 
     implementation 'cc.smartcash.smartcashj:smartcashj-core:0.17.2'
 
-
     compile(group: 'com.github.mmazi', name: 'rescu', version: '2.0.2')
     runtime(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25')
     runtime(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25')
