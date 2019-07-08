@@ -15,7 +15,7 @@ verifyModule 'com.google.guava:failureaccess:1.0.1:a171ee4c734dd2da837e4b16be9df
 verifyModule 'com.google.guava:guava:27.0.1-android:caf0955aed29a1e6d149f85cfb625a89161b5cf88e0e246552b7ffa358204e28'
 verifyModule 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava:b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99'
 verifyModule 'com.google.j2objc:j2objc-annotations:1.1:2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6'
-//verifymodule 'com.google.j2objc:j2objc-annotations:1.1:2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6'
+verifymodule 'com.google.j2objc:j2objc-annotations:1.1:2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6'
 verifyModule 'com.google.protobuf:protobuf-java:2.6.1:55aa554843983f431df5616112cf688d38aa17c132357afd1c109435bfdac4e6'
 verifyModule 'com.googlecode.javaewah:JavaEWAH:1.1.6:f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952'
 verifyModule 'com.jcraft:jsch:0.1.54:92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb'
