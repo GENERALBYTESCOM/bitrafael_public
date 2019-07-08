@@ -24,7 +24,6 @@ dependencies {
     final String dashjVersion = '0.15.2.20190416' // https://github.com/GENERALBYTESCOM/dashj/tree/generalbytes
     final String litecoinjVersion = '0.15.1.20190418' // https://github.com/GENERALBYTESCOM/litecoinj/tree/litecoin-0.15.1
     final String bitcoinjVersion = '0.15.1.20190411' // https://github.com/GENERALBYTESCOM/bitcoinj/tree/master
-    final String smartcashjVersion = '0.16.0'
 
     generalBytesCompile(group: 'org.bitcoinj', name: 'core', version: bitcoinjVersion)
     generalBytesCompile(group: 'org.litecoinj', name: 'core', version: litecoinjVersion)
