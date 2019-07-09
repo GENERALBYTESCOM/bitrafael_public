@@ -28,6 +28,7 @@ public interface IClient {
     BigDecimal FEE_HIGH = new BigDecimal("-3");
 
     String BTC = "BTC";
+    String LBTC = "LBTC";
     String DASH = "DASH";
     String LTC = "LTC";
     String XMR = "XMR";
