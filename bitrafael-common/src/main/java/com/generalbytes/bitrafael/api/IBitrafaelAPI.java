@@ -116,6 +116,15 @@ public interface IBitrafaelAPI {
     @Path("/currencies/quotes?source={source}")
     QuotesResponse getQuotes(@PathParam("source") String source);
 
+    /**
+     * Returns historical data of the currency
+     * @param source - i.e. USD
+     * @param date - YYYY-MM-DD
+     * @return
+     */
+    @GET
+    @Path("/currencies/quotes/historical")
+    QuotesResponse getQuotesHistorical(@QueryParam("source") String source, @QueryParam("date") String date);
 
 
 

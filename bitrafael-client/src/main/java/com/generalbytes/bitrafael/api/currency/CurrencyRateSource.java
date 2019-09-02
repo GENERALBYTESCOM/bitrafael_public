@@ -24,6 +24,8 @@ import com.generalbytes.bitrafael.api.dto.rest.QuotesResponse;
 import si.mazi.rescu.RestProxyFactory;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -36,6 +38,7 @@ public class CurrencyRateSource implements IRatesProvider{
     private Set<String> fiatCurrenciesSupported;
     private static final String LOCK = Class.class.getName().intern();
     private Map<String,QuotesResponse> cache = new ConcurrentHashMap<String,QuotesResponse>();
+    private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
     public CurrencyRateSource() {
@@ -82,7 +85,8 @@ public class CurrencyRateSource implements IRatesProvider{
             return BigDecimal.ZERO;
         }
 
-        final QuotesResponse resp = cache.get(fromCurrency);
+        String key = fromCurrency;
+        final QuotesResponse resp = cache.get(key);
         if (resp != null) {
             if (System.currentTimeMillis() < (resp.getTimestamp() + 60 * 60 * 1000)) {
                 return resp.getQuotes().get(fromCurrency + toCurrency);
@@ -93,13 +97,43 @@ public class CurrencyRateSource implements IRatesProvider{
         final QuotesResponse quotes = api.getQuotes(fromCurrency);
         if (quotes != null && quotes.isSuccess()) {
             quotes.setTimestamp(System.currentTimeMillis());
-            cache.put(fromCurrency,quotes);
+            cache.put(key, quotes);
             return quotes.getQuotes().get(fromCurrency+toCurrency);
         }
         return null;
     }
 
-//    public static void main(String[] args) {
+    @Override
+    public BigDecimal getRateHistorical(String fromCurrency, String toCurrency, LocalDate date) {
+        initializeIfNeeded();
+        if (!getFiatCurrenciesFrom().contains(fromCurrency)) {
+            return BigDecimal.ZERO;
+        }
+        if (!getFiatCurrenciesTo().contains(toCurrency)) {
+            return BigDecimal.ZERO;
+        }
+
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String key = fromCurrency + "_" + date.format(df);
+
+        final QuotesResponse resp = cache.get(key);
+        if (resp != null) {
+            if (System.currentTimeMillis() < (resp.getTimestamp() + 60 * 60 * 1000)) {
+                return resp.getQuotes().get(fromCurrency + toCurrency);
+            }
+        }
+
+
+        final QuotesResponse quotes = api.getQuotesHistorical(fromCurrency, date.format(df));
+        if (quotes != null && quotes.isSuccess()) {
+            quotes.setTimestamp(System.currentTimeMillis());
+            cache.put(key, quotes);
+            return quotes.getQuotes().get(fromCurrency+toCurrency);
+        }
+        return null;
+    }
+
+    //    public static void main(String[] args) {
 //        System.setProperty("org.slf4j.simpleLogger.log.si.mazi.rescu","trace");
 //
 //        CurrencyRateSource r = new CurrencyRateSource();

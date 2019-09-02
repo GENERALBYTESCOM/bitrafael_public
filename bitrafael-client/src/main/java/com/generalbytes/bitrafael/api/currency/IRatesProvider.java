@@ -18,11 +18,13 @@
 package com.generalbytes.bitrafael.api.currency;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Set;
 
 public interface IRatesProvider {
 
-    public Set<String> getFiatCurrenciesFrom();
-    public Set<String> getFiatCurrenciesTo();
-    public BigDecimal getRate(String fromCurrency, String toCurrency);
+    Set<String> getFiatCurrenciesFrom();
+    Set<String> getFiatCurrenciesTo();
+    BigDecimal getRate(String fromCurrency, String toCurrency);
+    BigDecimal getRateHistorical(String fromCurrency, String toCurrency, LocalDate date);
 }
