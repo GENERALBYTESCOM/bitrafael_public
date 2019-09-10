@@ -35,6 +35,7 @@ public interface IClient {
     String ETH = "ETH";
     String ETC = "ETC";
     String BCH = "BCH";
+    String SMART = "SMART";
 
     int AUDIT_RESULT_OK                     = 0;
     int AUDIT_RESULT_FRAUD_ATTEMPT_DETECTED = 1;
