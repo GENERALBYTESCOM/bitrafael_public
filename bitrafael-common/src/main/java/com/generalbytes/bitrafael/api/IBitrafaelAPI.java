@@ -99,6 +99,11 @@ public interface IBitrafaelAPI {
     @Path("/transactions/fees")
     TxFeesInfoResponse getTransactionFeesInfo();
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/transactions/fees")
+    TxFeesResponse getTransactionFees(List<String> txHashes);
+
     @GET
     @Path("/blockchain/height")
     BlockchainHeightResponse getCurrentBlockchainHeight();
