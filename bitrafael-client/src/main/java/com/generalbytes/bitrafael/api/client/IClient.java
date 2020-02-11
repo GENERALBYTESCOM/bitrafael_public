@@ -62,6 +62,8 @@ public interface IClient {
     List<AmountsPair> convertAmounts(List<AmountsPair> amountsPairs);
     TxFeesInfo getRecommendedTransactionFeesPerByte();
 
+    TxFees getTransactionFees(List<String> txHashes);
+
     public RiskLevel getTransactionRiskLevel(String txHash);
 
     public enum RiskLevel {
