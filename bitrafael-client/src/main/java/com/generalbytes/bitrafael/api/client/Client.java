@@ -180,6 +180,19 @@ public class Client implements IClient {
     }
 
     @Override
+    public TxFees getTransactionFees(List<String> txHashes) {
+        try {
+            final TxFeesResponse response = api.getTransactionFees(txHashes);
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public RiskLevel getTransactionRiskLevel(String txHash) {
         try {
             final TxRiskLevelInfoResponse response = api.getTransactionRiskLevel(txHash);
