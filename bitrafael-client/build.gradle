@@ -17,7 +17,8 @@ configurations {
 }
 
 dependencies {
-    compile project(':bitrafael-common')
+    compile project(':bitrafael-server-api')
+    compile project(':bitrafael-client-api')
     compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
     compile(group: 'com.google.guava', name: 'guava', version: '27.0.1-android')
 
