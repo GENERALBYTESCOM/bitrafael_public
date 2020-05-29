@@ -17,9 +17,13 @@
  ************************************************************************************/
 
 
-package com.generalbytes.bitrafael.server.api;
+package com.generalbytes.bitrafael.client;
 
-import com.generalbytes.bitrafael.server.api.api.IClient;
+import com.generalbytes.bitrafael.server.api.IBitrafaelAPI;
+import com.generalbytes.bitrafael.server.api.IBitrafaelBitcoinAPI;
+import com.generalbytes.bitrafael.server.api.IBitrafaelDashAPI;
+import com.generalbytes.bitrafael.server.api.IBitrafaelLitecoinAPI;
+import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.server.api.dto.*;
 import com.generalbytes.bitrafael.server.api.dto.rest.*;
 import com.generalbytes.bitrafael.tools.api.wallet.IWalletTools;

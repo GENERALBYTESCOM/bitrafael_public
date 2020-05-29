@@ -17,7 +17,7 @@
  ************************************************************************************/
 package com.generalbytes.bitrafael.tools.wallet.xmr;
 
-import com.generalbytes.bitrafael.server.api.api.IClient;
+import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.tools.api.wallet.Classification;
 import com.generalbytes.bitrafael.tools.api.wallet.IClassificator;
 import com.generalbytes.bitrafael.tools.wallet.xmr.core.Utils;

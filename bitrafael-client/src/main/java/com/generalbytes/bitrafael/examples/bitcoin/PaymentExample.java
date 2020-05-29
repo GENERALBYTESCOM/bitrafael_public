@@ -17,7 +17,7 @@
  ************************************************************************************/
 package com.generalbytes.bitrafael.examples.bitcoin;
 
-import com.generalbytes.bitrafael.server.api.api.IClient;
+import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.tools.api.payment.IPaymentListener;
 import com.generalbytes.bitrafael.tools.api.payment.Payment;
 import com.generalbytes.bitrafael.tools.api.payment.PaymentRequest;

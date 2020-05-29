@@ -18,7 +18,7 @@
 package com.generalbytes.bitrafael.examples.ethereum;
 
 
-import com.generalbytes.bitrafael.server.api.api.IClient;
+import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.tools.api.wallet.IWalletTools;
 import com.generalbytes.bitrafael.tools.wallet.eth.MasterPrivateKeyETH;
 import com.generalbytes.bitrafael.tools.wallet.eth.WalletToolsETH;

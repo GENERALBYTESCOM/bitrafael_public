@@ -19,7 +19,7 @@
 package com.generalbytes.bitrafael.tools.wallet;
 
 
-import com.generalbytes.bitrafael.server.api.api.IClient;
+import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.tools.api.wallet.*;
 import com.generalbytes.bitrafael.tools.wallet.bch.WalletToolsBCH;
 import com.generalbytes.bitrafael.tools.wallet.btc.WalletToolsBTC;

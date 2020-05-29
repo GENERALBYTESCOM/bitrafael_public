@@ -1,3 +1,4 @@
 include 'bitrafael-client'
+include 'bitrafael-client-dummy'
 include 'bitrafael-client-api'
 include 'bitrafael-server-api'

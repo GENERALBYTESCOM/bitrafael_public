@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.generalbytes.gradle.main'
+}
+
+dependencies {
+    compile project(':bitrafael-server-api')
+    compile project(':bitrafael-client-api')
+}
+
+dependencyVerifications {
+    checksums batmDependencyChecksumsConfig
+    printUnusedAssertions false
+}
+
+publishing {
+    if (hasGbUploadArtifactory) {
+        repositories {
+            maven {
+                credentials {
+                    username gbArtifactoryUser
+                    password gbArtifactoryPassword
+                }
+                url gbArtifactoryUploadUrl
+            }
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}

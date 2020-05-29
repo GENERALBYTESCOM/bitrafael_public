@@ -18,8 +18,8 @@
 
 package com.generalbytes.bitrafael.tools.payment;
 
-import com.generalbytes.bitrafael.server.api.Client;
-import com.generalbytes.bitrafael.server.api.api.IClient;
+import com.generalbytes.bitrafael.client.Client;
+import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.tools.api.payment.*;
 import com.generalbytes.bitrafael.tools.api.wallet.IWalletTools;
 import com.generalbytes.bitrafael.tools.wallet.WalletTools;

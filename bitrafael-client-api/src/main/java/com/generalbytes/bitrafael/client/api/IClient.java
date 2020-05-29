@@ -15,7 +15,7 @@
  * Web      :  http://www.generalbytes.com
  *
  ************************************************************************************/
-package com.generalbytes.bitrafael.server.api.api;
+package com.generalbytes.bitrafael.client.api;
 
 import com.generalbytes.bitrafael.server.api.dto.*;
 

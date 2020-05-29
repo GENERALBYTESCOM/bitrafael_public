@@ -18,7 +18,7 @@
 
 package com.generalbytes.bitrafael.examples.bitcoin;
 
-import com.generalbytes.bitrafael.server.api.api.IClient;
+import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.tools.watch.AbstractBlockchainWatcherTransactionListener;
 import com.generalbytes.bitrafael.tools.watch.BlockchainWatcher;
 import com.generalbytes.bitrafael.tools.api.watch.IBlockchainWatcherListener;

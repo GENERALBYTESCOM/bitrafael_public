@@ -18,8 +18,8 @@
 
 package com.generalbytes.bitrafael.examples.bitcoin;
 
-import com.generalbytes.bitrafael.server.api.Client;
-import com.generalbytes.bitrafael.server.api.api.IClient;
+import com.generalbytes.bitrafael.client.Client;
+import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.server.api.dto.TxInfo;
 import com.generalbytes.bitrafael.tools.wallet.WalletTools;
 import com.generalbytes.bitrafael.tools.watch.AbstractBlockchainWatcherWalletListener;

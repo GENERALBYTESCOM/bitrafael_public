@@ -17,8 +17,8 @@
  ************************************************************************************/
 package com.generalbytes.bitrafael.examples.litecoin;
 
-import com.generalbytes.bitrafael.server.api.Client;
-import com.generalbytes.bitrafael.server.api.api.IClient;
+import com.generalbytes.bitrafael.client.Client;
+import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.server.api.dto.AccountBalance;
 
 public class ClientExample {

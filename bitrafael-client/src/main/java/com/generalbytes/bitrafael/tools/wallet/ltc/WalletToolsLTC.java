@@ -18,7 +18,7 @@
 
 package com.generalbytes.bitrafael.tools.wallet.ltc;
 
-import com.generalbytes.bitrafael.server.api.api.IClient;
+import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.tools.api.wallet.Classification;
 import com.generalbytes.bitrafael.tools.api.wallet.IMasterPrivateKey;
 import com.generalbytes.bitrafael.tools.api.wallet.ISignature;

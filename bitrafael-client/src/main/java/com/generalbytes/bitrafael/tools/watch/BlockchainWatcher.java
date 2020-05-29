@@ -19,8 +19,8 @@
 package com.generalbytes.bitrafael.tools.watch;
 
 
-import com.generalbytes.bitrafael.server.api.Client;
-import com.generalbytes.bitrafael.server.api.api.IClient;
+import com.generalbytes.bitrafael.client.Client;
+import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.server.api.dto.TxInfo;
 import com.generalbytes.bitrafael.tools.api.watch.IBlockchainWatcher;
 import com.generalbytes.bitrafael.tools.api.watch.IBlockchainWatcherListener;
