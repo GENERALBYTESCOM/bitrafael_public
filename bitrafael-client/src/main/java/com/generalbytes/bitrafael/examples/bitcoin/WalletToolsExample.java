@@ -26,7 +26,7 @@ public class WalletToolsExample {
     public static void main(String[] args) {
         IWalletTools wt = new WalletTools();
         String cryptoCurrency = IClient.BTC;
-        IMasterPrivateKey mKey = wt.getMasterPrivateKey("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "", cryptoCurrency, IWalletTools.STANDARD_BIP49);
+        IMasterPrivateKey mKey = wt.getMasterPrivateKey("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "", cryptoCurrency, IWalletTools.STANDARD_BIP44);
         System.out.println("mKey = " + mKey);
         String xpub = mKey.getPUB();
         System.out.println("xpub = " + xpub);
