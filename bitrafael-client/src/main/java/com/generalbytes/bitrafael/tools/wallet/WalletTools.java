@@ -149,8 +149,6 @@ public class WalletTools implements IWalletTools {
             result = classificators.get(IClient.XMR).classify(input);
         }else if (IClient.ETH.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.ETH).classify(input);
-        }else if (IClient.ETC.equalsIgnoreCase(cryptoCurrencyHint)) {
-            result = classificators.get(IClient.ETC).classify(input);
         }else if (IClient.BCH.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.BCH).classify(input);
         }
