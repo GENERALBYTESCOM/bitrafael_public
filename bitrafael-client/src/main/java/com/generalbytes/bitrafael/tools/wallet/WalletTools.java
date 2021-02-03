@@ -214,12 +214,8 @@ public class WalletTools implements IWalletTools {
             return classificators.get(IClient.BCH).classify(input);
         }
 
-
         return result;
     }
-
-
-
 
     @Override
     public Set<String> supportedCryptoCurrencies() {
@@ -229,7 +225,6 @@ public class WalletTools implements IWalletTools {
         result.add(IClient.DASH);
         result.add(IClient.XMR);
         result.add(IClient.ETH);
-        result.add(IClient.ETC);
         result.add(IClient.BCH);
         return result;
     }
@@ -250,5 +245,4 @@ public class WalletTools implements IWalletTools {
         }
         return COIN_TYPE_BITCOIN;
     }
-
 }
