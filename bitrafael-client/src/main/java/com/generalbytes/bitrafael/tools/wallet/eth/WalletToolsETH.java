@@ -52,6 +52,15 @@ public class WalletToolsETH implements IWalletTools {
     public static final int XPRV = 0x0488ade4;
     private static final String HEX_CHARS = "0123456789abcdef";
 
+    private String cryptoCurrency;
+
+    public WalletToolsETH() {
+        this(IClient.ETH);
+    }
+
+    public WalletToolsETH(String cryptoCurrency) {
+        this.cryptoCurrency = cryptoCurrency;
+    }
 
     @Override
     public String generateSeedMnemonicSeparatedBySpaces() {
@@ -139,7 +148,7 @@ public class WalletToolsETH implements IWalletTools {
                 break;
         }
 
-        if(standard == -1) {
+        if (standard == -1) {
             throw new IllegalArgumentException("Unknown header bytes in pub: " + accountPUB);
         } else {
             if (isPub) {
@@ -153,10 +162,10 @@ public class WalletToolsETH implements IWalletTools {
                 }
                 if (standard == STANDARD_BIP44) {
                     return Address.fromKey(MainNetParams.get(), walletKey, Script.ScriptType.P2PKH).toString();
-                }else  if (standard == STANDARD_BIP84) {
+                } else  if (standard == STANDARD_BIP84) {
                     return null; //TODO
                 }
-            }else {
+            } else {
                 return null;
             }
         }
@@ -249,7 +258,6 @@ public class WalletToolsETH implements IWalletTools {
         return MasterPrivateKeyETH.serializePUB(masterKey,master.getStandard(), accountIndex, cryptoCurrency);
     }
 
-
     @Override
     public String getWalletAddressFromPrivateKey(String privateKey, String cryptoCurrency) {
         return null; //not supported yet
@@ -260,19 +268,16 @@ public class WalletToolsETH implements IWalletTools {
         return null;//not supported yet
     }
 
-
     public boolean isAddressValid(String address, String cryptoCurrency) {
         if (address == null) {
             return false;
-        }else{
+        } else {
             if (!address.startsWith("0x") && !address.startsWith("XE")){
                 return false;
             }
         }
-
         return isAddressValidInternal(address);
     }
-
 
     @Override
     public Classification classify(String input, String cryptoCurrencyHint) {
@@ -304,25 +309,24 @@ public class WalletToolsETH implements IWalletTools {
             //most likely address lets check it
             try {
                 if (isAddressValidInternal(input)) {
-                    return new Classification(Classification.TYPE_ADDRESS, IClient.ETH,input);
+                    return new Classification(Classification.TYPE_ADDRESS, cryptoCurrency, input);
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }
-        }else if (input.startsWith("XE")) {
+        } else if (input.startsWith("XE")) {
             try {
                 if (isAddressValidInternal(input)) {
-                    return new Classification(Classification.TYPE_ADDRESS,IClient.ETH,input);
+                    return new Classification(Classification.TYPE_ADDRESS, cryptoCurrency, input);
                 }
             } catch (AddressFormatException e) {
                 e.printStackTrace();
             }
-        }else if (input.startsWith("xpub")) {
-            return new Classification(Classification.TYPE_PUB,IClient.ETH,input);
+        } else if (input.startsWith("xpub")) {
+            return new Classification(Classification.TYPE_PUB, cryptoCurrency, input);
         }
 
         return new Classification(Classification.TYPE_UNKNOWN);
-
     }
 
     private static boolean isAddressValidInternal(String address) {
@@ -356,7 +360,6 @@ public class WalletToolsETH implements IWalletTools {
         result.add(IClient.ETC);
         return result;
     }
-
 
     private static byte[] decodeAddressAsBytes(String address) {
         if (address == null) {
@@ -422,7 +425,7 @@ public class WalletToolsETH implements IWalletTools {
             String base36 = iban.substring(4);
             BigInteger asBn = new BigInteger(base36, 36);
             return encodeAddressToChecksummedAddress(padLeft(asBn.toString(16), 20));
-        }else{
+        } else {
             return null;
         }
     }
@@ -471,10 +474,8 @@ public class WalletToolsETH implements IWalletTools {
                 total %= 97L;
             }
         }
-
         return (int)(total % 97L);
     }
-
 
     private static String padLeft(String number, int bytes) {
         String result = number;
@@ -514,7 +515,7 @@ public class WalletToolsETH implements IWalletTools {
                 checksumAddress += (addrChars[i] +"").toLowerCase();
             }
         }
-        return "0x"+checksumAddress;
+        return "0x" + checksumAddress;
     }
 
     private static String bytesToHexString(byte[] bytes) {
@@ -576,5 +577,4 @@ public class WalletToolsETH implements IWalletTools {
         System.arraycopy(result,result.length - address.length, address,0, address.length);
         return bytesToHexString(address);
     }
-
 }

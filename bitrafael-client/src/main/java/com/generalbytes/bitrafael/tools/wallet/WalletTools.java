@@ -54,10 +54,12 @@ public class WalletTools implements IWalletTools {
 
         classificators.put(IClient.XMR, xmrwt);
 
-        WalletToolsETH wETH = new WalletToolsETH();
+        WalletToolsETH wETH = new WalletToolsETH(IClient.ETH);
+        WalletToolsETH wETC = new WalletToolsETH(IClient.ETC);
         tools.put(IClient.ETH, wETH);
-        tools.put(IClient.ETC, wETH);
+        tools.put(IClient.ETC, wETC);
         classificators.put(IClient.ETH, wETH);
+        classificators.put(IClient.ETC, wETC);
     }
 
     private IWalletTools getDefaultWalletTools() {
@@ -141,17 +143,17 @@ public class WalletTools implements IWalletTools {
         Classification result = new Classification(Classification.TYPE_UNKNOWN);
         if (IClient.BTC.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.BTC).classify(input);
-        }else if (IClient.LTC.equalsIgnoreCase(cryptoCurrencyHint)) {
+        } else if (IClient.LTC.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.LTC).classify(input);
-        }else if (IClient.DASH.equalsIgnoreCase(cryptoCurrencyHint)) {
+        } else if (IClient.DASH.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.DASH).classify(input);
-        }else if (IClient.XMR.equalsIgnoreCase(cryptoCurrencyHint)) {
+        } else if (IClient.XMR.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.XMR).classify(input);
-        }else if (IClient.ETH.equalsIgnoreCase(cryptoCurrencyHint)) {
+        } else if (IClient.ETH.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.ETH).classify(input);
-        }else if (IClient.ETC.equalsIgnoreCase(cryptoCurrencyHint)) {
+        } else if (IClient.ETC.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.ETC).classify(input);
-        }else if (IClient.BCH.equalsIgnoreCase(cryptoCurrencyHint)) {
+        } else if (IClient.BCH.equalsIgnoreCase(cryptoCurrencyHint)) {
             result = classificators.get(IClient.BCH).classify(input);
         }
 
@@ -216,12 +218,8 @@ public class WalletTools implements IWalletTools {
             return classificators.get(IClient.BCH).classify(input);
         }
 
-
         return result;
     }
-
-
-
 
     @Override
     public Set<String> supportedCryptoCurrencies() {
@@ -252,5 +250,4 @@ public class WalletTools implements IWalletTools {
         }
         return COIN_TYPE_BITCOIN;
     }
-
 }
