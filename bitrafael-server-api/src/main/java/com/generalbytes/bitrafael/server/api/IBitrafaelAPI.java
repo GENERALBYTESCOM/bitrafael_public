@@ -79,6 +79,11 @@ public interface IBitrafaelAPI {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/addresses/info/{xpub}")
+    AddressesInfoResponse getAddressesInfoFromXpub(@PathParam("xpub") String xpub, @QueryParam("limit") int limit);
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/transactions/build")
     TxTemplateResponse buildTransactionTemplate(TxTemplateRequest tr);
 

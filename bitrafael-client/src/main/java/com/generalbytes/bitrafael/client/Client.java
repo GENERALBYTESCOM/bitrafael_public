@@ -35,6 +35,7 @@ import si.mazi.rescu.RestProxyFactory;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -264,6 +265,19 @@ public class Client implements IClient {
             final AddressesInfoResponse response = api.getAddressesInfos(addresses, limit);
             if (response != null && response.isSuccess() && response.getData() != null) {
                 return response.getData();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit) {
+        try {
+            final AddressesInfoResponse response = api.getAddressesInfoFromXpub(xpub, limit);
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData().values();
             }
         } catch (Throwable t) {
             t.printStackTrace();
