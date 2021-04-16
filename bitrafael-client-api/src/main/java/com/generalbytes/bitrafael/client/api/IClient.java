@@ -19,7 +19,9 @@ package com.generalbytes.bitrafael.client.api;
 
 import com.generalbytes.bitrafael.server.api.dto.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +52,7 @@ public interface IClient {
     AddressInfo getAddressInfo(String address, int limit);
     Map<String,TxInfo> getAddressesLastTransactionInfos(List<String> addresses);
     Map<String,AddressInfo> getAddressesInfo(List<String> addresses, int limit);
+    Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit) throws IOException;
     Map<String, Integer> getAddressesAudits(List<String> addresses);
 
     long getTransactionHeight(String txHash);
