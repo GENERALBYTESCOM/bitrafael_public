@@ -3,7 +3,9 @@ package com.generalbytes.bitrafael.client;
 import com.generalbytes.bitrafael.client.api.IClient;
 import com.generalbytes.bitrafael.server.api.dto.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +28,11 @@ public class Client implements IClient {
     @Override
     public AccountBalance getAccountBalance(String xpub) {
         return new AccountBalance(xpub,"nextAddr",0,"nextAddrChange",0,100000000,100000000);
+    }
+
+    @Override
+    public Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit) throws IOException {
+        return null;
     }
 
     @Override
