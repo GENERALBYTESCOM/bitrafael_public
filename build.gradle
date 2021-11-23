@@ -52,6 +52,12 @@ allprojects {
         options.incremental = true
     }
 
+    // Jars with the same contents should have the same checksums
+    tasks.withType(AbstractArchiveTask).configureEach {
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+    }
+
     afterEvaluate {
         if (pluginManager.hasPlugin('com.generalbytes.gradle.dependency.verification')) {
             dependencyChecksums {
