@@ -71,6 +71,11 @@ public class Client implements IClient {
     }
 
     @Override
+    public TxInfo getTransactionInfo(String txHash) {
+        return null;
+    }
+
+    @Override
     public String send(String fromPrivateKey, BigDecimal amount, String toAddress) {
         return null;
     }

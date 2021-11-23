@@ -57,6 +57,7 @@ public interface IClient {
 
     long getTransactionHeight(String txHash);
     long getTransactionConfirmations(String txHash);
+    TxInfo getTransactionInfo(String txHash);
 
     String send(String fromPrivateKey, BigDecimal amount, String toAddress); //LOW fee
     String send(String fromPrivateKey, BigDecimal amount, String toAddress, BigDecimal fee);
