@@ -110,6 +110,11 @@ public class MasterPrivateKeyETH implements IMasterPrivateKey {
             public int getProtocolVersionNum(ProtocolVersion version) {
                 return 0;
             }
+
+            @Override
+            public Block getGenesisBlock() {
+                return null;
+            }
         });
     }
 

@@ -235,6 +235,11 @@ public class WalletToolsETH implements IWalletTools {
             public int getProtocolVersionNum(ProtocolVersion version) {
                 return 0;
             }
+
+            @Override
+            public Block getGenesisBlock() {
+                return null;
+            }
         });
     }
 
