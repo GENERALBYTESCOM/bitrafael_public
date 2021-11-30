@@ -50,6 +50,8 @@ public class ClassificationExample {
                 "82uq8wckyDheRACjnFxbAxfRBD7pRMvF2EEsfNv7A1n3V86eD8KPuGwfmGmXKk6jXQBnpfUG5bGCg1XbFqUipGT28iW6vNL", //monero sub address
                 "0x8912358D977e123b51EcAd1fFA0cC4A7e32FF774", //ethereum
                 "qz2zt4yt687zgm6qzpwne26sgf6ez2lfru2kx4ptkr", //bitcoincash
+                "bitcoin:bc1q8s3h3vw5xufdas890q29lpuca56r0ezqar0mvs?amount=222&ddd=d33", // btc bech32 segwit address - starts with bc1 (bc1q)
+                "bitcoin:bc1pveaamy78cq5hvl74zmfw52fxyjun3lh7lgt44j03ygx02zyk8lesgk06f6?amount=222&ddd=d33", // btc taproot address - starts with bc1p
 
 
 
