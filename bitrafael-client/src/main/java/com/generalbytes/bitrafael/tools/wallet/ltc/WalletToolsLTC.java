@@ -45,10 +45,12 @@ import java.util.Set;
 
 public class WalletToolsLTC implements IWalletTools {
 
-    public static final int XPUB = 0x019da462;//Ltub
-    public static final int XPRV = 0x019d9cfe;//Ltpv
-    public static final int YPUB = 0x01b26ef6;//Mtub
-    public static final int YPRV = 0x01b26792;//Mtpv
+    public static final int XPUB = MasterPrivateKeyLTC.XPUB;//Ltub
+    public static final int XPRV = MasterPrivateKeyLTC.XPRV;//Ltpv
+    public static final int YPUB = MasterPrivateKeyLTC.YPUB;//Mtub
+    public static final int YPRV = MasterPrivateKeyLTC.YPRV;//Mtpv
+    public static final int ZPUB = MasterPrivateKeyLTC.ZPUB;//zpub - same as btc
+    public static final int ZPRV = MasterPrivateKeyLTC.ZPRV;//zprv
 
 
     @Override
@@ -94,6 +96,9 @@ public class WalletToolsLTC implements IWalletTools {
             case YPRV:
                 standard = STANDARD_BIP49; //yprv
                 break;
+            case ZPRV:
+                standard = STANDARD_BIP84; //zprv
+                break;
         }
         if (standard == -1) {
             return null;
@@ -127,14 +132,14 @@ public class WalletToolsLTC implements IWalletTools {
             final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
             final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
 
-            return "bechadress";
+            return Address.fromKey(MainNetParams.get(), walletKey, Script.ScriptType.P2WPKH).toString();
         }
         return null;
     }
 
     @Override
     public String getWalletAddressFromAccountPUB(String accountPUB, String cryptoCurrency, int chainIndex, int index) {
-        if (!accountPUB.startsWith("Ltub") && !accountPUB.startsWith("Mtub")) {
+        if (!accountPUB.startsWith("Ltub") && !accountPUB.startsWith("Mtub") && !accountPUB.startsWith("zpub")) {
             return null;
         }
         byte[] serializedKey = org.litecoinj.core.Base58.decodeChecked(accountPUB);
@@ -161,6 +166,14 @@ public class WalletToolsLTC implements IWalletTools {
                 standard = STANDARD_BIP49; //Mtpv
                 isPub = false;
                 break;
+            case ZPUB:
+                standard = STANDARD_BIP84;//zpub
+                isPub = true;
+                break;
+            case ZPRV:
+                standard = STANDARD_BIP84;//zprv
+                isPub = false;
+                break;
         }
 
         if(standard == -1) {
@@ -185,7 +198,7 @@ public class WalletToolsLTC implements IWalletTools {
                     byte[] addressBytes =  Utils.sha256hash160(scriptSig);
                     return LegacyAddress.fromScriptHash(MainNetParams.get(),addressBytes).toBase58();
                 }else  if (standard == STANDARD_BIP84) {
-                    return null; //TODO
+                    return Address.fromKey(MainNetParams.get(), walletKey, Script.ScriptType.P2WPKH).toString();
                 }
             }else {
                 return null;
@@ -202,6 +215,9 @@ public class WalletToolsLTC implements IWalletTools {
                 break;
             case STANDARD_BIP49:
                 header = YPUB; //ypub
+                break;            
+            case STANDARD_BIP84:
+                header = ZPUB; //zpub
                 break;
         }
         final int finalHeader = header;
@@ -384,9 +400,13 @@ public class WalletToolsLTC implements IWalletTools {
             return new Classification(Classification.TYPE_PUB,IClient.LTC,input);
         }else if (input.startsWith("Mtub")) {
             return new Classification(Classification.TYPE_PUB,IClient.LTC,input);
+        }else if (input.startsWith("zpub")) {
+            return new Classification(Classification.TYPE_PUB,IClient.LTC,input);
         }else if (input.startsWith("Ltpv")) {
             return new Classification(Classification.TYPE_PRV,IClient.LTC,input);
         }else if (input.startsWith("Mtpv")) {
+            return new Classification(Classification.TYPE_PRV,IClient.LTC,input);
+        }else if (input.startsWith("zprv")) {
             return new Classification(Classification.TYPE_PRV,IClient.LTC,input);
         }
 

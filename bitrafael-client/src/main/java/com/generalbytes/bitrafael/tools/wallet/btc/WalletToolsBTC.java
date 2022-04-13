@@ -133,7 +133,7 @@ public class WalletToolsBTC implements IWalletTools {
             final DeterministicKey chainKey = HDKeyDerivation.deriveChildKey(accountKey, new ChildNumber(chainIndex, false));
             final DeterministicKey walletKey = HDKeyDerivation.deriveChildKey(chainKey, new ChildNumber(index, false));
 
-            return "bechadress";
+            return Address.fromKey(MainNetParams.get(), walletKey, Script.ScriptType.P2WPKH).toString();
         }
         return null;
     }
@@ -199,7 +199,7 @@ public class WalletToolsBTC implements IWalletTools {
                     byte[] addressBytes =  Utils.sha256hash160(scriptSig);
                     return LegacyAddress.fromScriptHash(MainNetParams.get(),addressBytes).toString();
                 }else  if (standard == STANDARD_BIP84) {
-                    return null; //TODO
+                    return Address.fromKey(MainNetParams.get(), walletKey, Script.ScriptType.P2WPKH).toString();
                 }
             }else {
                 return null;
