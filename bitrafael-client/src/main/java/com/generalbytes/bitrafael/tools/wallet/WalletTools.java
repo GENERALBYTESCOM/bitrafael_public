@@ -194,7 +194,7 @@ public class WalletTools implements IWalletTools {
             return classificators.get(IClient.XMR).classify(input);
         }
 
-        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("L") || input.startsWith("3") || input.startsWith("6") || input.startsWith("M") || input.startsWith("Ltub") || input.startsWith("Mtub") || input.startsWith("T") || input.startsWith("Ltpv") || input.startsWith("Mtpv"))) {
+        if (result.getType() == Classification.TYPE_UNKNOWN && (input.startsWith("L") || input.startsWith("3") || input.startsWith("6") || input.startsWith("M") || input.startsWith("Ltub") || input.startsWith("Mtub") || input.startsWith("T") || input.startsWith("Ltpv") || input.startsWith("Mtpv"))) { // zpub, zprv same as btc
             return classificators.get(IClient.LTC).classify(input);
         }
 

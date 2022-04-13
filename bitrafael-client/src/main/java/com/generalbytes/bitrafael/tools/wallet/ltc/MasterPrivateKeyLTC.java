@@ -40,6 +40,8 @@ public class MasterPrivateKeyLTC implements IMasterPrivateKey {
     public static final int XPRV = 0x019d9cfe;//Ltpv
     public static final int YPUB = 0x01b26ef6;//Mtub
     public static final int YPRV = 0x01b26792;//Mtpv
+    public static final int ZPUB = 0x04b24746;//zpub -- same as btc
+    public static final int ZPRV = 0x04b2430c;//zprv
 
 
     private DeterministicKey key;
@@ -58,6 +60,9 @@ public class MasterPrivateKeyLTC implements IMasterPrivateKey {
                 break;
             case IWalletTools.STANDARD_BIP49:
                 header = YPRV; //yprv
+                break;
+            case IWalletTools.STANDARD_BIP84:
+                header = ZPRV;
                 break;
         }
         final int finalHeader = header;
@@ -155,6 +160,9 @@ public class MasterPrivateKeyLTC implements IMasterPrivateKey {
             case IWalletTools.STANDARD_BIP49:
                 header = YPRV; //Mtpv
                 break;
+            case IWalletTools.STANDARD_BIP84:
+                header = ZPRV; //zprv
+                break;
         }
         ByteBuffer ser = ByteBuffer.allocate(78);
         ser.putInt(header);
@@ -181,6 +189,9 @@ public class MasterPrivateKeyLTC implements IMasterPrivateKey {
                 break;
             case IWalletTools.STANDARD_BIP49:
                 header = YPUB; //Mtub
+                break;
+            case IWalletTools.STANDARD_BIP84:
+                header = ZPUB; //zpub
                 break;
         }
 
