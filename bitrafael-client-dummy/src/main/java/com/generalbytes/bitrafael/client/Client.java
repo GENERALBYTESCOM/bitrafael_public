@@ -36,12 +36,22 @@ public class Client implements IClient {
     }
 
     @Override
+    public Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit, int page) throws IOException {
+        return null;
+    }
+
+    @Override
     public TxInfo getAddressLastTransactionInfo(String address) {
         return null;
     }
 
     @Override
     public AddressInfo getAddressInfo(String address, int limit) {
+        return null;
+    }
+
+    @Override
+    public AddressInfo getAddressInfo(String address, int limit, int page) {
         return null;
     }
 
