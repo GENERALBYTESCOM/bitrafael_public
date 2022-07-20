@@ -70,7 +70,10 @@ public interface IBitrafaelAPI {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/addresses/{address}/info")
-    AddressInfoResponse getAddressInfo(@PathParam("address") String address, @QueryParam("limit") int limit, @QueryParam("page") int page);
+    AddressInfoResponse getAddressInfo(@PathParam("address") String address,
+                                       @QueryParam("limit") int limit,
+                                       @QueryParam("page") int page,
+                                       @QueryParam("sort") int sort);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -80,7 +83,10 @@ public interface IBitrafaelAPI {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/addresses/info/{xpub}")
-    AddressesInfoResponse getAddressesInfoFromXpub(@PathParam("xpub") String xpub, @QueryParam("limit") int limit, @QueryParam("page") int page);
+    AddressesInfoResponse getAddressesInfoFromXpub(@PathParam("xpub") String xpub,
+                                                   @QueryParam("limit") int limit,
+                                                   @QueryParam("page") int page,
+                                                   @QueryParam("sort") int sort);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
