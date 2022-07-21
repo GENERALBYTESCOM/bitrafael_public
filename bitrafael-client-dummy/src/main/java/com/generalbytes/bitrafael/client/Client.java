@@ -36,7 +36,8 @@ public class Client implements IClient {
     }
 
     @Override
-    public Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit, int page) throws IOException {
+    public Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit,
+                                                            int page, int sort) throws IOException {
         return null;
     }
 
@@ -51,7 +52,7 @@ public class Client implements IClient {
     }
 
     @Override
-    public AddressInfo getAddressInfo(String address, int limit, int page) {
+    public AddressInfo getAddressInfo(String address, int limit, int page, int sort) {
         return null;
     }
 

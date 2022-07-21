@@ -50,11 +50,11 @@ public interface IClient {
 
     TxInfo getAddressLastTransactionInfo(String address);
     AddressInfo getAddressInfo(String address, int limit);
-    AddressInfo getAddressInfo(String address, int limit, int page);
+    AddressInfo getAddressInfo(String address, int limit, int page, int sort);
     Map<String,TxInfo> getAddressesLastTransactionInfos(List<String> addresses);
     Map<String,AddressInfo> getAddressesInfo(List<String> addresses, int limit);
     Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit) throws IOException;
-    Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit, int page) throws IOException;
+    Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit, int page, int sort) throws IOException;
     Map<String, Integer> getAddressesAudits(List<String> addresses);
 
     long getTransactionHeight(String txHash);

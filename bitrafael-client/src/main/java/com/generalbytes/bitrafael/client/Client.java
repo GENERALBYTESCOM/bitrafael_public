@@ -248,13 +248,13 @@ public class Client implements IClient {
 
     @Override
     public AddressInfo getAddressInfo(String address, int limit) {
-        return getAddressInfo(address, limit, 0);
+        return getAddressInfo(address, limit, 0, 1);
     }
 
     @Override
-    public AddressInfo getAddressInfo(String address, int limit, int page) {
+    public AddressInfo getAddressInfo(String address, int limit, int page, int sort) {
         try {
-            final AddressInfoResponse response = api.getAddressInfo(address, limit, page);
+            final AddressInfoResponse response = api.getAddressInfo(address, limit, page, sort);
             if (response != null && response.isSuccess() && response.getData() != null) {
                 return response.getData();
             }
@@ -292,13 +292,13 @@ public class Client implements IClient {
 
     @Override
     public Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit) {
-        return getAddressesInfoFromXpub(xpub, limit, 0);
+        return getAddressesInfoFromXpub(xpub, limit, 0, 1);
     }
 
     @Override
-    public Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit, int page) {
+    public Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit, int page, int sort) {
         try {
-            final AddressesInfoResponse response = api.getAddressesInfoFromXpub(xpub, limit, page);
+            final AddressesInfoResponse response = api.getAddressesInfoFromXpub(xpub, limit, page, sort);
             if (response != null && response.isSuccess() && response.getData() != null) {
                 return response.getData().values();
             }
