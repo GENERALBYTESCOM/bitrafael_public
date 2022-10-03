@@ -51,6 +51,7 @@ public interface IClient {
     TxInfo getAddressLastTransactionInfo(String address);
     AddressInfo getAddressInfo(String address, int limit);
     AddressInfo getAddressInfo(String address, int limit, int page, int sort);
+    Collection<AddressInfo> getXpubTransactions(String xPubAddress, long lastTxTimestamp, int limit, int sort);
     Map<String,TxInfo> getAddressesLastTransactionInfos(List<String> addresses);
     Map<String,AddressInfo> getAddressesInfo(List<String> addresses, int limit);
     Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit) throws IOException;
