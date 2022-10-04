@@ -90,11 +90,11 @@ public interface IBitrafaelAPI {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/transactions/info/{xpub}") // normal
-    AddressesInfoResponse getXpubTransactions(@PathParam("xpub") String accountPUB,
-                                            @QueryParam("lasttx") long lastTxTimestamp,
-                                            @QueryParam("limit") int limit,
-                                            @QueryParam("sort") int sort) ;
+    @Path("/transactions/info/{xpub}")
+    AddressesInfoResponse getAddressesInfoFromXpub(@PathParam("xpub") String accountPUB,
+                                                   @QueryParam("lasttxtimestamp") long lastTxTimestamp,
+                                                   @QueryParam("limit") int limit,
+                                                   @QueryParam("sort") int sort);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

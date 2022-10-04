@@ -309,9 +309,9 @@ public class Client implements IClient {
     }
 
     @Override
-    public Collection<AddressInfo> getXpubTransactions(String xPubAddress, long lastTxTimestamp, int limit, int sort) { // normal
+    public Collection<AddressInfo> getAddressesInfoFromXpub(String xPubAddress, long lastTxTimestamp, int limit, int sort) { // normal
         try {
-            final AddressesInfoResponse response = api.getXpubTransactions(xPubAddress, lastTxTimestamp, limit, sort);
+            final AddressesInfoResponse response = api.getAddressesInfoFromXpub(xPubAddress, lastTxTimestamp, limit, sort);
             if (response != null && response.isSuccess() && response.getData() != null) {
                 return response.getData().values();
             }
