@@ -90,7 +90,7 @@ public interface IBitrafaelAPI {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/transactions/info/{xpub}")
+    @Path("/transactions/filteredinfo/{xpub}")
     AddressesInfoResponse getAddressesInfoFromXpub(@PathParam("xpub") String accountPUB,
                                                    @QueryParam("lasttxtimestamp") long lastTxTimestamp,
                                                    @QueryParam("limit") int limit,
