@@ -309,6 +309,19 @@ public class Client implements IClient {
     }
 
     @Override
+    public Collection<AddressInfo> getAddressesInfoFromXpub(String xPubAddress, long lastTxTimestamp, int limit, int sort) { // normal
+        try {
+            final AddressesInfoResponse response = api.getAddressesInfoFromXpub(xPubAddress, lastTxTimestamp, limit, sort);
+            if (response != null && response.isSuccess() && response.getData() != null) {
+                return response.getData().values();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public long getCurrentBlockchainHeight() {
         try {
             final BlockchainHeightResponse response = api.getCurrentBlockchainHeight();

@@ -55,6 +55,7 @@ public interface IClient {
     Map<String,AddressInfo> getAddressesInfo(List<String> addresses, int limit);
     Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit) throws IOException;
     Collection<AddressInfo> getAddressesInfoFromXpub(String xpub, int limit, int page, int sort) throws IOException;
+    Collection<AddressInfo> getAddressesInfoFromXpub(String xPubAddress, long lastTxTimestamp, int limit, int sort);
     Map<String, Integer> getAddressesAudits(List<String> addresses);
 
     long getTransactionHeight(String txHash);
