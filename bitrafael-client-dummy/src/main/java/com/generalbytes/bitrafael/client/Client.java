@@ -42,6 +42,12 @@ public class Client implements IClient {
     }
 
     @Override
+    public Collection<AddressInfo> getAddressesInfoFromXpub(String xPubAddress, long lastTxTimestamp, int limit,
+                                                            int sort) {
+        return null;
+    }
+
+    @Override
     public TxInfo getAddressLastTransactionInfo(String address) {
         return null;
     }
