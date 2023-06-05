@@ -17,6 +17,7 @@
  ************************************************************************************/
 package com.generalbytes.bitrafael.tools.api.payment;
 
+import java.io.File;
 import java.math.BigDecimal;
 
 public class PaymentRequestSpec {
@@ -28,6 +29,11 @@ public class PaymentRequestSpec {
     private Object tag;
     private int safeNumberOfBlockConfirmations;
     private long validityDurationInSeconds;
+    /**
+     * Directory where property files (e.g. payment_indexes_btc.properties) are located.
+     * If null, current / working directory is used.
+     */
+    private File xpubIndexesLocation;
 
     public PaymentRequestSpec(BigDecimal fiatAmount, BigDecimal fiatToleranceAmount, String fiatCurrency, String cryptoCurrency,  String accountXPUBForReceivingPayment) {
         this(fiatAmount,fiatToleranceAmount, fiatCurrency, cryptoCurrency, accountXPUBForReceivingPayment,null,3,15 * 60); //15 minutes
@@ -75,6 +81,14 @@ public class PaymentRequestSpec {
 
     public String getCryptoCurrency() {
         return cryptoCurrency;
+    }
+
+    public File getXpubIndexesLocation() {
+        return xpubIndexesLocation;
+    }
+
+    public void setXpubIndexesLocation(File xpubIndexesLocation) {
+        this.xpubIndexesLocation = xpubIndexesLocation;
     }
 
     @Override
