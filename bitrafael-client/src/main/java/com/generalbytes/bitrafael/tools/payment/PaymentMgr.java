@@ -89,7 +89,11 @@ public class PaymentMgr implements IPaymentMgr {
 
     public PaymentRequest createPaymentRequest(PaymentRequestSpec spec, IPaymentListener listener) {
 
-        String receivingAddress = getReceivingAddress(spec.getAccountXPUBForReceivingPayment(), IWalletTools.CHAIN_EXTERNAL, spec.getCryptoCurrency());
+        String receivingAddress = getReceivingAddress(
+                spec.getAccountXPUBForReceivingPayment(),
+                IWalletTools.CHAIN_EXTERNAL,
+                spec.getCryptoCurrency(),
+                spec.getXpubIndexesLocation());
 
         final ArrayList<AmountsPair> amountsPairs = new ArrayList<>();
         amountsPairs.add(new AmountsPair(spec.getFiatAmount(),          spec.getFiatCurrency(),null, spec.getCryptoCurrency()));
@@ -323,9 +327,9 @@ public class PaymentMgr implements IPaymentMgr {
         }
     }
 
-    private String getReceivingAddress(String xpubAccount, int chainIndex, String cryptoCurrency) {
+    private String getReceivingAddress(String xpubAccount, int chainIndex, String cryptoCurrency, File xpubIndexesFileLocation) {
         synchronized (INDEXES_LOCK) {
-            File xpubIndexesFile = new File("./payment_indexes_" + cryptoCurrency.toLowerCase() + ".properties");
+            File xpubIndexesFile = new File(xpubIndexesFileLocation, "payment_indexes_" + cryptoCurrency.toLowerCase() + ".properties");
             Properties p = new Properties();
             String address = null;
             try {
