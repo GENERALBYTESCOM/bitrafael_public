@@ -21,8 +21,8 @@ import com.generalbytes.bitrafael.server.api.dto.AmountsPair;
 import com.generalbytes.bitrafael.server.api.dto.TxTemplate;
 import com.generalbytes.bitrafael.server.api.dto.rest.*;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 
 

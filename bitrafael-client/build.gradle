@@ -33,7 +33,12 @@ dependencies {
 
     implementation(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.16.1')
     implementation('org.bouncycastle:bcprov-jdk15on:1.60') // bitcoinj/litecoinj depends on this and exposes it
-    implementation(group: 'com.github.mmazi', name: 'rescu', version: '2.0.2')
+    implementation(group: 'com.github.mmazi', name: 'rescu', version: '3.1') {
+        // Keep SLF4J 1.7.32 used by other dependencies
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    implementation(group: 'jakarta.ws.rs', name: 'jakarta.ws.rs-api', version: '3.1.0')
+    implementation(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.14.2')
     runtimeOnly(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32')
     runtimeOnly(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.32')
 
