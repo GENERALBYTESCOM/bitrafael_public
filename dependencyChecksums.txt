@@ -49,3 +49,5 @@ verifyModule 'org.slf4j:slf4j-simple:1.7.32:d2fdd7b73ca2019a2062d145a0d86179a58f
 verifyModule 'pl.allegro.tech.build:axion-release-plugin:1.9.3:3df236652861532b05d0ca7dfeac5132ae2d364253f49c8311fc956f58842780'
 verifyModule 'org.bouncycastle:bcprov-jdk15on:1.60:7f1a0e6badab38666f8467a9a0ee96656b2f8ec8623867ed34f3cdc173b7ee07'
 verifyModule 'org.bouncycastle:bcprov-jdk15to18:1.69:8e145c3581507ed74ec3cb1dc634e1d39dd2c21584cc3adb4d6689a0d56bcdaa'
+verifyModule 'javax.activation:javax.activation-api:1.2.0:43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393'
+verifyModule 'javax.xml.bind:jaxb-api:2.3.1:88b955a0df57880a26a74708bc34f74dcaf8ebf4e78843a28b50eae945732b06'

@@ -5,8 +5,9 @@ plugins {
 }
 
 dependencies {
-    compile(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.1')
-    compile(group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1')
+    implementation(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.1')
+    implementation(group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1')
+    implementation(group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1')
 }
 
 dependencyVerifications {

@@ -6,10 +6,10 @@ plugins {
 group = projectGroup
 
 dependencies {
-    compile(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1.20190220') //bitcoinj
-    compile(group: 'com.caucho', name: 'hessian', version: '4.0.51') //hessian
-    compile(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
-    compile(group: 'com.google.guava', name: 'guava', version: '27.0.1-android')
+    implementation(group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.14.1.20190220') //bitcoinj
+    implementation(group: 'com.caucho', name: 'hessian', version: '4.0.51') //hessian
+    implementation(group: 'com.madgag.spongycastle', name: 'core', version: '1.52.0.0')
+    implementation(group: 'com.google.guava', name: 'guava', version: '27.0.1-android')
 }
 
 dependencySubstitutions {
