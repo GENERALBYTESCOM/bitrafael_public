@@ -29,7 +29,7 @@ buildscript {
 
 plugins {
     id 'com.generalbytes.gradle.main'
-    id 'pl.allegro.tech.build.axion-release' version '1.9.3'
+    id 'pl.allegro.tech.build.axion-release' version '1.19.1'
 }
 
 scmVersion {
