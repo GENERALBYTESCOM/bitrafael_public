@@ -5,8 +5,8 @@ plugins {
 }
 
 dependencies {
-    compile project(':bitrafael-server-api')
-    compile project(':bitrafael-client-api')
+    implementation project(':bitrafael-server-api')
+    implementation project(':bitrafael-client-api')
 }
 
 dependencyVerifications {

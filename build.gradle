@@ -46,8 +46,8 @@ allprojects {
     version = scmVersion.version
 
     tasks.withType(JavaCompile) {
-        project.sourceCompatibility = JavaVersion.VERSION_1_8
-        project.targetCompatibility = JavaVersion.VERSION_1_8
+        project.sourceCompatibility = JavaVersion.VERSION_11
+        project.targetCompatibility = JavaVersion.VERSION_11
         options.encoding = 'UTF-8'
         options.incremental = true
     }

@@ -20,8 +20,8 @@ package com.generalbytes.bitrafael.server.api;
 
 
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 
 @Path("/bitcoin/v1")
 @Produces(MediaType.APPLICATION_JSON)
