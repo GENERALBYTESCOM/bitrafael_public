@@ -19,6 +19,7 @@ buildscript {
                 }
             }
             repositoryHandler.mavenCentral()
+            repositoryHandler.maven { url 'https://jitpack.io' }
         }
         batmDependencySubstitutionConfig = file('dependencySubstitutions.txt')
         batmDependencyChecksumsConfig = file('dependencyChecksums.txt')

@@ -60,3 +60,7 @@ verifyModule 'org.bitcoinj:bitcoinj-core:0.16.5:b43778c341ba2279d29a5fd6d72aae6b
 verifyModule 'org.bouncycastle:bcprov-jdk15to18:1.73:78233ded3571ad01eb772a987ad291d6a5d8d395802b60b2de1be05db758c59b'
 verifyModule 'org.litecoinj:core:0.15.1.20260110:3d467f6b19cc3d0bad2a9b9e4c2e06f6189173e4780da1e697830479a817699c'
 verifyModule 'org.slf4j:slf4j-simple:1.7.36:2f39bed943d624dfa8f4102d0571283a10870b6aa36f197a8a506f147010c10f'
+verifyModule 'com.google.errorprone:error_prone_annotations:2.11.0:721cb91842b46fa056847d104d5225c8b8e1e8b62263b993051e1e5a0137b7ec'
+verifyModule 'com.google.guava:guava:31.1-jre:a42edc9cab792e39fe39bb94f3fca655ed157ff87a8af78e1d6ba5b07c4a00ab'
+verifyModule 'org.litecoinj:core:0.15.1.20260115:11a929063851ed33f162c584c82ea084f3a8b48bbed124c6294c2d53c5162938'
+verifyModule 'com.github.GENERALBYTESCOM:litecoinj:0.15.1.20260115:568667264dcffad8b114f7a4dbd1e65e84970b4dbeea97efdd41b75df33ea874'
