@@ -27,7 +27,7 @@ import com.generalbytes.bitrafael.tools.api.watch.IBlockchainWatcherListener;
 public class TransactionWatcherExample {
     public static void main(String[] args) {
         String cryptoCurrency = IClient.BTC;
-        BlockchainWatcher bw = new BlockchainWatcher();
+        BlockchainWatcher bw = new BlockchainWatcher(() -> "insert your GB API Key");
         bw.start();
         bw.addBlockchainListener(new IBlockchainWatcherListener() {
             @Override

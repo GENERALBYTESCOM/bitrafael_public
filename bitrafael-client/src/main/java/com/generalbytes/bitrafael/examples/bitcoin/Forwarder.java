@@ -30,9 +30,9 @@ import java.math.BigDecimal;
 public class Forwarder {
     public static void main(String[] args) {
         WalletTools wt = new WalletTools();
-        BlockchainWatcher bw = new BlockchainWatcher();
+        BlockchainWatcher bw = new BlockchainWatcher(() -> "insert your GB API Key");
         final String cryptoCurrency = IClient.BTC;
-        final IClient c = new Client("https://coin.cz", cryptoCurrency);
+        final IClient c = new Client("https://coin.cz", cryptoCurrency, () -> "insert your GB API Key");
 
         final String[] privatekeys = {
                 "L54zVtKQ3kY8CuoEjhijsgTiGZVWhEHDcCeTZc7ssYjwMLemQ5xu",

@@ -40,11 +40,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 public class PaymentMgr implements IPaymentMgr {
 
+    private static final Logger log = Logger.getLogger(PaymentMgr.class.getName());
+
     private static final PaymentMgr instance = new PaymentMgr();
-    private Map<String,IClient> clients;
+    private final Map<String, IClient> clients = new HashMap<>();
+    private final AtomicReference<Supplier<String>> gbApiKeySupplier = new AtomicReference<>();
 
     private final Object INDEXES_LOCK = new Object();
 
@@ -56,11 +62,10 @@ public class PaymentMgr implements IPaymentMgr {
     private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
     private PaymentMgr() {
-        clients = new HashMap<>();
-        clients.put(IClient.BTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.BTC));
-        clients.put(IClient.LTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.LTC));
+        clients.put(IClient.BTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.BTC, this::getGbApiKey));
+        clients.put(IClient.LTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.LTC, this::getGbApiKey));
 
-        watcher = new BlockchainWatcher();
+        watcher = new BlockchainWatcher(this::getGbApiKey);
         watcher.start();
     }
 
@@ -85,6 +90,17 @@ public class PaymentMgr implements IPaymentMgr {
 
     public static PaymentMgr getInstance() {
         return instance;
+    }
+
+    public void setGbApiKeySupplier(Supplier<String> gbApiKeySupplier) {
+        if (!this.gbApiKeySupplier.compareAndSet(null, gbApiKeySupplier)) {
+            log.warning("setGbApiKeySupplier - GB API key supplier is already set, ignoring");
+        }
+    }
+
+    private String getGbApiKey() {
+        Supplier<String> supplier = gbApiKeySupplier.get();
+        return supplier == null ? null : supplier.get();
     }
 
     public PaymentRequest createPaymentRequest(PaymentRequestSpec spec, IPaymentListener listener) {

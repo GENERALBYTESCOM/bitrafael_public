@@ -32,7 +32,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 public class BlockchainWatcher implements IBlockchainWatcher {
     private static final int WATCH_BLOCKS_PERIOD_IN_MS = 1 * 60 * 1000;
     private static final int WATCH_WALLETS_PERIOD_IN_MS = 1000;
@@ -41,6 +42,7 @@ public class BlockchainWatcher implements IBlockchainWatcher {
     private final List<WalletRecord> walletRecords = new LinkedList<WalletRecord>();
     private final List<IBlockchainWatcherListener> listeners = new LinkedList<IBlockchainWatcherListener>();
     private Map<String, IClient> clients = null;
+    private final AtomicReference<Supplier<String>> gbApiKeySupplier = new AtomicReference<>();
     private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
     private Map<String,Long> lastBlockChainHeights = null;
 
@@ -132,8 +134,18 @@ public class BlockchainWatcher implements IBlockchainWatcher {
         this(IClient.BTC);
     }
 
+    public BlockchainWatcher(Supplier<String> gbApiKeySupplier) {
+        this();
+        this.gbApiKeySupplier.set(gbApiKeySupplier);
+    }
+
     public BlockchainWatcher(String cryptoCurrency) {
         this(new String[]{cryptoCurrency});
+    }
+
+    public BlockchainWatcher(String cryptoCurrency, Supplier<String> gbApiKeySupplier) {
+        this(cryptoCurrency);
+        this.gbApiKeySupplier.set(gbApiKeySupplier);
     }
 
     public BlockchainWatcher(String[] cryptoCurrencies) {
@@ -142,13 +154,18 @@ public class BlockchainWatcher implements IBlockchainWatcher {
         for (int i = 0; i < cryptoCurrencies.length; i++) {
             String cryptoCurrency = cryptoCurrencies[i];
             if (IClient.BTC.equalsIgnoreCase(cryptoCurrency)) {
-                clients.put(IClient.BTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.BTC));
+                clients.put(IClient.BTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.BTC, this::getGbApiKey));
                 lastBlockChainHeights.put(IClient.BTC,-1L);
             }else if (IClient.LTC.equalsIgnoreCase(cryptoCurrency)) {
-                clients.put(IClient.LTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.LTC));
+                clients.put(IClient.LTC, new Client(System.getProperty("coin.cz", "https://coin.cz"), IClient.LTC, this::getGbApiKey));
                 lastBlockChainHeights.put(IClient.LTC,-1L);
             }
         }
+    }
+
+    private String getGbApiKey() {
+        Supplier<String> supplier = gbApiKeySupplier.get();
+        return supplier == null ? null : supplier.get();
     }
 
     @Override
