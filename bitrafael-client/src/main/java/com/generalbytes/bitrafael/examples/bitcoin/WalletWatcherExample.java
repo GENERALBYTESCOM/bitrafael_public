@@ -27,7 +27,7 @@ import com.generalbytes.bitrafael.tools.watch.BlockchainWatcher;
 public class WalletWatcherExample {
     public static void main(String[] args) {
         String cryptoCurrency = IClient.BTC;
-        BlockchainWatcher bw = new BlockchainWatcher(cryptoCurrency);
+        BlockchainWatcher bw = new BlockchainWatcher(cryptoCurrency, () -> "insert your GB API Key");
         bw.start();
         String testAddress = "13zq3yaBAiuUaEUPxhYwk5bXNadgnGeP28";
         bw.addWallet(testAddress, cryptoCurrency, new AbstractBlockchainWatcherWalletListener() {
