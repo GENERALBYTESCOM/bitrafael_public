@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class CurrencyExchangeRatesExample {
     public static void main(String[] args) {
-        CurrencyRateSource rs = new CurrencyRateSource("https://coin.cz");
+        CurrencyRateSource rs = new CurrencyRateSource("https://coin.cz", () -> "insert your GB API Key");
         Set<String> fiatCurrenciesFrom = rs.getFiatCurrenciesFrom();
         System.out.println("Currencies from:");
         for (String from : fiatCurrenciesFrom) {
